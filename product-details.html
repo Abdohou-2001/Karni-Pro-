@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>تفاصيل المنتج - WEST Store</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+    * { font-family: 'Cairo', sans-serif; }
+
+  body {
+    background: #f8fafc;
+    padding-bottom: 100px;
+    overscroll-behavior: none;
+  }
+
+.soft-shadow {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+.soft-shadow-lg {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+.image-viewer {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+.image-viewer.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+.image-viewer img {
+    max-width: 95%;
+    max-height: 95%;
+    object-fit: contain;
+    border-radius: 1rem;
+    animation: zoomIn 0.3s ease;
+  }
+
+  @keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+.qty-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+.qty-btn:active {
+    transform: scale(0.9);
+  }
+
+.qty-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+.add-cart-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+.add-cart-btn:active {
+    transform: scale(0.98);
+  }
+
+.add-cart-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+.product-card {
+    transition: all 0.3s ease;
+  }
+
+.product-card:hover {
+    transform: translateY(-4px);
+  }
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+  }
+
+  @keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+.toast-slide {
+    animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1), slideOutDown 0.4s cubic-bezier(0.4, 0, 0.2, 1) 2.6s;
+  }
+
+  @keyframes slideInUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes slideOutDown {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(100%); opacity: 0; }
+  }
+
+.badge-pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+.star-rating {
+    display: inline-flex;
+    gap: 2px;
+  }
+
+.fade-in {
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm sticky top-0 z-40 border-b-2 border-emerald-500">
+    <div class="max-w-4xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <button onclick="history.back()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-emerald-50 hover:bg-emerald-100 transition">
+          <i class="fa-solid fa-arrow-right text-emerald-600"></i>
+        </button>
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-store text-white"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-black text-gray-900">WEST Store</h1>
+            <p class="text-[10px] text-gray-500">متجرك الموثوق</p>
+          </div>
+        </div>
+        <button onclick="window.location.href='cart.html'" class="relative w-10 h-10 flex items-center justify-center rounded-xl bg-emerald-50 hover:bg-emerald-100 transition">
+          <i class="fa-solid fa-cart-shopping text-emerald-600"></i>
+          <span id="cartBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold badge-pulse"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto">
+
+    <!-- Loading Skeleton -->
+    <div id="loadingSkeleton">
+      <div class="skeleton w-full h-96"></div>
+      <div class="px-4 py-6 space-y-4">
+        <div class="skeleton h-8 rounded w-3/4"></div>
+        <div class="skeleton h-6 rounded w-1/2"></div>
+        <div class="skeleton h-12 rounded w-full"></div>
+        <div class="skeleton h-32 rounded w-full"></div>
+      </div>
+    </div>
+
+    <!-- Product Content -->
+    <div id="productContent" class="hidden fade-in">
+
+      <!-- Product Image -->
+      <div class="relative bg-white">
+        <img id="productImage" src="" alt=""
+             class="w-full h-96 md:h-[500px] object-cover cursor-zoom-in"
+             onclick="openImageViewer()">
+        <button onclick="openImageViewer()"
+                class="absolute bottom-4 right-4 w-12 h-12 bg-white/90 backdrop-blur rounded-xl flex items-center justify-center shadow-lg hover:bg-white transition">
+          <i class="fa-solid fa-expand text-gray-700"></i>
+        </button>
+        <div id="stockBadge" class="absolute top-4 left-4"></div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="bg-white px-4 py-6">
+
+        <!-- Name & Category -->
+        <div class="mb-4">
+          <h1 id="productName" class="text-3xl md:text-4xl font-black text-gray-900 mb-3 leading-tight"></h1>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="productCategory" class="bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-lg text-sm font-bold"></span>
+            <span id="productBarcode" class="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-lg text-sm font-mono"></span>
+          </div>
+        </div>
+
+        <!-- Rating -->
+        <div class="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
+          <div id="productRating" class="star-rating text-amber-400 text-xl"></div>
+          <span id="ratingText" class="text-gray-700 font-bold"></span>
+          <span class="text-gray-400">•</span>
+          <span id="reviewsCount" class="text-gray-600 text-sm"></span>
+        </div>
+
+        <!-- Price -->
+        <div class="mb-6">
+          <div class="flex items-baseline gap-3 mb-2">
+            <span id="productPrice" class="text-5xl font-black text-emerald-600"></span>
+            <span class="text-2xl text-gray-500 font-bold">درهم</span>
+          </div>
+          <div id="publicPriceContainer" class="hidden flex items-center gap-2">
+            <span class="text-gray-400 line-through text-lg" id="publicPrice"></span>
+            <span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs font-bold" id="discount"></span>
+          </div>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="grid grid-cols-2 gap-3 mb-6">
+          <div id="stockCard" class="bg-gray-50 rounded-xl p-4 border-2 border-gray-100">
+            <div class="flex items-center gap-2 mb-1">
+              <i class="fa-solid fa-box text-gray-500"></i>
+              <span class="text-xs text-gray-500 font-semibold">المخزون</span>
+            </div>
+            <p id="stockQuantity" class="text-lg font-black text-gray-900"></p>
+          </div>
+          <div id="piecesCard" class="hidden bg-amber-50 rounded-xl p-4 border-2 border-amber-100">
+            <div class="flex items-center gap-2 mb-1">
+              <i class="fa-solid fa-boxes-stacked text-amber-600"></i>
+              <span class="text-xs text-amber-700 font-semibold">العلبة</span>
+            </div>
+            <p id="piecesPerBox" class="text-lg font-black text-amber-900"></p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Description -->
+      <div class="bg-white px-4 py-6 mb-2">
+        <h2 class="text-xl font-black text-gray-900 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-align-right text-emerald-600"></i>
+          الوصف
+        </h2>
+        <div id="productDescription" class="text-gray-700 leading-relaxed"></div>
+      </div>
+
+      <!-- Quantity Selector -->
+      <div class="bg-white px-4 py-6 mb-2">
+        <h3 class="text-lg font-black text-gray-900 mb-4">الكمية</h3>
+        <div class="bg-gray-50 rounded-2xl p-5 border-2 border-gray-100">
+          <div class="flex items-center justify-between">
+            <button id="decreaseBtn" onclick="changeQuantity(-1)"
+                    class="qty-btn w-14 h-14 flex items-center justify-center rounded-xl bg-white hover:bg-emerald-50 text-emerald-600 transition border-2 border-gray-200 shadow-sm">
+              <i class="fa-solid fa-minus text-xl"></i>
+            </button>
+            <span id="quantity" class="text-4xl font-black text-gray-900 w-24 text-center">1</span>
+            <button id="increaseBtn" onclick="changeQuantity(1)"
+                    class="qty-btn w-14 h-14 flex items-center justify-center rounded-xl bg-white hover:bg-emerald-50 text-emerald-600 transition border-2 border-gray-200 shadow-sm">
+              <i class="fa-solid fa-plus text-xl"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="bg-white px-4 py-6 mb-2">
+        <div class="bg-gradient-to-l from-emerald-50 to-emerald-100 rounded-2xl p-5 border-2 border-emerald-200">
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700 font-bold text-lg">المجموع</span>
+            <div class="text-left">
+              <span id="totalPrice" class="text-4xl font-black text-emerald-600"></span>
+              <span class="text-gray-600 font-bold mr-2">درهم</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add to Cart Button -->
+      <div class="bg-white px-4 py-6 sticky bottom-0 z-30 border-t-2 border-gray-100">
+        <button id="addToCartBtn" onclick="addToCart()"
+                class="add-cart-btn w-full bg-emerald-600 hover:bg-emerald-700 text-white py-5 rounded-2xl font-black text-xl transition shadow-xl flex items-center justify-center gap-3">
+          <i class="fa-solid fa-cart-plus text-2xl"></i>
+          إضافة إلى السلة
+        </button>
+      </div>
+
+      <!-- Similar Products -->
+      <div id="similarSection" class="bg-white px-4 py-6 mt-2">
+        <h2 class="text-2xl font-black text-gray-900 mb-6 flex items-center gap-2">
+          <i class="fa-solid fa-layer-group text-emerald-600"></i>
+          منتجات مشابهة
+        </h2>
+        <div id="similarProducts" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+      </div>
+
+    </div>
+
+    <!-- Not Found -->
+    <div id="notFoundContent" class="hidden text-center py-20 px-4">
+      <div class="w-32 h-32 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+        <i class="fa-solid fa-box-open text-6xl text-gray-400"></i>
+      </div>
+      <h2 class="text-3xl font-black text-gray-900 mb-3">المنتج غير موجود</h2>
+      <p class="text-gray-600 mb-8">عذراً، لم نتمكن من العثور على هذا المنتج</p>
+      <button onclick="window.location.href='store.html'"
+              class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-bold transition shadow-lg">
+        <i class="fa-solid fa-store ml-2"></i>العودة إلى المتجر
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Image Viewer -->
+  <div id="imageViewer" class="image-viewer" onclick="closeImageViewer()">
+    <button onclick="closeImageViewer()" class="absolute top-6 right-6 w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center hover:bg-white/30 transition">
+      <i class="fa-solid fa-xmark text-white text-2xl"></i>
+    </button>
+    <img id="viewerImage" src="" alt="">
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-50">
+    <div class="bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 min-w-[340px] toast-slide">
+      <div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center">
+        <i class="fa-solid fa-check text-white text-xl"></i>
+      </div>
+      <span id="toastMessage" class="font-bold text-lg"></span>
+    </div>
+  </div>
+
+  <!-- Audio -->
+  <audio id="successSound" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" preload="auto"></audio>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD5KnoOye-Ns7RNQq9KqGNSmakYydIoLAw",
+  authDomain: "my-store-4f430.firebaseapp.com",
+  databaseURL: "https://my-store-4f430-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "my-store-4f430",
+  storageBucket: "my-store-4f430.firebasestorage.app",
+  messagingSenderId: "674007434765",
+  appId: "1:674007434765:web:c4005d096ab86167cc3744"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Variables
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get('id');
+let product = null;
+let currentQuantity = 1;
+let customerName = localStorage.getItem('customerName') || 'Mini brahim';
+
+// Load Product
+async function loadProduct() {
+  if (!productId) {
+    showNotFound();
+    return;
+  }
+
+  try {
+    const snapshot = await get(ref(db, `products/${productId}`));
+
+    if (!snapshot.exists()) {
+      showNotFound();
+      return;
+    }
+
+    product = { id: productId,...snapshot.val() };
+
+    if (product.hidden === true) {
+      showNotFound();
+      return;
+    }
+
+    renderProduct();
+    loadSimilarProducts();
+    updateCartBadge();
+
+  } catch (error) {
+    console.error('Error loading product:', error);
+    showNotFound();
+  }
+}
+
+// Render Product
+function renderProduct() {
+  document.getElementById('loadingSkeleton').classList.add('hidden');
+  document.getElementById('productContent').classList.remove('hidden');
+
+  // Image
+  document.getElementById('productImage').src = product.image || 'https://via.placeholder.com/800';
+  document.getElementById('viewerImage').src = product.image || 'https://via.placeholder.com/800';
+
+  // Basic Info
+  document.getElementById('productName').textContent = product.name || 'بدون اسم';
+  document.getElementById('productCategory').textContent = product.category || 'غير محدد';
+  document.getElementById('productBarcode').textContent = product.barcode || 'غير متوفر';
+
+  // Price
+  const price = parseFloat(product.price) || 0;
+  document.getElementById('productPrice').textContent = price.toFixed(2);
+
+  // Public Price
+  if (product.publicPrice && parseFloat(product.publicPrice) > price) {
+    document.getElementById('publicPriceContainer').classList.remove('hidden');
+    document.getElementById('publicPrice').textContent = parseFloat(product.publicPrice).toFixed(2) + ' درهم';
+    const discount = ((product.publicPrice - price) / product.publicPrice * 100).toFixed(0);
+    document.getElementById('discount').textContent = `-${discount}%`;
+  }
+
+  // Stock
+  const stock = parseInt(product.stock) || 0;
+  const stockBadge = document.getElementById('stockBadge');
+  const stockQuantity = document.getElementById('stockQuantity');
+  const addBtn = document.getElementById('addToCartBtn');
+
+  if (stock > 0) {
+    stockBadge.innerHTML = '<i class="fa-solid fa-check ml-1"></i>متوفر';
+    stockBadge.className = 'bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg';
+    stockQuantity.textContent = `${stock} قطعة`;
+    document.getElementById('stockCard').classList.remove('hidden');
+  } else {
+    stockBadge.innerHTML = '<i class="fa-solid fa-xmark ml-1"></i>غير متوفر';
+    stockBadge.className = 'bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg';
+    stockQuantity.textContent = 'نفذ من المخزون';
+    document.getElementById('stockCard').classList.remove('hidden');
+    addBtn.disabled = true;
+    addBtn.innerHTML = '<i class="fa-solid fa-ban ml-2"></i>غير متوفر حالياً';
+  }
+
+  // Pieces Per Box
+  if (product.piecesPerBox) {
+    document.getElementById('piecesCard').classList.remove('hidden');
+    document.getElementById('piecesPerBox').textContent = `${product.piecesPerBox} قطعة`;
+  }
+
+  // Rating
+  const rating = parseFloat(product.rating) || 0;
+  const reviews = parseInt(product.reviews) || 0;
+  renderStars(rating);
+  document.getElementById('ratingText').textContent = rating.toFixed(1);
+  document.getElementById('reviewsCount').textContent = `${reviews} مراجعة`;
+
+  // Description
+  const desc = product.description || 'لا يوجد وصف لهذا المنتج.';
+  document.getElementById('productDescription').textContent = desc;
+
+  updateTotal();
+  updateButtons();
+}
+
+// Render Stars
+function renderStars(rating) {
+  const container = document.getElementById('productRating');
+  const fullStars = Math.floor(rating);
+  const hasHalf = rating % 1 >= 0.5;
+  let html = '';
+
+  for (let i = 0; i < 5; i++) {
+    if (i < fullStars) {
+      html += '<i class="fa-solid fa-star"></i>';
+    } else if (i === fullStars && hasHalf) {
+      html += '<i class="fa-solid fa-star-half-stroke"></i>';
+    } else {
+      html += '<i class="fa-regular fa-star"></i>';
+    }
+  }
+  container.innerHTML = html;
+}
+
+// Change Quantity
+window.changeQuantity = function(delta) {
+  const stock = parseInt(product.stock) || 0;
+  const newQty = currentQuantity + delta;
+
+  if (newQty < 1) return;
+  if (stock > 0 && newQty > stock) {
+    showToast('الكمية المطلوبة أكبر من المتوفر', 'error');
+    return;
+  }
+
+  currentQuantity = newQty;
+  document.getElementById('quantity').textContent = currentQuantity;
+
+  // Animation
+  const qtyEl = document.getElementById('quantity');
+  qtyEl.style.transform = 'scale(1.3)';
+  setTimeout(() => {
+    qtyEl.style.transform = 'scale(1)';
+  }, 150);
+
+  updateTotal();
+  updateButtons();
+}
+
+// Update Total
+function updateTotal() {
+  const price = parseFloat(product.price) || 0;
+  const total = price * currentQuantity;
+  document.getElementById('totalPrice').textContent = total.toFixed(2);
+}
+
+// Update Buttons State
+function updateButtons() {
+  const stock = parseInt(product.stock) || 0;
+  document.getElementById('decreaseBtn').disabled = currentQuantity <= 1;
+  document.getElementById('increaseBtn').disabled = stock > 0 && currentQuantity >= stock;
+}
+
+// Add to Cart
+window.addToCart = async function() {
+  if (!product) return;
+
+  try {
+    const cartRef = ref(db, `cart/${customerName}/${product.id}`);
+    const snapshot = await get(cartRef);
+
+    const price = parseFloat(product.price) || 0;
+    const total = price * currentQuantity;
+
+    if (snapshot.exists()) {
+      // المنتج موجود - زيادة الكمية
+      const currentQty = snapshot.val().quantity || 0;
+      const newQty = currentQty + currentQuantity;
+      await update(cartRef, {
+        quantity: newQty,
+        total: price * newQty
+      });
+    } else {
+      // منتج جديد
+      await set(cartRef, {
+        id: product.id,
+        name: product.name || 'بدون اسم',
+        image: product.image || '',
+        barcode: product.barcode || '',
+        category: product.category || '',
+        price: price,
+        quantity: currentQuantity,
+        total: total
+      });
+    }
+
+    // اهتزاز
+    if (navigator.vibrate) {
+      navigator.vibrate([100, 50, 100]);
+    }
+
+    // صوت
+    const sound = document.getElementById('successSound');
+    sound.currentTime = 0;
+    sound.play().catch(e => console.log('Audio play failed:', e));
+
+    // Toast
+    showToast('✅ تمت إضافة المنتج إلى السلة');
+
+    // Reset quantity
+    currentQuantity = 1;
+    document.getElementById('quantity').textContent = '1';
+    updateTotal();
+    updateButtons();
+
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    showToast('❌ فشل إضافة المنتج', 'error');
+  }
+}
+
+// Load Similar Products
+async function loadSimilarProducts() {
+  if (!product.category) return;
+
+  try {
+    const snapshot = await get(ref(db, 'products'));
+    if (!snapshot.exists()) return;
+
+    const allProducts = [];
+    snapshot.forEach(child => {
+      const p = { id: child.key,...child.val() };
+      if (p.id!== product.id && p.category === product.category && p.hidden!== true) {
+        allProducts.push(p);
+      }
+    });
+
+    // عرض 4-6 منتجات
+    const similar = allProducts.slice(0, 6);
+    if (similar.length === 0) {
+      document.getElementById('similarSection').classList.add('hidden');
+      return;
+    }
+
+    document.getElementById('similarProducts').innerHTML = similar.map(p => `
+      <div class="product-card bg-white rounded-xl soft-shadow border-2 border-gray-100 overflow-hidden cursor-pointer"
+           onclick="window.location.href='product-details.html?id=${p.id}'">
+        <img src="${p.image || 'https://via.placeholder.com/300'}"
+             alt="${p.name}"
+             class="w-full h-40 object-cover">
+        <div class="p-3">
+          <h3 class="font-bold text-gray-900 text-sm mb-2 line-clamp-2">${p.name || 'بدون اسم'}</h3>
+          <p class="text-emerald-600 font-black text-lg">${parseFloat(p.price || 0).toFixed(2)} درهم</p>
+        </div>
+      </div>
+    `).join('');
+
+  } catch (error) {
+    console.error('Error loading similar products:', error);
+  }
+}
+
+// Update Cart Badge
+function updateCartBadge() {
+  onValue(ref(db, `cart/${customerName}`), (snapshot) => {
+    const badge = document.getElementById('cartBadge');
+    if (snapshot.exists()) {
+      const count = Object.keys(snapshot.val()).length;
+      badge.textContent = count;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  });
+}
+
+// Image Viewer
+window.openImageViewer = function() {
+  document.getElementById('imageViewer').classList.add('active');
+}
+
+window.closeImageViewer = function() {
+  document.getElementById('imageViewer').classList.remove('active');
+}
+
+// Show Not Found
+function showNotFound() {
+  document.getElementById('loadingSkeleton').classList.add('hidden');
+  document.getElementById('notFoundContent').classList.remove('hidden');
+}
+
+// Show Toast
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMessage').textContent = message;
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 3000);
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  loadProduct();
+});
+</script>
+
+</body>
+</html>
