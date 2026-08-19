@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الرئيسية - Mostafa Clean Shop</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+  
+    * {
+    font-family: 'Cairo', sans-serif;
+  }
+  
+  body {
+    background: #f8fafc;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .product-card {
+    transition: all 0.2s ease;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .side-menu {
+    transition: transform 0.3s ease-out;
+  }
+  
+  .side-menu.hidden {
+    transform: translateX(100%);
+  }
+</style>
+</head>
+<body class="pb-24">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <button id="menuBtn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition">
+          <i class="fa-solid fa-bars text-xl text-gray-700"></i>
+        </button>
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-broom text-white"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold text-gray-900">Mostafa Clean Shop</h1>
+            <p class="text-xs text-gray-500">متجر المنظفات</p>
+          </div>
+        </div>
+        <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition relative">
+          <i class="fa-solid fa-cart-shopping text-xl text-gray-700"></i>
+          <span id="cartBadge" class="hidden absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Side Menu -->
+  <div id="sideMenuBackdrop" class="hidden fixed inset-0 bg-black/50 z-40"></div>
+  <aside id="sideMenu" class="side-menu hidden fixed top-0 right-0 w-72 h-full bg-white shadow-2xl z-50">
+    <div class="p-6 border-b border-gray-100">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-900">القائمة</h2>
+        <button id="closeMenuBtn" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition">
+          <i class="fa-solid fa-xmark text-gray-500"></i>
+        </button>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+          <i class="fa-solid fa-user text-emerald-600 text-xl"></i>
+        </div>
+        <div>
+          <p class="font-semibold text-gray-900">مصطفى</p>
+          <p class="text-xs text-gray-500">مدير المتجر</p>
+        </div>
+      </div>
+    <nav class="p-4 space-y-2">
+      <a href="menu.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-emerald-50 text-emerald-600 font-semibold">
+        <i class="fa-solid fa-house w-5"></i>
+        <span>الرئيسية</span>
+      </a>
+      <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 text-gray-700 transition">
+        <i class="fa-solid fa-box w-5"></i>
+        <span>المنتجات</span>
+      </a>
+      <a href="customers.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 text-gray-700 transition">
+        <i class="fa-solid fa-users w-5"></i>
+        <span>العملاء</span>
+      </a>
+      <a href="sales.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 text-gray-700 transition">
+        <i class="fa-solid fa-cart-shopping w-5"></i>
+        <span>المبيعات</span>
+      </a>
+      <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 text-gray-700 transition">
+        <i class="fa-solid fa-chart-simple w-5"></i>
+        <span>التقارير</span>
+      </a>
+    </nav>
+  </aside>
+
+  <main class="max-w-7xl mx-auto px-4 pt-6 pb-6">
+    <!-- Welcome Section -->
+    <div class="mb-6">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">أهلاً بك في متجر مصطفى كلين</h2>
+      <p class="text-gray-600">تصفح أفضل منتجات المنظفات والمواد المنزلية</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
+      <div class="relative">
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="البحث عن منتج..." 
+          class="w-full pr-10 pl-4 py-3 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition"
+        >
+        <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      </div>
+    </div>
+
+    <!-- Category Pills -->
+    <div class="mb-6 overflow-x-auto scrollbar-hide">
+      <div class="flex gap-2 pb-2" id="categoryContainer">
+        <!-- Categories will be rendered here -->
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div id="productsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"></div>
+
+    <!-- No Results -->
+    <div id="noResults" class="hidden text-center py-16">
+      <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+        <i class="fa-solid fa-search text-4xl text-gray-400"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">لا توجد نتائج</h3>
+      <p class="text-gray-500">لم نعثر على منتجات تطابق بحثك</p>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-5 h-16">
+        <button class="flex flex-col items-center justify-center gap-1 text-emerald-600 relative">
+          <div class="absolute -top-1 w-12 h-1 bg-emerald-600 rounded-full"></div>
+          <i class="fa-solid fa-house text-xl"></i>
+          <span class="text-xs font-semibold">الرئيسية</span>
+        </button>
+        <button onclick="window.location.href='customers.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-users text-xl"></i>
+          <span class="text-xs font-medium">العملاء</span>
+        </button>
+        <button onclick="window.location.href='products.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-box text-xl"></i>
+          <span class="text-xs font-medium">المنتجات</span>
+        </button>
+        <button onclick="window.location.href='sales.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-cart-shopping text-xl"></i>
+          <span class="text-xs font-medium">المبيعات</span>
+        </button>
+        <button onclick="window.location.href='reports.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-chart-simple text-xl"></i>
+          <span class="text-xs font-medium">التقارير</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+<script type="module">
+  
+  import { db } from "./firebase.js";
+
+import {
+  ref,
+  get
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+  
+  // Global State
+  let allProducts = [];
+  let filteredProducts = [];
+  let currentCategory = 'الكل';
+  let searchQuery = '';
+
+  // DOM Elements
+  const productsGrid = document.getElementById('productsGrid');
+  const noResults = document.getElementById('noResults');
+  const searchInput = document.getElementById('searchInput');
+  const categoryContainer = document.getElementById('categoryContainer');
+  const menuBtn = document.getElementById('menuBtn');
+  const closeMenuBtn = document.getElementById('closeMenuBtn');
+  const sideMenu = document.getElementById('sideMenu');
+  const sideMenuBackdrop = document.getElementById('sideMenuBackdrop');
+
+  // Initialize App
+  async function init() {
+    await loadProducts();
+    setupEventListeners();
+}
+
+  // Load Products from localStorage
+  async function loadProducts() {
+
+    const snapshot = await get(ref(db, "products"));
+
+    if (snapshot.exists()) {
+
+        const products = Object.values(snapshot.val());
+
+        allProducts = products.filter(
+            p => p.hidden === false || p.hidden === undefined
+        );
+
+    } else {
+
+        allProducts = [];
+
+    }
+
+    performSearch();
+    renderCategories();
+}
+
+  // Render Categories
+  function renderCategories() {
+    const categories = ['الكل', ...new Set(allProducts.map(p => p.category))];
+    categoryContainer.innerHTML = categories.map(cat => `
+      <button 
+        class="category-pill ${cat === 'الكل' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:border-emerald-500'} px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition" 
+        data-category="${cat}"
+      >
+        ${cat}
+      </button>
+    `).join('');
+    
+    // Add event listeners to category pills
+    document.querySelectorAll('.category-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        currentCategory = pill.dataset.category;
+        updateCategoryUI(pill);
+        performSearch();
+      });
+    });
+  }
+
+  // Update Category UI
+  function updateCategoryUI(activePill) {
+    document.querySelectorAll('.category-pill').forEach(p => {
+      p.classList.remove('bg-emerald-600', 'text-white', 'shadow-md');
+      p.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
+    });
+    activePill.classList.remove('bg-white', 'text-gray-700', 'border', 'border-gray-200');
+    activePill.classList.add('bg-emerald-600', 'text-white', 'shadow-md');
+  }
+
+  // Render Products
+  function renderProducts() {
+    if (filteredProducts.length === 0) {
+      productsGrid.innerHTML = '';
+      noResults.classList.remove('hidden');
+    } else {
+      noResults.classList.add('hidden');
+      productsGrid.innerHTML = filteredProducts.map(p => createProductCard(p)).join('');
+      attachAddToCartListeners();
+    }
+  }
+
+  // Create Product Card HTML
+  function createProductCard(product) {
+    const defaultImage = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop';
+    const isLowStock = product.stock <= product.lowStockThreshold;
+    const statusClass = isLowStock ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700';
+    const statusText = isLowStock ? 'منخفض' : 'متوفر';
+    
+    return `
+      <div class="product-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in cursor-pointer" onclick="openProductDetails('${product.id}')">
+        <div class="relative">
+          <div class="aspect-square bg-gray-100 overflow-hidden">
+            <img src="${product.image || defaultImage}" alt="${product.name}" class="w-full h-full object-cover" onerror="this.src='${defaultImage}'">
+          </div>
+          <span class="absolute top-2 right-2 px-2.5 py-1 rounded-full text-xs font-medium ${statusClass}">
+            ${statusText}
+          </span>
+        </div>
+        <div class="p-3">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1 line-clamp-2 h-10">${product.name}</h3>
+          <p class="text-xs text-gray-500 mb-2">${product.category}</p>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-lg font-bold text-emerald-600">${product.price.toFixed(2)} <span class="text-xs font-normal text-gray-500">درهم</span></p>
+              <p class="text-xs text-gray-500">المخزون: ${product.stock}</p>
+            </div>
+            <button 
+              class="add-to-cart-btn w-9 h-9 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center justify-center transition shadow-md" 
+              data-product-id="${product.id}"
+            >
+              <i class="fa-solid fa-cart-plus text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Attach Add to Cart Listeners
+  function attachAddToCartListeners() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const productId = parseInt(e.currentTarget.dataset.productId);
+        addToCart(productId);
+      });
+    });
+  }
+
+  // Add to Cart Function
+  function addToCart(productId) {
+    const product = allProducts.find(p => p.id === productId);
+    if (product) {
+      // You can implement cart logic here
+      console.log('Added to cart:', product);
+      // Show toast or notification
+      showToast('تمت الإضافة إلى السلة');
+    }
+  }
+
+  // Show Toast Notification
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  }
+
+  // Perform Search
+  function performSearch() {
+  filteredProducts = allProducts.filter(p => {
+    const matchesSearch = (p.name || "").toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = currentCategory === 'الكل' || p.category === currentCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  // ترتيب المنتجات من A إلى Z
+  filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+
+  renderProducts();
+}
+
+  // Setup Event Listeners
+  function setupEventListeners() {
+    // Search input
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      performSearch();
+    });
+
+    // Side Menu
+    menuBtn.addEventListener('click', () => {
+      sideMenu.classList.remove('hidden');
+      sideMenuBackdrop.classList.remove('hidden');
+    });
+
+    closeMenuBtn.addEventListener('click', closeSideMenu);
+    sideMenuBackdrop.addEventListener('click', closeSideMenu);
+  }
+
+  // Close Side Menu
+  function closeSideMenu() {
+    sideMenu.classList.add('hidden');
+    sideMenuBackdrop.classList.add('hidden');
+  }
+
+  // Listen for localStorage changes from products.html
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'products') {
+      loadProducts();
+    }
+  });
+
+  // Reload products when page becomes visible
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      loadProducts();
+    }
+  });
+
+  // Initialize on page load
+  window.openProductDetails = function(productId) {
+  window.location.href = `product-details.html?id=${productId}`;
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
