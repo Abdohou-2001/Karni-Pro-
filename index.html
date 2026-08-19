@@ -751,6 +751,16 @@
         }
      .city-filter-item.active-city .city-count { background: rgba(255,255,255,0.25); color: white; }
 
+    
+     .stat-card.active-stat {
+            border: 2px solid var(--primary);
+            background: linear-gradient(135deg, var(--card) 0%, #ccfbf1 100%);
+            transform: scale(0.97);
+        }
+        [data-theme="dark"] .stat-card.active-stat {
+            background: linear-gradient(135deg, var(--card) 0%, #1e3a3a 100%);
+        }
+
     </style>
 </head>
 <body>
@@ -780,21 +790,25 @@ title="التقارير">
     </header>
 
     <div class="stats-grid">
-        <div class="stat-card">
+        <div class="stat-card" onclick="filterByStatus('all')" title="عرض الكل">
             <div class="stat-number"><span id="totalAmount">0</span> درهم</div>
             <div class="stat-label">💰 المبلغ الإجمالي</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" id="statCustomers" onclick="filterByStatus('all')" title="عرض جميع الزبناء">
             <div class="stat-number" id="totalCustomers">0</div>
             <div class="stat-label">👥 الزبناء</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" id="statOverdue" onclick="filterByStatus('overdue')" title="عرض المتأخرين">
             <div class="stat-number" id="overdueCount">0</div>
             <div class="stat-label">🔴 متأخر</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" id="statToday" onclick="filterByStatus('today')" title="عرض زبناء اليوم">
             <div class="stat-number" id="todayCount">0</div>
             <div class="stat-label">🟢 اليوم</div>
+        </div>
+        <div class="stat-card" id="statUpcoming" onclick="filterByStatus('upcoming')" title="عرض القادمين" style="grid-column: span 2;">
+            <div class="stat-number" id="upcomingCount">0</div>
+            <div class="stat-label">🔵 قادم</div>
         </div>
     </div>
 
@@ -865,17 +879,6 @@ title="التقارير">
                     <input type="tel" class="form-input" id="customerPhone">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">🏙️ المدينة</label>
-                    <div class="city-select-wrapper">
-                        <button type="button" class="form-input city-select-btn" id="citySelectBtn" onclick="toggleCityDropdown('add')">
-                            <span id="citySelectText">اختر المدينة</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="city-dropdown" id="cityDropdownAdd"></div>
-                        <input type="hidden" id="customerCity">
-                    </div>
-                </div>
-                <div class="form-group">
                     <label class="form-label">المبلغ *</label>
                     <input type="number" class="form-input" id="customerAmount" required>
                 </div>
@@ -917,11 +920,12 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
         const customersRef = ref(db, 'customers');
         let allCustomers = {};
-let currentFilter = 'all';
-let searchTimer;
-let currentCityFilter = 'all';
+        let currentStatusFilter = 'all'; // all, today, overdue, upcoming
+        let currentCityFilter = 'all';
+        let currentSearchQuery = '';
+        let searchTimer;
 
-        // ========== Cities System - NEW ==========
+        // ========== Cities System ==========
         const DEFAULT_CITIES = ["Gulmim", "TanTan", "Toronto", "ouatia"];
         function getAllCities(){
             const set = new Set(DEFAULT_CITIES);
@@ -930,15 +934,95 @@ let currentCityFilter = 'all';
             });
             return Array.from(set).sort((a,b)=> a.localeCompare(b));
         }
-        function getCityCounts(){
+        function getCityCounts(filteredCustomers = null){
+            const source = filteredCustomers || allCustomers;
             const counts = {};
-            getAllCities().forEach(city=> counts[city]=0);
-            Object.values(allCustomers).forEach(c=>{
+            // count only from source that matches status filter? We want dynamic counts based on status if active
+            Object.values(source).forEach(c=>{
                 const city = (c.city||'').trim();
-                if(city && counts.hasOwnProperty(city)) counts[city]++;
-                else if(city) counts[city]=(counts[city]||0)+1;
+                if(!city) return;
+                counts[city] = (counts[city]||0)+1;
             });
+            // ensure default cities appear even with 0 if no status filter
+            if(!filteredCustomers){
+                getAllCities().forEach(city=>{
+                    if(!counts.hasOwnProperty(city)) counts[city]=0;
+                });
+            }
             return counts;
+        }
+        function getCustomersByStatus(status){
+            const today = new Date().toISOString().split('T')[0];
+            const result = {};
+            Object.keys(allCustomers).forEach(key=>{
+                const c = allCustomers[key];
+                const custDate = (c.date || c.paymentDate || '').trim();
+                if(status==='all') result[key]=c;
+                else if(status==='today' && custDate===today) result[key]=c;
+                else if(status==='overdue' && custDate && custDate < today) result[key]=c;
+                else if(status==='upcoming' && custDate && custDate > today) result[key]=c;
+            });
+            return result;
+        }
+        function applyAllFilters(){
+            let filtered = {...allCustomers};
+
+            // 1. Search filter
+            if(currentSearchQuery){
+                const q = currentSearchQuery.toLowerCase();
+                const temp = {};
+                Object.keys(filtered).forEach(key=>{
+                    const name = (filtered[key].name||'').toLowerCase();
+                    if(name.includes(q)) temp[key]=filtered[key];
+                });
+                filtered = temp;
+            }
+
+            // 2. City filter
+            if(currentCityFilter !== 'all'){
+                const temp = {};
+                Object.keys(filtered).forEach(key=>{
+                    const city = (filtered[key].city||'').trim().toLowerCase();
+                    if(city === currentCityFilter.toLowerCase()) temp[key]=filtered[key];
+                });
+                filtered = temp;
+            }
+
+            // 3. Status filter
+            if(currentStatusFilter !== 'all'){
+                const today = new Date().toISOString().split('T')[0];
+                const temp = {};
+                Object.keys(filtered).forEach(key=>{
+                    const c = filtered[key];
+                    const custDate = (c.date || c.paymentDate || '').trim();
+                    if(currentStatusFilter==='today' && custDate===today) temp[key]=c;
+                    else if(currentStatusFilter==='overdue' && custDate && custDate < today) temp[key]=c;
+                    else if(currentStatusFilter==='upcoming' && custDate && custDate > today) temp[key]=c;
+                });
+                filtered = temp;
+            }
+
+            renderCustomers(filtered);
+            updateActiveStates();
+        }
+        function updateActiveStates(){
+            // filter tabs
+            document.querySelectorAll('.filter-tab').forEach(tab=> tab.classList.remove('active'));
+            const tabs = document.querySelectorAll('.filter-tab');
+            tabs.forEach(tab=>{
+                const txt = tab.textContent.trim();
+                if(currentStatusFilter==='all' && txt.includes('الكل')) tab.classList.add('active');
+                if(currentStatusFilter==='today' && txt.includes('اليوم')) tab.classList.add('active');
+                if(currentStatusFilter==='overdue' && txt.includes('متأخر')) tab.classList.add('active');
+                if(currentStatusFilter==='upcoming' && txt.includes('قادم')) tab.classList.add('active');
+                if(currentCityFilter!=='all' && txt.includes('المدينة')) tab.classList.add('active');
+            });
+            // stat cards
+            document.querySelectorAll('.stat-card').forEach(c=> c.classList.remove('active-stat'));
+            if(currentStatusFilter==='all') document.getElementById('statCustomers')?.classList.add('active-stat');
+            if(currentStatusFilter==='overdue') document.getElementById('statOverdue')?.classList.add('active-stat');
+            if(currentStatusFilter==='today') document.getElementById('statToday')?.classList.add('active-stat');
+            if(currentStatusFilter==='upcoming') document.getElementById('statUpcoming')?.classList.add('active-stat');
         }
 
 
@@ -975,11 +1059,7 @@ let currentCityFilter = 'all';
         if(!wrapper.contains(e.target)){
             hideSuggestions();
         }
-        const cityWrapper = document.querySelector('.city-select-wrapper');
-        const cityDropdown = document.getElementById('cityDropdownAdd');
-        if(cityWrapper && cityDropdown && !cityWrapper.contains(e.target)){
-            cityDropdown.classList.remove('active');
-        }
+        
         const cityModal = document.getElementById('cityFilterModal');
         if(e.target === cityModal){
             closeCityFilter();
@@ -991,7 +1071,7 @@ let currentCityFilter = 'all';
             onValue(customersRef, (snapshot) => {
                 const data = snapshot.val();
                 allCustomers = data || {};
-                applyFilter(currentFilter);
+                applyAllFilters();
                 document.getElementById('syncStatus').innerHTML = '<i class="fas fa-circle" style="color: #4ade80"></i> متصل بـ Firebase';
             }, (error) => {
                 console.error(error);
@@ -1001,13 +1081,9 @@ let currentCityFilter = 'all';
 
         // ========== Navigation Functions ==========
 
-        // 1. زر Calendar - يوري الناس اللي خاصهم يخلصو
         window.openCalendar = function() {
-            currentFilter = 'today';
-            applyFilter('today');
-            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.filter-tab')[1].classList.add('active');
-            showToast('عرض زبناء اليوم');
+            filterByStatus('today');
+            showToast('عرض زبناء اليوم - Calendar');
             window.scrollTo({top: 300, behavior: 'smooth'});
         }
 
@@ -1084,6 +1160,7 @@ let currentCityFilter = 'all';
             let customersCount = 0;
             let todayCount = 0;
             let overdueCount = 0;
+            let upcomingCount = 0;
             const today = new Date().toISOString().split('T')[0];
 
             Object.keys(customers).forEach((key, index) => {
@@ -1092,9 +1169,10 @@ let currentCityFilter = 'all';
                 customersCount++;
                 totalAmount += realTotal;
 
-                const custDate = customer.date || customer.paymentDate || '';
+                const custDate = (customer.date || customer.paymentDate || '').trim();
                 if(custDate === today) todayCount++;
                 else if(custDate && custDate < today) overdueCount++;
+                else if(custDate && custDate > today) upcomingCount++;
 
                 const overdueClass = custDate && custDate < today ? 'overdue' : '';
 
@@ -1149,7 +1227,7 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
                 list.innerHTML += card;
             });
 
-            updateStats({totalAmount, customersCount, todayCount, overdueCount});
+            updateStats({totalAmount, customersCount, todayCount, overdueCount, upcomingCount});
         }
 
         function updateStats(stats) {
@@ -1157,6 +1235,8 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             document.getElementById('totalCustomers').textContent = stats.customersCount || 0;
             document.getElementById('todayCount').textContent = stats.todayCount || 0;
             document.getElementById('overdueCount').textContent = stats.overdueCount || 0;
+            const upEl = document.getElementById('upcomingCount');
+            if(upEl) upEl.textContent = stats.upcomingCount || 0;
         }
 
         // ========== Modal Functions ==========
@@ -1167,25 +1247,23 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             document.getElementById('customerPhone').value = '';
             document.getElementById('customerCity').value = '';
             document.getElementById('citySelectText').textContent = 'اختر المدينة';
-            document.getElementById('cityDropdownAdd').classList.remove('active');
+            
             setTodayDate();
             document.getElementById('customerModal').classList.add('active');
         }
 
         window.closeModal = function() {
             document.getElementById('customerModal').classList.remove('active');
-            document.getElementById('cityDropdownAdd')?.classList.remove('active');
+            
         }
 
         window.saveCustomer = async function(e) {
             e.preventDefault();
             const id = document.getElementById('customerId').value;
-            const cityVal = document.getElementById('customerCity').value || '';
             const data = {
                 name: document.getElementById('customerName').value,
                 amount: parseInt(document.getElementById('customerAmount').value),
                 phone: document.getElementById('customerPhone').value,
-                city: cityVal,
                 date: document.getElementById('customerDate').value,
                 paymentDate: document.getElementById('customerDate').value,
                 updatedAt: new Date().toISOString()
@@ -1205,29 +1283,19 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             if(confirm('متأكد من الحذف؟')) deleteCustomer(id);
         }
 
-        // ========== Filter & Search ==========
+        // ========== Filter & Search - Combined ==========
         window.filterBy = function(filter) {
-            currentFilter = filter;
-            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-            hideSuggestions();
-            applyFilter(filter);
+            // old function kept for compatibility with HTML tabs
+            filterByStatus(filter);
         }
 
-        function applyFilter(filter) {
-            const filtered = {};
-            const today = new Date().toISOString().split('T')[0];
-
-            Object.keys(allCustomers).forEach(key => {
-                const customer = allCustomers[key];
-                const custDate = customer.date || customer.paymentDate || '';
-                if(filter === 'all') filtered[key] = customer;
-                else if(filter === 'today' && custDate === today) filtered[key] = customer;
-                else if(filter === 'overdue' && custDate && custDate < today) filtered[key] = customer;
-                else if(filter === 'upcoming' && custDate && custDate > today) filtered[key] = customer;
-            });
-
-            renderCustomers(filtered);
+        window.filterByStatus = function(status){
+            currentStatusFilter = status;
+            hideSuggestions();
+            applyAllFilters();
+            const names = {all:'الكل', today:'اليوم', overdue:'المتأخرين', upcoming:'القادمين'};
+            showToast(`عرض ${names[status]||status} - ${status==='all'? Object.keys(allCustomers).length : ''} ${status!=='all' ? '' : ''}`);
+            window.scrollTo({top: 300, behavior: 'smooth'});
         }
 
         function hideSuggestions(){
@@ -1244,15 +1312,18 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             if(!box || !input) return;
 
             const q = query.trim().toLowerCase();
+            currentSearchQuery = query.trim();
+
             if(!q){
                 hideSuggestions();
                 clearBtn.style.display='none';
-                applyFilter(currentFilter);
+                applyAllFilters();
                 return;
             }
             clearBtn.style.display='block';
 
-            const matches = Object.entries(allCustomers).filter(([k,c])=>{
+            // suggestions based on all customers (not filtered) for quick jump
+            let matches = Object.entries(allCustomers).filter(([k,c])=>{
                 const name = (c.name||'').toLowerCase();
                 return name.includes(q);
             });
@@ -1260,12 +1331,10 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             if(matches.length === 0){
                 box.innerHTML = `<div class="suggestion-empty">🔍 لا توجد نتائج لـ "${query}"</div>`;
                 box.classList.add('active');
-                // ايضا فلترة القائمة الرئيسية فارغة
                 renderCustomers({});
                 return;
             }
 
-            // ترتيب: اللي يبدأ بالحرف أولا
             matches.sort((a,b)=>{
                 const an = (a[1].name||'').toLowerCase();
                 const bn = (b[1].name||'').toLowerCase();
@@ -1279,11 +1348,12 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
                 const realTotal = getCustomerRealTotal(c);
                 const initial = (c.name||'?').charAt(0).toUpperCase();
                 const safeName = (c.name||'بدون اسم').replace(/</g,'&lt;');
+                const cityTxt = c.city ? ` • ${c.city}` : '';
                 return `
                 <div class="suggestion-item" onclick="openDetails('${key}')">
                     <div class="suggestion-avatar">${initial}</div>
                     <div class="suggestion-info">
-                        <div class="suggestion-name">${safeName}</div>
+                        <div class="suggestion-name">${safeName}${cityTxt}</div>
                         <div class="suggestion-amount">${realTotal} Amount</div>
                     </div>
                     <i class="fas fa-chevron-left" style="color: var(--text-muted); font-size:12px;"></i>
@@ -1291,11 +1361,7 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             }).join('');
 
             box.classList.add('active');
-
-            // كذلك فلترة القائمة الرئيسية Live
-            const filtered = {};
-            matches.forEach(([k,c])=> filtered[k]=c);
-            renderCustomers(filtered);
+            applyAllFilters();
         }
 
         window.searchCustomer = function() {
@@ -1329,53 +1395,37 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // ========== City Dropdown Logic ==========
-        window.toggleCityDropdown = function(context){
-            const dropdownId = context === 'add' ? 'cityDropdownAdd' : 'cityDropdownAdd';
-            const dropdown = document.getElementById(dropdownId);
-            if(!dropdown) return;
-            if(dropdown.classList.contains('active')){
-                dropdown.classList.remove('active');
-                return;
-            }
-            const cities = getAllCities();
-            const currentCity = document.getElementById('customerCity').value;
-            dropdown.innerHTML = cities.map(city=>`
-                <div class="city-option ${city===currentCity?'selected':''}" onclick="selectCity('${city.replace(/'/g, "\'")}', 'add')">
-                    <span><i class="fas fa-map-marker-alt"></i> ${city}</span>
-                    ${city===currentCity?'<i class="fas fa-check"></i>':''}
-                </div>
-            `).join('');
-            dropdown.classList.add('active');
-        }
-
-        window.selectCity = function(city, context){
-            document.getElementById('customerCity').value = city;
-            document.getElementById('citySelectText').textContent = city;
-            document.getElementById('cityDropdownAdd').classList.remove('active');
-        }
-
+                // ========== City Filter Logic - Improved with combined filters ==========
         window.openCityFilter = function(){
             const listDiv = document.getElementById('cityFilterList');
-            const counts = getCityCounts();
-            const cities = Object.keys(counts).sort((a,b)=> counts[b]-counts[a] || a.localeCompare(b));
-            const totalAll = Object.keys(allCustomers).length;
+            // counts based on current status filter if active, to show dynamic numbers
+            const statusFiltered = currentStatusFilter==='all' ? allCustomers : getCustomersByStatus(currentStatusFilter);
+            const counts = getCityCounts(statusFiltered);
+            const cities = Object.keys(counts).filter(c=>c).sort((a,b)=> counts[b]-counts[a] || a.localeCompare(b));
+            const totalAll = Object.keys(statusFiltered).length;
 
             let html = `
                 <div class="city-filter-item ${currentCityFilter==='all'?'active-city':''}" onclick="filterByCity('all')">
-                    <span><i class="fas fa-globe"></i> All - الكل</span>
+                    <span><i class="fas fa-globe"></i> 🔄 All - الكل</span>
                     <span class="city-count">${totalAll}</span>
                 </div>
             `;
-            html += cities.map(city=>`
-                <div class="city-filter-item ${currentCityFilter===city?'active-city':''}" onclick="filterByCity('${city.replace(/'/g, "\'")}')">
-                    <span><i class="fas fa-city"></i> ${city}</span>
-                    <span class="city-count">${counts[city]||0}</span>
-                </div>
-            `).join('');
-
-            if(cities.length===0){
-                html += '<div class="suggestion-empty">لا توجد مدن بعد</div>';
+            if(cities.length>0){
+                html += cities.map(city=>`
+                    <div class="city-filter-item ${currentCityFilter===city?'active-city':''}" onclick="filterByCity('${city.replace(/'/g, "\'")}')">
+                        <span><i class="fas fa-city"></i> ${city}</span>
+                        <span class="city-count">${counts[city]||0}</span>
+                    </div>
+                `).join('');
+            } else {
+                // show default cities even with 0
+                const allDefaults = getAllCities();
+                html += allDefaults.map(city=>`
+                    <div class="city-filter-item ${currentCityFilter===city?'active-city':''}" onclick="filterByCity('${city.replace(/'/g, "\'")}')">
+                        <span><i class="fas fa-city"></i> ${city}</span>
+                        <span class="city-count">0</span>
+                    </div>
+                `).join('');
             }
 
             listDiv.innerHTML = html;
@@ -1389,35 +1439,26 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
         window.filterByCity = function(city){
             currentCityFilter = city;
             closeCityFilter();
-            document.querySelectorAll('.filter-tab').forEach(tab=> tab.classList.remove('active'));
-            // keep city tab active visually
-            const tabs = document.querySelectorAll('.filter-tab');
-            tabs.forEach(t=>{ if(t.textContent.includes('المدينة')) t.classList.add('active'); });
-
+            applyAllFilters();
             if(city==='all'){
-                currentFilter='all';
-                document.querySelectorAll('.filter-tab')[0].classList.add('active');
-                tabs.forEach(t=>{ if(t.textContent.includes('المدينة')) t.classList.remove('active'); });
-                applyFilter('all');
-                showToast('عرض جميع المدن');
-                return;
+                showToast('عرض جميع المدن - الكل');
+            } else {
+                // count after filter
+                const filteredKeys = Object.keys(allCustomers).filter(k=>{
+                    const c = allCustomers[k];
+                    const cityMatch = (c.city||'').trim().toLowerCase() === city.toLowerCase();
+                    if(!cityMatch) return false;
+                    if(currentStatusFilter==='all') return true;
+                    const custDate = (c.date || c.paymentDate || '').trim();
+                    const today = new Date().toISOString().split('T')[0];
+                    if(currentStatusFilter==='today') return custDate===today;
+                    if(currentStatusFilter==='overdue') return custDate && custDate < today;
+                    if(currentStatusFilter==='upcoming') return custDate && custDate > today;
+                    return true;
+                });
+                showToast(`مدينة ${city} - ${filteredKeys.length} زبون ${currentStatusFilter!=='all' ? '+ فلتر الحالة' : ''}`);
             }
-
-            const filtered = {};
-            Object.keys(allCustomers).forEach(key=>{
-                const c = allCustomers[key];
-                if((c.city||'').trim().toLowerCase() === city.toLowerCase()){
-                    filtered[key]=c;
-                }
-            });
-            renderCustomers(filtered);
-            showToast(`مدينة ${city} - ${Object.keys(filtered).length} زبون`);
         }
-
-
-       window.openRoute = function() {
-    window.location.href = 'route.html';
-}
 
 window.openReportsPage = function() {
 
