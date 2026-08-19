@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الشحن - Mostafa Clean Shop</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+    * { font-family: 'Cairo', sans-serif; }
+  body { background: #f8fafc; }
+ .scrollbar-hide::-webkit-scrollbar { display: none; }
+ .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+ .soft-shadow { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); }
+ .soft-shadow-lg { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
+ .card-hover { transition: all 0.3s ease; }
+ .card-hover:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); }
+ .animate-slide-up { animation: slideUp 0.3s ease-out; }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+ .animate-fade-in { animation: fadeIn 0.2s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+ .step-active { background: #10b981; color: white; }
+ .step-inactive { background: #e5e7eb; color: #6b7280; }
+</style>
+</head>
+<body class="pb-24">
+
+<!-- Header -->
+<header class="bg-emerald-600 text-white shadow-sm sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between">
+      <h1 class="text-xl md:text-2xl font-bold">الشحن</h1>
+      <i class="fa-solid fa-boxes-stacked text-xl"></i>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 pt-6 pb-6">
+  <!-- الخطوة 1: لصق اللائحة -->
+  <div id="step1Page"></div>
+  
+  <!-- الخطوة 2: عدد القطع -->
+  <div id="step2Page" class="hidden"></div>
+  
+  <!-- الخطوة 3: البون -->
+  <div id="step3Page" class="hidden"></div>
+  
+  <!-- صفحة الاستلام -->
+  <div id="receivePage" class="hidden"></div>
+</main>
+
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-5 h-16">
+      <button onclick="window.location.href='Menu.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+        <i class="fa-solid fa-house text-xl"></i>
+        <span class="text-xs font-medium">الرئيسية</span>
+      </button>
+      <button onclick="window.location.href='products.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+        <i class="fa-solid fa-box text-xl"></i>
+        <span class="text-xs font-medium">المنتجات</span>
+      </button>
+      <button onclick="window.location.href='reports.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+        <i class="fa-solid fa-chart-simple text-xl"></i>
+        <span class="text-xs font-medium">التقارير</span>
+      </button>
+      <button class="flex flex-col items-center justify-center gap-1 text-emerald-600 relative">
+        <div class="absolute -top-1 w-12 h-1 bg-emerald-600 rounded-full"></div>
+        <i class="fa-solid fa-boxes-stacked text-xl"></i>
+        <span class="text-xs font-semibold">الشحن</span>
+      </button>
+      <button onclick="window.location.href='sales.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+        <i class="fa-solid fa-cart-shopping text-xl"></i>
+        <span class="text-xs font-medium">المبيعات</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+  <div class="bg-gray-900 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3">
+    <i id="toastIcon" class="fa-solid fa-check-circle text-emerald-400"></i>
+    <span id="toastMessage"></span>
+  </div>
+</div>
+
+<!-- Modal لعدد القطع -->
+<div id="piecesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl p-6 max-w-sm w-full animate-slide-up">
+    <h3 class="text-lg font-bold text-gray-900 mb-2" id="modalProductName"></h3>
+    <p class="text-sm text-gray-600 mb-4">كم قطعة داخل العلبة؟</p>
+    <input type="number" id="modalPiecesInput" class="w-full p-3 border-2 border-gray-200 rounded-xl text-center text-xl font-bold focus:border-emerald-500 outline-none mb-4" placeholder="0">
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="closePiecesModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold transition">إلغاء</button>
+      <button onclick="savePiecesPerBox()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { db } from "./firebase.js";
+import { ref, get, set, push, update } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+let allProducts = [];
+let parsedProducts = [];
+let currentProductIndex = 0;
+let currentTransferId = null;
+let currentPiecesModalProduct = null;
+
+async function init() {
+  await loadProducts();
+  renderStep1();
+}
+
+init();
+
+async function loadProducts() {
+  const snap = await get(ref(db, 'products'));
+  allProducts = snap.exists()? Object.entries(snap.val()).map(([id, p]) => ({id,...p})) : [];
+}
+
+function renderStep1() {
+  const html = `
+    <div class="bg-white rounded-2xl soft-shadow-lg p-6 animate-slide-up">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <div class="step-active w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+          <span class="text-sm font-semibold text-gray-900">لصق اللائحة</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+          <span class="text-sm text-gray-500">التحقق</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+          <span class="text-sm text-gray-500">البون</span>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-bold text-gray-900 mb-4">لصق لائحة الشارج</h2>
+
+      <textarea id="stockTextArea" rows="12" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 outline-none text-lg mb-4" placeholder="12
+Dalaa Bakal
+
+5
+Asperox
+
+3
+Pando
+
+أو
+
+12 Dalaa Bakal
+5 Asperox
+3 Pando"></textarea>
+
+      <p class="text-xs text-gray-500 mb-4">البرنامج يفهم الطريقتين: سطرين أو سطر واحد</p>
+
+      <button onclick="analyzeList()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-search"></i>
+        تحليل اللائحة
+      </button>
+
+      <div class="mt-6 bg-gray-50 rounded-xl p-4">
+        <p class="text-sm font-bold text-gray-900 mb-2">تعليمات</p>
+        <ul class="text-xs text-gray-600 space-y-1">
+          <li>• اكتب الكمية ثم اسم المنتج</li>
+          <li>• كل منتج في سطر أو سطرين</li>
+          <li>• مثال: 12 Dalaa Bakal</li>
+        </ul>
+      </div>
+    </div>
+  `;
+  document.getElementById('step1Page').innerHTML = html;
+}
+
+window.analyzeList = function() {
+  const text = document.getElementById('stockTextArea').value.trim();
+  if (!text) {
+    showToast('الرجاء لصق اللائحة أولا', 'error');
+    return;
+  }
+
+  parsedProducts = [];
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const parts = line.split(/\s+/);
+    const qty = parseInt(parts[0]);
+    
+    if (!isNaN(qty)) {
+      let name;
+      if (parts.length > 1) {
+        // نفس السطر: "12 Dalaa Bakal"
+        name = parts.slice(1).join(' ').toLowerCase();
+      } else {
+        // سطرين: "12" ثم "Dalaa Bakal"
+        i++;
+        name = lines[i]?.toLowerCase();
+      }
+
+      if (name) {
+        const product = allProducts.find(p => 
+          p.name.toLowerCase() === name || 
+          p.name.toLowerCase().includes(name) || 
+          name.includes(p.name.toLowerCase())
+        );
+
+        parsedProducts.push({
+  quantity: qty,
+  productName: name,
+  productId: product?.id || null,
+  productImage: product?.image || 'https://via.placeholder.com/100',
+  piecesPerBox: product?.piecesPerBox || null,
+  boxes: 0,
+  extraPieces: 0,
+  totalPieces: 0,
+  received: false,
+  found: !!product
+});
+      }
+    }
+  }
+
+  if (parsedProducts.length === 0) {
+    showToast('لم يتم العثور على أي منتج', 'error');
+    return;
+  }
+
+  renderStep2();
+}
+
+function renderStep2() {
+  document.getElementById('step1Page').classList.add('hidden');
+  document.getElementById('step2Page').classList.remove('hidden');
+
+  const html = `
+    <div class="bg-white rounded-2xl soft-shadow-lg p-6 animate-slide-up">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+          <span class="text-sm text-gray-500">لصق اللائحة</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-active w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+          <span class="text-sm font-semibold text-gray-900">التحقق</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+          <span class="text-sm text-gray-500">البون</span>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-bold text-gray-900 mb-4">تحقق من المنتجات</h2>
+
+      <div class="space-y-3 mb-6">
+        ${parsedProducts.map((p, idx) => `
+          <div class="bg-${p.found? 'white' : 'red-50'} border-2 border-${p.found? 'gray-200' : 'red-300'} rounded-xl p-4">
+            <div class="flex items-center gap-3 mb-3">
+              <img src="${p.productImage}" class="w-14 h-14 rounded-lg object-cover">
+              <div class="flex-1">
+                <p class="font-bold text-gray-900">${p.productName}</p>
+                <p class="text-sm text-gray-600">${p.quantity} قطعة</p>
+              </div>
+              ${p.found? '<i class="fa-solid fa-check-circle text-emerald-600 text-xl"></i>' : '<i class="fa-solid fa-times-circle text-red-600 text-xl"></i>'}
+            </div>
+            ${!p.found? `
+              <div class="bg-red-100 rounded-lg p-3 mb-2">
+                <p class="text-sm font-semibold text-red-700 mb-2">منتج غير معروف</p>
+                <select onchange="linkProduct(${idx}, this.value)" class="w-full p-2 border border-red-300 rounded-lg text-sm">
+                  <option value="">اختر المنتج الصحيح</option>
+                  ${allProducts.map(prod => `<option value="${prod.id}">${prod.name}</option>`).join('')}
+                </select>
+              </div>
+            ` : p.piecesPerBox === null? `
+              <button onclick="openPiecesModal(${idx})" class="w-full bg-amber-100 hover:bg-amber-200 text-amber-700 py-2 rounded-lg text-sm font-semibold transition">
+                <i class="fa-solid fa-question-circle ml-1"></i>
+                كم قطعة داخل العلبة؟
+              </button>
+            ` : `
+              <p class="text-sm text-emerald-600 font-semibold mb-3">
+    <i class="fa-solid fa-check ml-1"></i>
+    ${p.piecesPerBox} قطعة/علبة
+</p>
+
+<div class="flex gap-2">
+    <button
+        onclick="editPieces(${idx})"
+        class="flex-1 border border-emerald-500 text-emerald-600 rounded-lg py-2 text-sm">
+        <i class="fa-solid fa-pen ml-1"></i>
+        تعديل القطع
+    </button>
+
+    <button
+        onclick="deleteProduct(${idx})"
+        class="flex-1 border border-red-500 text-red-600 rounded-lg py-2 text-sm">
+        <i class="fa-solid fa-trash ml-1"></i>
+        إزالة المنتج
+    </button>
+</div>
+            `}
+          </div>
+        `).join('')}
+      </div>
+
+      <button onclick="goToStep3()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition">
+        التالي → إنشاء البون
+      </button>
+
+      <button onclick="backToStep1()" class="w-full mt-3 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold transition">
+        رجوع
+      </button>
+    </div>
+  `;
+  document.getElementById('step2Page').innerHTML = html;
+}
+
+window.linkProduct = function(index, productId) {
+  if (!productId) return;
+  const product = allProducts.find(p => p.id === productId);
+  parsedProducts[index].productId = product.id;
+  parsedProducts[index].productName = product.name;
+  parsedProducts[index].productImage = product.image;
+  parsedProducts[index].piecesPerBox = product.piecesPerBox || null;
+  parsedProducts[index].found = true;
+  renderStep2();
+}
+
+window.openPiecesModal = function(index) {
+  currentPiecesModalProduct = index;
+  document.getElementById('modalProductName').textContent = parsedProducts[index].productName;
+  document.getElementById('piecesModal').classList.remove('hidden');
+  document.getElementById('modalPiecesInput').focus();
+}
+  
+window.editPieces = function(index){
+    openPiecesModal(index);
+}
+
+window.deleteProduct = function(index){
+
+    if(!confirm("هل تريد حذف هذا المنتج؟")) return;
+
+    parsedProducts.splice(index,1);
+
+    renderStep2();
+}
+
+window.closePiecesModal = function() {
+  document.getElementById('piecesModal').classList.add('hidden');
+  document.getElementById('modalPiecesInput').value = '';
+}
+
+window.savePiecesPerBox = async function() {
+  const pieces = parseInt(document.getElementById('modalPiecesInput').value);
+  if (!pieces || pieces <= 0) {
+    showToast('الرجاء إدخال عدد صحيح', 'error');
+    return;
+  }
+
+  const product = parsedProducts[currentPiecesModalProduct];
+  product.piecesPerBox = pieces;
+
+  // حفظ في Firebase
+  await update(ref(db, `products/${product.productId}`), { piecesPerBox: pieces });
+
+  showToast('تم الحفظ - لن نسأل عن هذا المنتج مرة أخرى');
+  closePiecesModal();
+  renderStep2();
+}
+
+window.goToStep3 = function() {
+  // تحقق من كل المنتجات
+  const missing = parsedProducts.filter(p =>!p.found ||!p.piecesPerBox);
+  if (missing.length > 0) {
+    showToast('الرجاء إكمال جميع البيانات', 'error');
+    return;
+  }
+
+  parsedProducts.forEach(p => {
+    p.boxes = Math.floor(p.quantity / p.piecesPerBox);
+    p.extraPieces = p.quantity % p.piecesPerBox;
+    p.totalPieces = p.quantity;
+});
+
+  renderStep3();
+}
+
+function renderStep3() {
+  document.getElementById('step2Page').classList.add('hidden');
+  document.getElementById('step3Page').classList.remove('hidden');
+
+  const totalPieces = parsedProducts.reduce((sum, p) => sum + p.totalPieces, 0);
+
+  const html = `
+    <div class="bg-white rounded-2xl soft-shadow-lg p-6 animate-slide-up">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+          <span class="text-sm text-gray-500">لصق اللائحة</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+          <span class="text-sm text-gray-500">التحقق</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-active w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+          <span class="text-sm font-semibold text-gray-900">البون</span>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-bold text-gray-900 mb-4">بون الشارج</h2>
+
+      <div class="overflow-x-auto mb-4">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b-2 border-gray-200">
+              <th class="text-right py-2 px-2">المنتج</th>
+              <th class="text-center py-2 px-2">الكراتين</th>
+              <th class="text-center py-2 px-2">القطع</th>
+              <th class="text-center py-2 px-2">الإجمالي</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${parsedProducts.map(p => `
+              <tr class="border-b border-gray-100">
+                <td class="py-3 px-2">
+                  <div class="flex items-center gap-2">
+                    <img src="${p.productImage}" class="w-10 h-10 rounded object-cover">
+                    <span class="font-semibold">${p.productName}</span>
+                  </div>
+                </td>
+                <td class="text-center py-3 px-2">
+<span class="text-amber-600 font-bold">
+${p.boxes} علبة
+</span>
+${p.extraPieces > 0 ? `
+<span class="text-blue-600 font-bold">
++ ${p.extraPieces} قطعة
+</span>
+` : ""}
+</td>
+
+<td class="text-center py-3 px-2">
+${p.piecesPerBox} قطعة/علبة
+</td>
+
+<td class="text-center py-3 px-2 font-bold text-emerald-600">
+${p.totalPieces} قطعة
+</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-emerald-50 rounded-xl p-4 mb-6 flex items-center justify-between">
+        <span class="text-lg font-bold text-gray-900">الإجمالي</span>
+        <span class="text-2xl font-bold text-emerald-600">${totalPieces.toLocaleString()} قطعة</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="shareBon()" class="bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-share-nodes"></i>
+          مشاركة البون
+        </button>
+        <button onclick="saveStockTransfer()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold shadow-lg transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-check"></i>
+          حفظ الشارج
+        </button>
+      </div>
+
+      <button onclick="backToStep2()" class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold transition">
+        رجوع
+      </button>
+    </div>
+  `;
+  document.getElementById('step3Page').innerHTML = html;
+}
+
+window.shareBon = function() {
+  let text = 'بون الشحن\n\n';
+  parsedProducts.forEach(p => {
+    text += `${p.productName}\n`;
+
+text += `${p.boxes} علبة`;
+
+if (p.totalPieces % p.piecesPerBox !== 0) {
+    text += ` + ${p.totalPieces % p.piecesPerBox} قطعة`;
+}
+
+text += "\n\n";
+  });
+  text += `الإجمالي: ${parsedProducts.reduce((sum, p) => sum + p.totalPieces, 0)} قطعة`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'بون الشحن', text: text });
+  } else {
+    navigator.clipboard.writeText(text);
+    showToast('تم نسخ البون');
+  }
+}
+
+window.saveStockTransfer = async function() {
+  const transfer = {
+    date: new Date().toISOString().split('T')[0],
+    time: new Date().toLocaleTimeString('ar-MA'),
+    timestamp: Date.now(),
+    products: parsedProducts.map(p => ({
+      productId: p.productId,
+      productName: p.productName,
+      productImage: p.productImage,
+      boxes: p.boxes,
+      piecesPerBox: p.piecesPerBox,
+      totalPieces: p.totalPieces,
+      received: false
+    })),
+    totalPieces: parsedProducts.reduce((sum, p) => sum + p.totalPieces, 0),
+    status: 'pending',
+    receivedCount: 0
+  };
+
+  const newRef = push(ref(db, 'stockTransfers'));
+  await set(newRef, transfer);
+  currentTransferId = newRef.key;
+
+  showToast('تم حفظ الشحن بنجاح');
+  setTimeout(() => showReceivePage(currentTransferId), 1000);
+}
+
+async function showReceivePage(transferId) {
+  document.getElementById('step3Page').classList.add('hidden');
+  document.getElementById('receivePage').classList.remove('hidden');
+
+  const snap = await get(ref(db, 'stockTransfers/' + transferId));
+  const transfer = snap.val();
+  if (!transfer) return;
+
+  currentTransferId = transferId;
+  renderReceivePage(transfer);
+}
+
+function renderReceivePage(transfer) {
+  const receivedCount = transfer.products.filter(p => p.received).length;
+  const totalCount = transfer.products.length;
+  const totalReceived = transfer.products.reduce((sum, p) => sum + (p.received? p.totalPieces : 0), 0);
+  const totalPending = transfer.totalPieces - totalReceived;
+
+  const html = `
+    <div class="bg-white rounded-2xl soft-shadow-lg p-6 animate-slide-up">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900">حالة استلام المنتجات</h2>
+        <button onclick="backToReports()" class="text-gray-500 hover:text-gray-700">
+          <i class="fa-solid fa-arrow-left text-xl"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 mb-6">
+        ${transfer.products.map((p, idx) => `
+          <div class="bg-${p.received? 'emerald' : 'amber'}-50 border-2 border-${p.received? 'emerald' : 'amber'}-200 rounded-xl p-4 flex items-center gap-4 transition">
+            <button onclick="confirmReceiveProduct(${idx})" ${p.received? 'disabled' : ''} class="w-12 h-12 rounded-full ${p.received? 'bg-emerald-600' : 'bg-white border-2 border-gray-300'} flex items-center justify-center transition ${p.received? '' : 'hover:border-emerald-600'}">
+              ${p.received? '<i class="fa-solid fa-check text-white text-xl"></i>' : ''}
+            </button>
+            <img src="${p.productImage}" class="w-16 h-16 rounded-lg object-cover">
+            <div class="flex-1">
+              <p class="font-bold text-gray-900">${p.productName}</p>
+              <p class="text-sm mt-1">
+<span class="text-amber-600 font-bold">
+📦 ${p.boxes} علبة
+</span>
+
+${p.totalPieces % p.piecesPerBox !== 0 ? `
+<span class="text-blue-600 font-bold">
+ + ${p.totalPieces % p.piecesPerBox} قطعة
+</span>
+` : ""}
+</p>
+              <p class="text-xs ${p.received? 'text-emerald-600' : 'text-amber-600'} font-semibold mt-1">
+                ${p.received? 'تم الاستلام' : 'في الانتظار'}
+              </p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="bg-gray-50 rounded-xl p-4 mb-6">
+        <p class="text-sm font-bold text-gray-900 mb-3">ملخص الشحن</p>
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div>
+            <p class="text-xs text-gray-500">إجمالي القطع</p>
+            <p class="text-lg font-bold text-gray-900">${transfer.totalPieces}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500">تم الاستلام</p>
+            <p class="text-lg font-bold text-emerald-600">${totalReceived}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500">في الانتظار</p>
+            <p class="text-lg font-bold text-amber-600">${totalPending}</p>
+          </div>
+        </div>
+      </div>
+
+      ${receivedCount === totalCount? `
+        <div class="bg-emerald-600 text-white py-4 rounded-xl font-bold text-center shadow-lg">
+          <i class="fa-solid fa-check-circle ml-2"></i>
+          تم استلام جميع المنتجات
+        </div>
+      ` : `
+        <button onclick="confirmAllReceive()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition">
+          <i class="fa-solid fa-check-double ml-2"></i>
+          تم استلام جميع المنتجات
+        </button>
+      `}
+    </div>
+  `;
+  document.getElementById('receivePage').innerHTML = html;
+}
+
+window.confirmReceiveProduct = async function(index) {
+  const snap = await get(ref(db, 'stockTransfers/' + currentTransferId));
+  const transfer = snap.val();
+
+  if (transfer.products[index].received) return;
+
+  transfer.products[index].received = true;
+  transfer.receivedCount = transfer.products.filter(p => p.received).length;
+
+  const productRef = ref(db, 'products/' + transfer.products[index].productId);
+  const productSnap = await get(productRef);
+  const currentStock = productSnap.val()?.stock || 0;
+  if (currentStock < transfer.products[index].totalPieces) {
+    showToast("المخزون غير كاف", "error");
+    return;
+}
+
+await update(productRef, {
+    stock: currentStock - transfer.products[index].totalPieces
+});
+
+await push(ref(db, "sales"), {
+    productId: transfer.products[index].productId,
+    productName: transfer.products[index].productName,
+    quantity: transfer.products[index].totalPieces,
+    date: new Date().toISOString().split("T")[0],
+    timestamp: Date.now()
+});
+
+await updateStatistics();
+  if (transfer.receivedCount === transfer.products.length) {
+    transfer.status = 'completed';
+    transfer.completedAt = Date.now();
+  }
+
+  await set(ref(db, 'stockTransfers/' + currentTransferId), transfer);
+
+  showToast('تم استلام المنتج وتحديث المخزون');
+  renderReceivePage(transfer);
+}
+
+window.confirmAllReceive = async function() {
+  if (!confirm('هل أنت متأكد من استلام جميع المنتجات؟')) return;
+
+  const snap = await get(ref(db, 'stockTransfers/' + currentTransferId));
+  const transfer = snap.val();
+
+  for (let i = 0; i < transfer.products.length; i++) {
+    if (!transfer.products[i].received) {
+      const productRef = ref(db, 'products/' + transfer.products[i].productId);
+      const productSnap = await get(productRef);
+      const currentStock = productSnap.val()?.stock || 0;
+      if (currentStock >= transfer.products[i].totalPieces) {
+
+    await update(productRef, {
+    stock: currentStock - transfer.products[i].totalPieces
+});
+
+await push(ref(db, "sales"), {
+    productId: transfer.products[i].productId,
+    productName: transfer.products[i].productName,
+    quantity: transfer.products[i].totalPieces,
+    date: new Date().toISOString().split("T")[0],
+    timestamp: Date.now()
+});
+
+await updateStatistics();
+}
+      transfer.products[i].received = true;
+    }
+  }
+
+  transfer.status = 'completed';
+  transfer.receivedCount = transfer.products.length;
+  transfer.completedAt = Date.now();
+
+  await set(ref(db, 'stockTransfers/' + currentTransferId), transfer);
+
+  showToast('تم استلام جميع المنتجات بنجاح');
+  renderReceivePage(transfer);
+}
+
+window.backToStep1 = function() {
+  document.getElementById('step2Page').classList.add('hidden');
+  document.getElementById('step1Page').classList.remove('hidden');
+}
+
+window.backToStep2 = function() {
+  document.getElementById('step3Page').classList.add('hidden');
+  document.getElementById('step2Page').classList.remove('hidden');
+}
+
+window.backToReports = function() {
+  window.location.href = 'reports.html';
+}
+
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const icon = document.getElementById('toastIcon');
+  document.getElementById('toastMessage').textContent = message;
+
+  if (type === 'error') {
+    icon.className = 'fa-solid fa-circle-xmark text-red-400';
+  } else {
+    icon.className = 'fa-solid fa-check-circle text-emerald-400';
+  }
+
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 2000);
+}
+
+async function updateStatistics() {
+
+  const snap = await get(ref(db, "products"));
+
+  if (!snap.exists()) return;
+
+  const products = Object.values(snap.val());
+
+  const totalStock = products.reduce((s, p) => s + (p.stock || 0), 0);
+
+  const totalProducts = products.length;
+
+  const lowStock = products.filter(p => (p.stock || 0) <= 10).length;
+
+  const totalValue = products.reduce((s, p) => s + ((p.stock || 0) * (p.purchasePrice || 0)), 0);
+
+  await update(ref(db, "statistics"), {
+    totalStock,
+    totalProducts,
+    lowStock,
+    totalValue,
+    updatedAt: Date.now()
+  });
+
+}
+</script>
+</body>
+</html>
