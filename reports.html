@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>التقارير - Mostafa Clean Shop</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+    * { font-family: 'Cairo', sans-serif; }
+  body { background: #f8fafc; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.soft-shadow { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); }
+.soft-shadow-lg { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
+.card-hover { transition: all 0.3s ease; }
+.card-hover:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); }
+.animate-slide-up { animation: slideUp 0.3s ease-out; }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.animate-fade-in { animation: fadeIn 0.2s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.step-active { background: #10b981; color: white; }
+.step-inactive { background: #e5e7eb; color: #6b7280; }
+</style>
+</head>
+<body class="pb-24">
+
+<!-- Header -->
+<header class="bg-emerald-600 text-white shadow-sm sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between">
+      <h1 class="text-xl md:text-2xl font-bold">التقارير</h1>
+      <i class="fa-solid fa-bell text-xl"></i>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 pt-6 pb-6" id="mainContent">
+  <!-- صفحة التقارير الرئيسية -->
+  <div id="reportsPage">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-gray-900">ملخص اليوم</h2>
+      <p class="text-sm text-gray-600" id="todayDate"></p>
+    </div>
+
+    <div class="bg-white rounded-2xl soft-shadow p-5 mb-4 card-hover">
+      <div class="flex items-start justify-between mb-3">
+        <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+          <i class="fa-solid fa-box text-emerald-600 text-xl"></i>
+        </div>
+        <div class="text-left">
+          <p class="text-sm text-gray-500">مجموع المبيعات</p>
+          <p class="text-3xl font-bold text-gray-900" id="dailyTotal">0</p>
+          <p class="text-xs text-gray-500">قطعة</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+        <div>
+          <p class="text-xs text-gray-500">المنتجات المباعة</p>
+          <p class="text-sm font-semibold text-gray-900" id="dailyProducts">0 قطعة</p>
+        </div>
+        <div class="text-left">
+          <p class="text-xs text-gray-500">مقارنة مع أمس</p>
+          <p class="text-sm font-semibold" id="dailyCompare">+ 0%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl soft-shadow p-5 mb-4 card-hover">
+      <div class="flex items-start justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-chart-line text-emerald-600"></i>
+          <p class="text-sm font-semibold text-gray-700">هذا الأسبوع</p>
+        </div>
+        <div class="text-left">
+          <p class="text-2xl font-bold text-gray-900" id="weeklyTotal">0</p>
+          <p class="text-xs text-gray-500">قطعة</p>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500">المنتجات المباعة</p>
+    </div>
+
+    <div class="bg-white rounded-2xl soft-shadow p-5 mb-4 card-hover">
+      <div class="flex items-start justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-calendar text-emerald-600"></i>
+          <p class="text-sm font-semibold text-gray-700">هذا الشهر</p>
+        </div>
+        <div class="text-left">
+          <p class="text-2xl font-bold text-gray-900" id="monthlyTotal">0</p>
+          <p class="text-xs text-gray-500">قطعة</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between pt-2">
+        <p class="text-xs text-gray-500">نسبة التقدم</p>
+        <p class="text-sm font-semibold" id="monthlyProgress">+ 0%</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl soft-shadow p-5 mb-4 card-hover">
+      <div class="flex items-start justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-chart-bar text-emerald-600"></i>
+          <p class="text-sm font-semibold text-gray-700">هذه السنة</p>
+        </div>
+        <div class="text-left">
+          <p class="text-2xl font-bold text-gray-900" id="yearlyTotal">0</p>
+          <p class="text-xs text-gray-500">قطعة</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between pt-2">
+        <p class="text-xs text-gray-500">المنتجات</p>
+        <p class="text-sm font-semibold text-emerald-600" id="yearlyGrowth">+ 0%</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="bg-white rounded-xl soft-shadow p-4 card-hover">
+        <p class="text-xs text-gray-500 mb-2">أكثر منتج مبيعا</p>
+        <p class="text-sm font-bold text-gray-900" id="topProduct">-</p>
+        <p class="text-xs text-emerald-600" id="topProductQty">0 قطعة</p>
+      </div>
+      <div class="bg-white rounded-xl soft-shadow p-4 card-hover">
+        <p class="text-xs text-gray-500 mb-2">أقل منتج مبيعا</p>
+        <p class="text-sm font-bold text-gray-900" id="lowProduct">-</p>
+        <p class="text-xs text-red-600" id="lowProductQty">0 قطعة</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 mb-6">
+      <div class="bg-white rounded-xl soft-shadow p-4 card-hover">
+        <p class="text-xs text-gray-500 mb-2">أكثر فئة مبيعا</p>
+        <p class="text-sm font-bold text-gray-900" id="topCategory">-</p>
+        <p class="text-xs text-emerald-600" id="topCategoryQty">0 قطعة</p>
+      </div>
+      <div class="bg-white rounded-xl soft-shadow p-4 card-hover">
+        <p class="text-xs text-gray-500 mb-2">أقل فئة مبيعا</p>
+        <p class="text-sm font-bold text-gray-900" id="lowCategory">-</p>
+        <p class="text-xs text-red-600" id="lowCategoryQty">0 قطعة</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl soft-shadow p-5 mb-4">
+      <h3 class="text-sm font-bold text-gray-900 mb-4">أداء المبيعات (آخر 7 أيام)</h3>
+      <div class="relative h-64">
+        <canvas id="dailyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl soft-shadow p-5 mb-4">
+      <h3 class="text-sm font-bold text-gray-900 mb-4">المبيعات الشهرية</h3>
+      <div class="relative h-64">
+        <canvas id="monthlyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl soft-shadow p-5 mb-6">
+      <h3 class="text-sm font-bold text-gray-900 mb-4">المبيعات السنوية</h3>
+      <div class="relative h-64">
+        <canvas id="yearlyChart"></canvas>
+      </div>
+    </div>
+
+    <button onclick="window.location.href='stock.html'" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition flex items-center justify-center gap-3">
+      <i class="fa-solid fa-plus-circle"></i>
+      شحن جديد
+    </button>
+  </div>
+
+  <!-- صفحة الشحن الجديد -->
+  <div id="newStockPage" class="hidden"></div>
+
+  <!-- صفحة استلام الشحن -->
+  <div id="receiveStockPage" class="hidden"></div>
+</main>
+
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-5 h-16">
+      <button onclick="window.location.href='Menu.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+        <i class="fa-solid fa-house text-xl"></i>
+        <span class="text-xs font-medium">الرئيسية</span>
+      </button>
+      <button onclick="window.location.href='products.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+        <i class="fa-solid fa-box text-xl"></i>
+        <span class="text-xs font-medium">المنتجات</span>
+      </button>
+      <button class="flex flex-col items-center justify-center gap-1 text-emerald-600 relative">
+        <div class="absolute -top-1 w-12 h-1 bg-emerald-600 rounded-full"></div>
+        <i class="fa-solid fa-chart-simple text-xl"></i>
+        <span class="text-xs font-semibold">التقارير</span>
+      </button>
+      <button onclick="window.location.href='sales.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+        <i class="fa-solid fa-cart-shopping text-xl"></i>
+        <span class="text-xs font-medium">المبيعات</span>
+      </button>
+      <button class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+        <i class="fa-solid fa-gear text-xl"></i>
+        <span class="text-xs font-medium">الإعدادات</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+  <div class="bg-gray-900 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3">
+    <i id="toastIcon" class="fa-solid fa-check-circle text-emerald-400"></i>
+    <span id="toastMessage"></span>
+  </div>
+</div>
+
+<script type="module">
+import { db } from "./firebase.js";
+import { ref, get, set, push, update } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+let products = [];
+let sales = [];
+let stockTransfers = [];
+let currentStep = 1;
+let parsedProducts = [];
+let currentProductIndex = 0;
+let currentTransferId = null;
+let dailyChart = null;
+let monthlyChart = null;
+let yearlyChart = null;
+
+async function init() {
+  await loadData();
+  updateDate();
+  calculateStats();
+  renderCharts();
+}
+
+init();
+
+async function loadData() {
+  const productsSnap = await get(ref(db, 'products'));
+  products = productsSnap.exists()? Object.entries(productsSnap.val()).map(([id, p]) => ({id,...p})) : [];
+
+  const salesSnap = await get(ref(db, 'sales'));
+  sales = salesSnap.exists()? Object.values(salesSnap.val()) : [];
+
+  const transfersSnap = await get(ref(db, 'stockTransfers'));
+  stockTransfers = transfersSnap.exists()? Object.entries(transfersSnap.val()).map(([id, t]) => ({id,...t})) : [];
+}
+
+function updateDate() {
+  const date = new Date();
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('todayDate').textContent = date.toLocaleDateString('ar-MA', options);
+}
+
+function calculateStats() {
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  const yearStart = new Date(today.getFullYear(), 0, 1);
+  const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+  const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+  const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+  const todaySales = sales.filter(s => s.date === todayStr);
+  const dailyTotal = todaySales.reduce((sum, s) => sum + (s.quantity || 0), 0);
+  document.getElementById('dailyTotal').textContent = dailyTotal.toLocaleString();
+  document.getElementById('dailyProducts').textContent = todaySales.length + ' قطعة';
+
+  const yesterdaySales = sales.filter(s => s.date === yesterdayStr);
+  const yesterdayTotal = yesterdaySales.reduce((sum, s) => sum + (s.quantity || 0), 0);
+  const dailyCompare = yesterdayTotal > 0? ((dailyTotal - yesterdayTotal) / yesterdayTotal * 100).toFixed(1) : 0;
+  const compareEl = document.getElementById('dailyCompare');
+  compareEl.textContent = (dailyCompare >= 0? '+ ' : '') + dailyCompare + '%';
+  compareEl.className = 'text-sm font-semibold ' + (dailyCompare >= 0? 'text-emerald-600' : 'text-red-600');
+
+  const weeklySales = sales.filter(s => new Date(s.date) >= weekAgo);
+  const weeklyTotal = weeklySales.reduce((sum, s) => sum + (s.quantity || 0), 0);
+  document.getElementById('weeklyTotal').textContent = weeklyTotal.toLocaleString();
+
+  const monthlySales = sales.filter(s => new Date(s.date) >= monthStart);
+  const monthlyTotal = monthlySales.reduce((sum, s) => sum + (s.quantity || 0), 0);
+  document.getElementById('monthlyTotal').textContent = monthlyTotal.toLocaleString();
+
+  const lastMonthSales = sales.filter(s => {
+    const d = new Date(s.date);
+    return d >= lastMonthStart && d <= lastMonthEnd;
+  });
+    const lastMonthTotal = lastMonthSales.reduce((sum, s) => sum + (s.quantity || 0), 0);
+  const monthlyProgress = lastMonthTotal > 0? ((monthlyTotal - lastMonthTotal) / lastMonthTotal * 100).toFixed(1) : 0;
+  const progressEl = document.getElementById('monthlyProgress');
+  progressEl.textContent = (monthlyProgress >= 0? '+ ' : '') + monthlyProgress + '%';
+  progressEl.className = 'text-sm font-semibold ' + (monthlyProgress >= 0? 'text-emerald-600' : 'text-red-600');
+
+  const yearlySales = sales.filter(s => new Date(s.date) >= yearStart);
+  const yearlyTotal = yearlySales.reduce((sum, s) => sum + (s.quantity || 0), 0);
+  document.getElementById('yearlyTotal').textContent = yearlyTotal.toLocaleString();
+
+  const productSales = {};
+  sales.forEach(s => {
+    if (!productSales[s.productId]) productSales[s.productId] = { name: s.productName, qty: 0 };
+    productSales[s.productId].qty += s.quantity || 0;
+  });
+  const sortedProducts = Object.values(productSales).sort((a, b) => b.qty - a.qty);
+  if (sortedProducts.length > 0) {
+    document.getElementById('topProduct').textContent = sortedProducts[0].name;
+    document.getElementById('topProductQty').textContent = sortedProducts[0].qty + ' قطعة';
+    document.getElementById('lowProduct').textContent = sortedProducts[sortedProducts.length - 1].name;
+    document.getElementById('lowProductQty').textContent = sortedProducts[sortedProducts.length - 1].qty + ' قطعة';
+  }
+
+  const categorySales = {};
+  sales.forEach(s => {
+    const product = products.find(p => p.id === s.productId);
+    const cat = product?.category || 'غير محدد';
+    if (!categorySales[cat]) categorySales[cat] = 0;
+    categorySales[cat] += s.quantity || 0;
+  });
+  const sortedCategories = Object.entries(categorySales).sort((a, b) => b[1] - a[1]);
+  if (sortedCategories.length > 0) {
+    document.getElementById('topCategory').textContent = sortedCategories[0][0];
+    document.getElementById('topCategoryQty').textContent = sortedCategories[0][1] + ' قطعة';
+    document.getElementById('lowCategory').textContent = sortedCategories[sortedCategories.length - 1][0];
+    document.getElementById('lowCategoryQty').textContent = sortedCategories[sortedCategories.length - 1][1] + ' قطعة';
+  }
+}
+
+function renderCharts() {
+  const last7Days = [];
+  const last7Labels = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split('T')[0];
+    last7Labels.push(date.getDate() + ' ' + date.toLocaleDateString('ar-MA', { month: 'short' }));
+    const daySales = sales.filter(s => s.date === dateStr).reduce((sum, s) => sum + (s.quantity || 0), 0);
+    last7Days.push(daySales);
+  }
+
+  if (dailyChart) dailyChart.destroy();
+  dailyChart = new Chart(document.getElementById('dailyChart'), {
+    type: 'line',
+    data: {
+      labels: last7Labels,
+      datasets: [{
+        label: 'المبيعات',
+        data: last7Days,
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  const last12Months = [];
+  const last12Labels = [];
+  for (let i = 11; i >= 0; i--) {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+    const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+    const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    last12Labels.push(date.toLocaleDateString('ar-MA', { month: 'short' }));
+    const monthSales = sales.filter(s => {
+      const d = new Date(s.date);
+      return d >= monthStart && d <= monthEnd;
+    }).reduce((sum, s) => sum + (s.quantity || 0), 0);
+    last12Months.push(monthSales);
+  }
+
+  if (monthlyChart) monthlyChart.destroy();
+  monthlyChart = new Chart(document.getElementById('monthlyChart'), {
+    type: 'bar',
+    data: {
+      labels: last12Labels,
+      datasets: [{
+        label: 'المبيعات',
+        data: last12Months,
+        backgroundColor: '#10b981'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  const last5Years = [];
+  const last5Labels = [];
+  for (let i = 4; i >= 0; i--) {
+    const year = new Date().getFullYear() - i;
+    const yearStart = new Date(year, 0, 1);
+    const yearEnd = new Date(year, 11, 31);
+    last5Labels.push(year.toString());
+    const yearSales = sales.filter(s => {
+      const d = new Date(s.date);
+      return d >= yearStart && d <= yearEnd;
+    }).reduce((sum, s) => sum + (s.quantity || 0), 0);
+    last5Years.push(yearSales);
+  }
+
+  if (yearlyChart) yearlyChart.destroy();
+  yearlyChart = new Chart(document.getElementById('yearlyChart'), {
+    type: 'bar',
+    data: {
+      labels: last5Labels,
+      datasets: [{
+        label: 'المبيعات',
+        data: last5Years,
+        backgroundColor: '#10b981'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+}
+
+window.openNewStockPage = function() {
+  document.getElementById('reportsPage').classList.add('hidden');
+  document.getElementById('newStockPage').classList.remove('hidden');
+  renderStep1();
+}
+
+function renderStep1() {
+  currentStep = 1;
+  const html = `
+    <div class="bg-white rounded-2xl soft-shadow-lg p-6 animate-slide-up">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <div class="step-active w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+          <span class="text-sm font-semibold text-gray-900">لصق اللائحة</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+          <span class="text-sm text-gray-500">تفاصيل المنتجات</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+          <span class="text-sm text-gray-500">البون</span>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-bold text-gray-900 mb-4">لصق لائحة الشارج</h2>
+
+      <textarea id="stockTextArea" rows="10" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 outline-none text-lg mb-4" placeholder="12
+diva maxi
+
+4
+balai IP harcha
+
+8
+asperox
+
+15
+pando"></textarea>
+
+      <p class="text-xs text-gray-500 mb-4">يمكنك نسخ ولصق اللائحة من أي مكان</p>
+
+      <button onclick="analyzeList()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-search"></i>
+        تحليل اللائحة
+      </button>
+
+      <div class="mt-6 bg-gray-50 rounded-xl p-4">
+        <p class="text-sm font-bold text-gray-900 mb-2">تعليمات</p>
+        <ul class="text-xs text-gray-600 space-y-1">
+          <li>• اكتب الكمية ثم اسم المنتج</li>
+          <li>• كل منتج في سطر واحد</li>
+          <li>• مثال: 12 diva maxi</li>
+        </ul>
+      </div>
+
+      <button onclick="backToReports()" class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold transition">
+        رجوع
+      </button>
+    </div>
+  `;
+  document.getElementById('newStockPage').innerHTML = html;
+}
+
+window.analyzeList = function() {
+  const text = document.getElementById('stockTextArea').value.trim();
+  if (!text) {
+    showToast('الرجاء لصق اللائحة أولا', 'error');
+    return;
+  }
+
+  parsedProducts = [];
+  const lines = text.split('\n').filter(l => l.trim());
+
+  for (let i = 0; i < lines.length; i += 2) {
+    const qty = parseInt(lines[i]);
+    const name = lines[i + 1]?.trim().toLowerCase();
+
+    if (qty && name) {
+      const product = products.find(p => p.name.toLowerCase().includes(name) || name.includes(p.name.toLowerCase()));
+      if (product) {
+        parsedProducts.push({
+          productId: product.id,
+          productName: product.name,
+          productImage: product.image,
+          boxes: qty,
+          piecesPerBox: null,
+          totalPieces: 0,
+          received: false
+        });
+      } else {
+        showToast(`لم يتم العثور على: ${name}`, 'error');
+        return;
+      }
+    }
+  }
+
+  if (parsedProducts.length === 0) {
+    showToast('لم يتم العثور على أي منتج', 'error');
+    return;
+  }
+
+  renderStep2();
+}
+
+function renderStep2() {
+  currentStep = 2;
+  currentProductIndex = 0;
+  renderProductQuestion();
+}
+
+function renderProductQuestion() {
+  const product = parsedProducts[currentProductIndex];
+  const html = `
+    <div class="bg-white rounded-2xl soft-shadow-lg p-6 animate-slide-up">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+          <span class="text-sm text-gray-500">لصق اللائحة</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-active w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+          <span class="text-sm font-semibold text-gray-900">تفاصيل المنتجات</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+          <span class="text-sm text-gray-500">البون</span>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-bold text-gray-900 mb-2">عدد القطع في العلبة</h2>
+      <p class="text-sm text-gray-600 mb-6">أدخل عدد القطع التي تحتوي عليها العلبة لكل منتج</p>
+
+      <div class="bg-gray-50 rounded-xl p-4 mb-4 flex items-center gap-4">
+        <img src="${product.productImage}" class="w-16 h-16 rounded-lg object-cover">
+        <div class="flex-1">
+          <p class="font-bold text-gray-900">${product.productName}</p>
+          <p class="text-sm text-gray-600">العلبة تحتوي على</p>
+        </div>
+        <input type="number" id="piecesInput" class="w-20 p-3 border-2 border-gray-200 rounded-lg text-center text-lg font-bold focus:border-emerald-500 outline-none" placeholder="0" autofocus>
+      </div>
+
+      <button onclick="savePiecesAndNext()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition">
+        ${currentProductIndex < parsedProducts.length - 1? 'التالي' : 'عرض البون'} →
+      </button>
+
+      <p class="text-xs text-center text-gray-500 mt-4">${currentProductIndex + 1} من ${parsedProducts.length}</p>
+    </div>
+  `;
+  document.getElementById('newStockPage').innerHTML = html;
+  document.getElementById('piecesInput').focus();
+}
+
+window.savePiecesAndNext = function() {
+  const pieces = parseInt(document.getElementById('piecesInput').value);
+  if (!pieces || pieces <= 0) {
+    showToast('الرجاء إدخال عدد القطع', 'error');
+    return;
+  }
+
+  parsedProducts[currentProductIndex].piecesPerBox = pieces;
+  parsedProducts[currentProductIndex].totalPieces = parsedProducts[currentProductIndex].boxes * pieces;
+
+  if (currentProductIndex < parsedProducts.length - 1) {
+    currentProductIndex++;
+    renderProductQuestion();
+  } else {
+    renderStep3();
+  }
+}
+
+function renderStep3() {
+  currentStep = 3;
+  const totalPieces = parsedProducts.reduce((sum, p) => sum + p.totalPieces, 0);
+
+  const html = `
+    <div class="bg-white rounded-2xl soft-shadow-lg p-6 animate-slide-up">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+          <span class="text-sm text-gray-500">لصق اللائحة</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+          <span class="text-sm text-gray-500">تفاصيل المنتجات</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="step-active w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+          <span class="text-sm font-semibold text-gray-900">البون</span>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-bold text-gray-900 mb-4">بون الشارج</h2>
+
+      <div class="overflow-x-auto mb-4">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b-2 border-gray-200">
+              <th class="text-right py-2 px-2">المنتج</th>
+              <th class="text-center py-2 px-2">الكمية</th>
+              <th class="text-center py-2 px-2">العلبة</th>
+              <th class="text-center py-2 px-2">المجموع</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${parsedProducts.map(p => `
+              <tr class="border-b border-gray-100">
+                <td class="py-3 px-2">
+                  <div class="flex items-center gap-2">
+                    <img src="${p.productImage}" class="w-10 h-10 rounded object-cover">
+                    <span class="font-semibold">${p.productName}</span>
+                  </div>
+                </td>
+                <td class="text-center py-3 px-2">${p.boxes}</td>
+                <td class="text-center py-3 px-2">× ${p.piecesPerBox}</td>
+                <td class="text-center py-3 px-2 font-bold text-emerald-600">= ${p.totalPieces}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-emerald-50 rounded-xl p-4 mb-6 flex items-center justify-between">
+        <span class="text-lg font-bold text-gray-900">الإجمالي</span>
+        <span class="text-2xl font-bold text-emerald-600">${totalPieces.toLocaleString()} قطعة</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="shareBon()" class="bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-share-nodes"></i>
+          مشاركة البون
+        </button>
+        <button onclick="saveStockTransfer()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold shadow-lg transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-check"></i>
+          حفظ الشارج
+        </button>
+      </div>
+
+      <button onclick="backToReports()" class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold transition">
+        رجوع
+      </button>
+    </div>
+  `;
+  document.getElementById('newStockPage').innerHTML = html;
+}
+
+window.shareBon = function() {
+  let text = 'بون الشحن\n\n';
+  parsedProducts.forEach(p => {
+    text += `${p.productName}\n${p.boxes} × ${p.piecesPerBox} = ${p.totalPieces} قطعة\n\n`;
+  });
+  text += `الإجمالي: ${parsedProducts.reduce((sum, p) => sum + p.totalPieces, 0)} قطعة`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'بون الشحن', text: text });
+  } else {
+    navigator.clipboard.writeText(text);
+    showToast('تم نسخ البون');
+  }
+}
+
+window.saveStockTransfer = async function() {
+  const transfer = {
+    date: new Date().toISOString().split('T')[0],
+    time: new Date().toLocaleTimeString('ar-MA'),
+    timestamp: Date.now(),
+    products: parsedProducts.map(p => ({
+      productId: p.productId,
+      productName: p.productName,
+      productImage: p.productImage,
+      boxes: p.boxes,
+      piecesPerBox: p.piecesPerBox,
+      totalPieces: p.totalPieces,
+      received: false
+    })),
+    totalPieces: parsedProducts.reduce((sum, p) => sum + p.totalPieces, 0),
+    status: 'pending',
+    receivedCount: 0
+  };
+
+  const newRef = push(ref(db, 'stockTransfers'));
+  await set(newRef, transfer);
+  currentTransferId = newRef.key;
+
+  showToast('تم حفظ الشحن بنجاح');
+  setTimeout(() => showReceiveStockPage(currentTransferId), 1000);
+}
+
+async function showReceiveStockPage(transferId) {
+  document.getElementById('newStockPage').classList.add('hidden');
+  document.getElementById('receiveStockPage').classList.remove('hidden');
+
+  const snap = await get(ref(db, 'stockTransfers/' + transferId));
+  const transfer = snap.val();
+  if (!transfer) return;
+
+  currentTransferId = transferId;
+  const receivedCount = transfer.products.filter(p => p.received).length;
+  const totalCount = transfer.products.length;
+  const totalReceived = transfer.products.reduce((sum, p) => sum + (p.received? p.totalPieces : 0), 0);
+  const totalPending = transfer.totalPieces - totalReceived;
+
+  const html = `
+    <div class="bg-white rounded-2xl soft-shadow-lg p-6 animate-slide-up">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900">حالة استلام المنتجات</h2>
+        <button onclick="backToReports()" class="text-gray-500 hover:text-gray-700">
+          <i class="fa-solid fa-arrow-left text-xl"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 mb-6">
+        ${transfer.products.map((p, idx) => `
+  <div class="bg-${p.received? 'emerald' : 'amber'}-50 border-2 border-${p.received? 'emerald' : 'amber'}-200 rounded-xl p-4 flex flex-col gap-3 transition">
+    <div class="flex items-center gap-4">
+      <button onclick="confirmReceiveProduct(${idx})" ${p.received? 'disabled' : ''} class="w-12 h-12 rounded-full ${p.received? 'bg-emerald-600' : 'bg-white border-2 border-gray-300'} flex items-center justify-center">
+        ${p.received? '<i class="fa-solid fa-check text-white text-xl"></i>' : ''}
+      </button>
+      <img src="${p.productImage}" class="w-16 h-16 rounded-lg object-cover">
+      <div class="flex-1">
+        <p class="font-bold text-gray-900">${p.productName}</p>
+        <p class="text-sm text-gray-600">${p.boxes} × ${p.piecesPerBox} = ${p.totalPieces} قطعة</p>
+      </div>
+    </div>
+
+    <!-- الازرار الجديدة -->
+    <div class="flex gap-2">
+      <button onclick="editProductPieces(${idx})" class="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2">
+        <i class="fa-solid fa-pen text-emerald-600"></i> تعديل القطع
+      </button>
+      <button onclick="deleteProductFromTransfer(${idx})" class="flex-1 bg-red-50 border border-red-200 hover:bg-red-100 text-red-600 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2">
+        <i class="fa-solid fa-trash"></i> حذف
+      </button>
+    </div>
+  </div>
+`).join('')}
+      </div>
+
+      <div class="bg-gray-50 rounded-xl p-4 mb-6">
+        <p class="text-sm font-bold text-gray-900 mb-3">ملخص الشحن
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div>
+            <p class="text-xs text-gray-500">إجمالي القطع</p>
+            <p class="text-lg font-bold text-gray-900">${transfer.totalPieces}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500">تم الاستلام</p>
+            <p class="text-lg font-bold text-emerald-600">${totalReceived}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500">في الانتظار</p>
+            <p class="text-lg font-bold text-amber-600">${totalPending}</p>
+          </div>
+        </div>
+      </div>
+
+      ${receivedCount === totalCount? `
+        <div class="bg-emerald-600 text-white py-4 rounded-xl font-bold text-center shadow-lg">
+          <i class="fa-solid fa-check-circle ml-2"></i>
+          تم استلام جميع المنتجات
+        </div>
+      ` : `
+        <button onclick="confirmAllReceive()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition">
+          <i class="fa-solid fa-check-double ml-2"></i>
+          تم استلام جميع المنتجات
+        </button>
+      `}
+    </div>
+  `;
+  document.getElementById('receiveStockPage').innerHTML = html;
+}
+
+window.confirmReceiveProduct = async function(index) {
+  const snap = await get(ref(db, 'stockTransfers/' + currentTransferId));
+  const transfer = snap.val();
+
+  transfer.products[index].received = true;
+  transfer.receivedCount = transfer.products.filter(p => p.received).length;
+
+  const productRef = ref(db, 'products/' + transfer.products[index].productId);
+  const productSnap = await get(productRef);
+  const currentStock = productSnap.val()?.stock || 0;
+  await update(productRef, {
+    stock: currentStock + transfer.products[index].totalPieces
+  });
+
+  //... كود الـ sales...
+
+  if (transfer.receivedCount === transfer.products.length) {
+    transfer.status = 'completed';
+    transfer.completedAt = Date.now();
+  }
+
+  await set(ref(db, 'stockTransfers/' + currentTransferId), transfer);
+
+  showToast('تم استلام المنتج وتحديث المخزون');
+  showReceiveStockPage(currentTransferId);
+}
+
+// ====== من هنا الدوال الجديدة اللي زدنا ======
+window.deleteProductFromTransfer = async function(index) {
+  if (!confirm('هل أنت متأكد من حذف هذا المنتج من البون؟')) return;
+
+  const snap = await get(ref(db, 'stockTransfers/' + currentTransferId));
+  let transfer = snap.val();
+
+  transfer.products.splice(index, 1);
+  transfer.totalPieces = transfer.products.reduce((sum, p) => sum + p.totalPieces, 0);
+
+  await set(ref(db, 'stockTransfers/' + currentTransferId), transfer);
+  showToast('تم حذف المنتج');
+  showReceiveStockPage(currentTransferId);
+}
+
+window.editProductPieces = async function(index) {
+  const snap = await get(ref(db, 'stockTransfers/' + currentTransferId));
+  let transfer = snap.val();
+  let product = transfer.products[index];
+
+  const newPieces = prompt(`تعديل عدد القطع في العلبة لـ ${product.productName}:`, product.piecesPerBox);
+  if (!newPieces) return;
+
+  const pieces = parseInt(newPieces);
+  if (isNaN(pieces) || pieces <= 0) {
+    showToast('عدد غير صحيح', 'error');
+    return;
+  }
+
+  product.piecesPerBox = pieces;
+  product.totalPieces = product.boxes * pieces;
+  transfer.totalPieces = transfer.products.reduce((sum, p) => sum + p.totalPieces, 0);
+
+  await set(ref(db, 'stockTransfers/' + currentTransferId), transfer);
+  showToast('تم تعديل القطع');
+  showReceiveStockPage(currentTransferId);
+}
+// ====== الى هنا الدوال الجديدة ======
+
+window.confirmAllReceive = async function() {
+  if (!confirm('هل أنت متأكد من استلام جميع المنتجات؟')) return;
+
+  const snap = await get(ref(db, 'stockTransfers/' + currentTransferId));
+  const transfer = snap.val();
+
+  for (let i = 0; i < transfer.products.length; i++) {
+    if (!transfer.products[i].received) {
+      const productRef = ref(db, 'products/' + transfer.products[i].productId);
+      const productSnap = await get(productRef);
+      const currentStock = productSnap.val()?.stock || 0;
+      await update(productRef, {
+    stock: currentStock + transfer.products[i].totalPieces
+});
+
+// أضف هذا مباشرة بعده
+
+try {
+  await push(ref(db, "sales"), {
+    productId: transfer.products[i].productId,
+    productName: transfer.products[i].productName,
+    quantity: transfer.products[i].totalPieces,
+    date: new Date().toISOString().split("T")[0],
+    timestamp: Date.now()
+  });
+} catch(e) {
+  console.error("خطأ في sales", e);
+}
+      transfer.products[i].received = true;
+    }
+  }
+
+  transfer.status = 'completed';
+  transfer.receivedCount = transfer.products.length;
+  transfer.completedAt = Date.now();
+
+  await set(ref(db, 'stockTransfers/' + currentTransferId), transfer);
+
+  showToast('تم استلام جميع المنتجات بنجاح');
+  showReceiveStockPage(currentTransferId);
+}
+
+window.backToReports = function() {
+  document.getElementById('newStockPage').classList.add('hidden');
+  document.getElementById('receiveStockPage').classList.add('hidden');
+  document.getElementById('reportsPage').classList.remove('hidden');
+  loadData().then(() => {
+    calculateStats();
+    renderCharts();
+  });
+}
+
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const icon = document.getElementById('toastIcon');
+  document.getElementById('toastMessage').textContent = message;
+
+  if (type === 'error') {
+    icon.className = 'fa-solid fa-circle-xmark text-red-400';
+  } else {
+    icon.className = 'fa-solid fa-check-circle text-emerald-400';
+  }
+
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 2000);
+}
+</script>
+</body>
+</html>
