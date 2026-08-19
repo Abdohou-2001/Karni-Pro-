@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Tahoma',sans-serif}
+body{
+background:linear-gradient(
+180deg,
+#08121f 0%,
+#0b1727 50%,
+#10253b 100%
+);
+overflow:hidden;
+}
+
+.header{background:#0F766E;color:white;padding:15px 20px;text-align:center;font-size:20px;font-weight:bold;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.list-btn{background:white;width:40px;height:40px;border-radius:12px;border:none;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.back-btn{background:white;width:40px;height:40px;border-radius:12px;border:none;font-size:22px;cursor:pointer;color:#0F766E;display:flex;align-items:center;justify-content:center}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:white;padding:12px 0;position:sticky;top:70px;z-index:99;box-shadow:0 2px 5px rgba(0,0,0,.05)}
+.stat-card{text-align:center;padding:8px 0}
+.stat-number{font-size:26px;font-weight:bold;color:#0F766E}
+.stat-label{font-size:13px;color:#64748b;margin-top:2px}
+
+.map-container{position:relative;width:100%;height:calc(100vh - 135px);overflow:auto}
+.map-content{position:relative;padding-bottom:180px}
+.map-bg{
+position:absolute;
+width:100%;
+height:100%;
+background-image:
+radial-gradient(#ffffff 1px, transparent 1px),
+radial-gradient(#60a5fa 1px, transparent 1px);
+background-size:120px 120px,180px 180px;
+background-position:0 0,60px 60px;
+opacity:.35;
+z-index:0;
+}
+.route-path{position:absolute;top:0;left:0;width:100%;z-index:1;pointer-events:none}
+.route-path svg{width:100%;display:block}
+
+.point{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:10px;z-index:10}
+.point-label{background:white;padding:10px 14px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.12);font-size:15px;white-space:nowrap;min-width:120px;text-align:center}
+.point-name{font-weight:bold;color:#1e293b;margin-bottom:2px}
+.point-status{font-size:13px}
+.point-status.visited{color:#16a34a}
+.point-status.current{color:#2563eb}
+.point-status.pending{color:#6b7280}
+.point-status.closed{color:#1f2937}
+.point-status.postponed{color:#f97316}
+
+.point-dot{width:42px;height:42px;border-radius:50%;color:white;font-weight:bold;display:flex;align-items:center;justify-content:center;font-size:18px;border:4px solid white;box-shadow:0 4px 10px rgba(0,0,0,.15)}
+.point-dot.visited{background:#16a34a}
+.point-dot.current{background:#2563eb}
+.point-dot.pending{background:#94a3b8}
+.point-dot.closed{background:#374151}
+.point-dot.closed-note{background:#dc2626}
+.point-dot.postponed{background:#f97316}
+
+/* راية النهاية */
+.finish-flag{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;z-index:20}
+.flag-pole{width:4px;height:80px;background:linear-gradient(to bottom,#dc2626,#991b1b);border-radius:2px}
+.flag{background:#dc2626;color:white;padding:12px 20px;border-radius:10px;font-weight:bold;font-size:16px;box-shadow:0 4px 12px rgba(220,38,38,.4);margin-bottom:5px;position:relative}
+.flag:after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);border-left:10px solid transparent;border-right:10px solid transparent;border-top:8px solid #dc2626}
+
+.start-house{
+position:absolute;
+transform:translate(-50%,-50%);
+display:flex;
+flex-direction:column;
+align-items:center;
+z-index:20;
+}
+
+.house{
+background:#0F766E;
+color:white;
+padding:12px 20px;
+border-radius:12px;
+font-weight:bold;
+font-size:16px;
+box-shadow:0 4px 12px rgba(15,118,110,.4);
+margin-bottom:5px;
+}
+
+.house-pole{
+display:none;
+}
+
+.street-light:before{
+content:'';
+position:absolute;
+top:-12px;
+left:-8px;
+width:24px;
+height:24px;
+background:#fde68a;
+border-radius:50%;
+box-shadow:
+0 0 10px #fde68a,
+0 0 20px #fde68a,
+0 0 35px rgba(253,230,138,.8);
+}
+
+.tree{
+position:absolute;
+font-size:28px;
+z-index:2;
+filter:drop-shadow(0 0 8px rgba(34,197,94,.4));
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+<button class="list-btn" onclick="window.location.href='route-map.html'">📋</button>
+🗺️ Route
+<button class="back-btn" onclick="window.location.href='index.html'">⬅️</button>
+</div>
+
+<div class="stats">
+<div class="stat-card">
+<div class="stat-number" id="pendingCount">0</div>
+<div class="stat-label">Pending</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="currentCount">0</div>
+<div class="stat-label">Current</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="visitedCount">0</div>
+<div class="stat-label">Visited</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="totalCount">0</div>
+<div class="stat-label">Total</div>
+</div>
+</div>
+
+<div class="map-container" id="mapContainer">
+<div class="map-content" id="mapContent">
+<div class="map-bg"></div>
+<div class="route-path" id="routePathDiv">
+<svg id="routeSvg">
+<path id="routePath" fill="none" stroke="#374151" stroke-width="12" stroke-dasharray="15 12" stroke-linecap="round"/>
+</svg>
+</div>
+<div id="pointsContainer"></div>
+
+<div id="startContainer"></div>
+
+<div id="treesContainer"></div>
+
+<div id="lightsContainer"></div>
+
+<div id="finishContainer"></div>
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBCVOOouLET3GDGyHj2i7ncvUZBjUUVB7Y",
+  authDomain: "karni-b9b34.firebaseapp.com",
+  databaseURL: "https://karni-b9b34-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "karni-b9b34",
+  storageBucket: "karni-b9b34.firebasestorage.app",
+  messagingSenderId: "489835094040",
+  appId: "1:489835094040:web:109e20fe7b65516903236d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let routeList = [];
+
+onValue(ref(db, 'routeManual'), (snapshot)=>{
+    routeList = snapshot.exists()? snapshot.val() : [];
+    renderMap();
+});
+
+function renderMap(){
+    const container = document.getElementById('pointsContainer');
+    const startContainer =
+document.getElementById('startContainer');
+
+const treesContainer =
+document.getElementById('treesContainer');
+
+const lightsContainer =
+document.getElementById('lightsContainer');
+
+const finishContainer =
+document.getElementById('finishContainer');
+    const mapContent = document.getElementById('mapContent');
+    const routePathDiv = document.getElementById('routePathDiv');
+    const routeSvg = document.getElementById('routeSvg');
+    const path = document.getElementById('routePath');
+
+    container.innerHTML = '';
+startContainer.innerHTML = '';
+treesContainer.innerHTML = '';
+lightsContainer.innerHTML = '';
+finishContainer.innerHTML = '';
+    let pending = 0, current = 0, visited = 0;
+
+    if(routeList.length === 0){
+        path.setAttribute('d', '');
+        document.getElementById('totalCount').innerText = 0;
+        return;
+    }
+
+    let points = [];
+    let itemHeight = 130;
+    let totalHeight = (routeList.length * itemHeight) + 350;
+    mapContent.style.height = totalHeight + 'px';
+    routePathDiv.style.height = totalHeight + 'px';
+    routeSvg.setAttribute('height', totalHeight);
+
+    let width = document.getElementById('mapContainer').offsetWidth;
+
+routeList.forEach((item, index)=>{
+    let y = 100 + (index * itemHeight);
+    let x = width/2 + Math.sin(index * 0.9) * (width * 0.28);
+    points.push({x, y});
+});
+
+for(let i = 0; i < points.length; i++){
+
+    const p = points[i];
+
+    treesContainer.innerHTML += `
+    <div class="tree"
+    style="
+    top:${p.y - 40}px;
+    left:${p.x - 190}px;
+    ">
+    🌳
+    </div>
+
+    <div class="tree"
+    style="
+    top:${p.y + 40}px;
+    left:${p.x + 190}px;
+    ">
+    🌲
+    </div>
+    `;
+}
+
+for(let i = 0; i < points.length; i++){
+
+    const p = points[i];
+
+    lightsContainer.innerHTML += `
+    <div class="street-light"
+    style="
+    top:${p.y}px;
+    left:${p.x - 140}px;
+    "></div>
+
+    <div class="street-light"
+    style="
+    top:${p.y}px;
+    left:${p.x + 90}px;
+    "></div>
+    `;
+}
+
+    // رسم المسار كامل حتى الراية
+    if(points.length > 1){
+
+    let firstPoint = points[0];
+
+    startContainer.innerHTML = `
+    <div class="start-house"
+    style="
+    top:${firstPoint.y - 40}px;
+    left:${firstPoint.x}px
+    ">
+        <div class="house">🏠 Départ</div>
+        <div class="house-pole"></div>
+    </div>
+    `;
+
+    let d = `M ${points[0].x} ${points[0].y}`;
+
+    for(let i = 1; i < points.length; i++){
+        let cpX = (points[i-1].x + points[i].x) / 2;
+        d += ` Q ${cpX} ${points[i-1].y + 55}, ${points[i].x} ${points[i].y}`;
+    }
+
+    let lastPoint = points[points.length-1];
+    d += ` L ${lastPoint.x} ${lastPoint.y + 150}`;
+
+    path.setAttribute('d', d);
+}
+
+    // رسم النقط
+    routeList.forEach((item, index)=>{
+        if(item.status === 'pending') pending++;
+        if(item.status === 'current') current++;
+        if(item.status === 'visited') visited++;
+
+        if(pending > 0 && item.status === 'pending' && current === 0){
+            item.status = 'current';
+            current = 1;
+            pending--;
+        }
+
+        let point = points[index];
+        let statusText = item.status === 'current'? 'Current' :
+                        item.status === 'visited'? 'Visited' :
+                        item.status === 'closed'? 'Closed' :
+                        item.status === 'Note'? 'Note' :
+                        item.status === 'postponed'? 'Postponed' : 'Pending';
+
+        let isLeft = index % 2 === 0;
+
+        container.innerHTML += `
+        <div class="point" style="top:${point.y}px;left:${point.x}px;flex-direction:${isLeft?'row-reverse':'row'}">
+            <div class="point-dot ${item.status}">${index+1}</div>
+            <div class="point-label">
+                <div class="point-name">${item.name}</div>
+                <div class="point-status ${item.status}">${statusText}</div>
+            </div>
+        </div>
+        `;
+    });
+
+    // راية النهاية
+    if(points.length > 0){
+        let lastPoint = points[points.length-1];
+        finishContainer.innerHTML = `
+        <div class="finish-flag" style="top:${lastPoint.y + 170}px;left:${lastPoint.x}px">
+            <div class="flag">🏁 النهاية</div>
+            <div class="flag-pole"></div>
+        </div>
+        `;
+    }
+
+    document.getElementById('totalCount').innerText = routeList.length;
+    document.getElementById('visitedCount').innerText = visited;
+    document.getElementById('currentCount').innerText = current;
+    document.getElementById('pendingCount').innerText = pending;
+
+    // سكرول للتحت
+    setTimeout(()=>{
+        let mapContainer = document.getElementById('mapContainer');
+        const currentPoint =
+document.querySelector('.point-dot.current');
+
+if(currentPoint){
+    currentPoint.scrollIntoView({
+        behavior:'smooth',
+        block:'center'
+    });
+}
+    }, 300);
+}
+
+window.addEventListener('resize', renderMap);
+</script>
+</body>
+</html>
