@@ -665,6 +665,92 @@
 
         /* ========== 300 سطر CSS إضافي للدارك مود والأنيميشن ========== */
         /*...*/
+    
+        /* ========== City Select - NEW ========== */
+     .city-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+     .city-select-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            text-align: right;
+        }
+     .city-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow-lg);
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+        }
+     .city-dropdown.active {
+            display: block;
+            animation: slideUp 0.2s ease-out;
+        }
+     .city-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+     .city-option:last-child { border-bottom: none; }
+     .city-option:hover { background: var(--bg); }
+     .city-option.selected { background: var(--primary); color: white; }
+
+        /* City badge in card */
+     .city-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            color: #00695c;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+        [data-theme="dark"] .city-badge {
+            background: linear-gradient(135deg, #1e3a3a 0%, #2a5555 100%);
+            color: #4ade80;
+        }
+
+        /* City filter modal */
+     .city-filter-item {
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+            font-weight: 700;
+        }
+     .city-filter-item:hover { background: var(--bg); }
+     .city-filter-item.active-city { background: var(--gradient); color: white; }
+     .city-count {
+            background: var(--bg);
+            color: var(--text-muted);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+     .city-filter-item.active-city .city-count { background: rgba(255,255,255,0.25); color: white; }
+
     </style>
 </head>
 <body>
@@ -741,6 +827,7 @@ title="التقارير">
         <button class="filter-tab" onclick="filterBy('today')">اليوم</button>
         <button class="filter-tab" onclick="filterBy('overdue')">متأخر</button>
         <button class="filter-tab" onclick="filterBy('upcoming')">قادم</button>
+        <button class="filter-tab" onclick="openCityFilter()"><i class="fas fa-city"></i> المدينة</button>
     </div>
 
     <div class="customers-list" id="customersList">
@@ -752,6 +839,18 @@ title="التقارير">
 
     <button class="fab" onclick="showAddModal()">+</button>
 
+
+    <div class="modal" id="cityFilterModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:20px; font-size:22px; display:flex; align-items:center; gap:8px;"><i class="fas fa-city" style="color:var(--primary)"></i> اختر المدينة</h3>
+            <div id="cityFilterList" style="max-height:350px; overflow-y:auto; border:2px solid var(--border); border-radius:14px;"></div>
+            <div class="form-buttons" style="margin-top:15px;">
+                <button class="btn btn-save" onclick="filterByCity('all')"><i class="fas fa-sync"></i> 🔄 All - الكل</button>
+                <button class="btn btn-cancel" onclick="closeCityFilter()"><i class="fas fa-times"></i> إغلاق</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="customerModal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px; font-size: 22px;">إضافة زبون جديد</h3>
@@ -762,12 +861,23 @@ title="التقارير">
                     <input type="text" class="form-input" id="customerName" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">المبلغ *</label>
-                    <input type="number" class="form-input" id="customerAmount" required>
-                </div>
-                <div class="form-group">
                     <label class="form-label">رقم الهاتف</label>
                     <input type="tel" class="form-input" id="customerPhone">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🏙️ المدينة</label>
+                    <div class="city-select-wrapper">
+                        <button type="button" class="form-input city-select-btn" id="citySelectBtn" onclick="toggleCityDropdown('add')">
+                            <span id="citySelectText">اختر المدينة</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="city-dropdown" id="cityDropdownAdd"></div>
+                        <input type="hidden" id="customerCity">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">المبلغ *</label>
+                    <input type="number" class="form-input" id="customerAmount" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">تاريخ الاستحقاق *</label>
@@ -809,6 +919,28 @@ const db = getDatabase(app);
         let allCustomers = {};
 let currentFilter = 'all';
 let searchTimer;
+let currentCityFilter = 'all';
+
+        // ========== Cities System - NEW ==========
+        const DEFAULT_CITIES = ["Gulmim", "TanTan", "Toronto", "ouatia"];
+        function getAllCities(){
+            const set = new Set(DEFAULT_CITIES);
+            Object.values(allCustomers).forEach(c=>{
+                if(c.city && c.city.trim()) set.add(c.city.trim());
+            });
+            return Array.from(set).sort((a,b)=> a.localeCompare(b));
+        }
+        function getCityCounts(){
+            const counts = {};
+            getAllCities().forEach(city=> counts[city]=0);
+            Object.values(allCustomers).forEach(c=>{
+                const city = (c.city||'').trim();
+                if(city && counts.hasOwnProperty(city)) counts[city]++;
+                else if(city) counts[city]=(counts[city]||0)+1;
+            });
+            return counts;
+        }
+
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -842,6 +974,15 @@ let searchTimer;
     document.addEventListener('click', function(e){
         if(!wrapper.contains(e.target)){
             hideSuggestions();
+        }
+        const cityWrapper = document.querySelector('.city-select-wrapper');
+        const cityDropdown = document.getElementById('cityDropdownAdd');
+        if(cityWrapper && cityDropdown && !cityWrapper.contains(e.target)){
+            cityDropdown.classList.remove('active');
+        }
+        const cityModal = document.getElementById('cityFilterModal');
+        if(e.target === cityModal){
+            closeCityFilter();
         }
     });
 });
@@ -957,6 +1098,8 @@ let searchTimer;
 
                 const overdueClass = custDate && custDate < today ? 'overdue' : '';
 
+                const cityDisplay = customer.city ? customer.city : 'Select City';
+                const cityIcon = customer.city ? '🏙️' : '📍';
                 const card = `
                     <div class="customer-card ${overdueClass}" onclick="openDetails('${key}')" style="animation-delay: ${index * 0.05}s">
                         <div class="customer-header">
@@ -967,6 +1110,9 @@ let searchTimer;
                                 <div class="customer-meta">
                                     <span><i class="fas fa-phone"></i> ${customer.phone || '-'}</span>
                                     <span><i class="fas fa-calendar"></i> ${custDate || '-'}</span>
+                                </div>
+                                <div class="customer-meta" style="margin-top:6px;">
+                                    <span class="city-badge">${cityIcon} ${cityDisplay}</span>
                                 </div>
                             </div>
                         </div>
@@ -1019,22 +1165,29 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             document.getElementById('customerName').value = '';
             document.getElementById('customerAmount').value = '';
             document.getElementById('customerPhone').value = '';
+            document.getElementById('customerCity').value = '';
+            document.getElementById('citySelectText').textContent = 'اختر المدينة';
+            document.getElementById('cityDropdownAdd').classList.remove('active');
             setTodayDate();
             document.getElementById('customerModal').classList.add('active');
         }
 
         window.closeModal = function() {
             document.getElementById('customerModal').classList.remove('active');
+            document.getElementById('cityDropdownAdd')?.classList.remove('active');
         }
 
         window.saveCustomer = async function(e) {
             e.preventDefault();
             const id = document.getElementById('customerId').value;
+            const cityVal = document.getElementById('customerCity').value || '';
             const data = {
                 name: document.getElementById('customerName').value,
                 amount: parseInt(document.getElementById('customerAmount').value),
                 phone: document.getElementById('customerPhone').value,
+                city: cityVal,
                 date: document.getElementById('customerDate').value,
+                paymentDate: document.getElementById('customerDate').value,
                 updatedAt: new Date().toISOString()
             };
 
@@ -1175,6 +1328,92 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
+
+        // ========== City Dropdown Logic ==========
+        window.toggleCityDropdown = function(context){
+            const dropdownId = context === 'add' ? 'cityDropdownAdd' : 'cityDropdownAdd';
+            const dropdown = document.getElementById(dropdownId);
+            if(!dropdown) return;
+            if(dropdown.classList.contains('active')){
+                dropdown.classList.remove('active');
+                return;
+            }
+            const cities = getAllCities();
+            const currentCity = document.getElementById('customerCity').value;
+            dropdown.innerHTML = cities.map(city=>`
+                <div class="city-option ${city===currentCity?'selected':''}" onclick="selectCity('${city.replace(/'/g, "\'")}', 'add')">
+                    <span><i class="fas fa-map-marker-alt"></i> ${city}</span>
+                    ${city===currentCity?'<i class="fas fa-check"></i>':''}
+                </div>
+            `).join('');
+            dropdown.classList.add('active');
+        }
+
+        window.selectCity = function(city, context){
+            document.getElementById('customerCity').value = city;
+            document.getElementById('citySelectText').textContent = city;
+            document.getElementById('cityDropdownAdd').classList.remove('active');
+        }
+
+        window.openCityFilter = function(){
+            const listDiv = document.getElementById('cityFilterList');
+            const counts = getCityCounts();
+            const cities = Object.keys(counts).sort((a,b)=> counts[b]-counts[a] || a.localeCompare(b));
+            const totalAll = Object.keys(allCustomers).length;
+
+            let html = `
+                <div class="city-filter-item ${currentCityFilter==='all'?'active-city':''}" onclick="filterByCity('all')">
+                    <span><i class="fas fa-globe"></i> All - الكل</span>
+                    <span class="city-count">${totalAll}</span>
+                </div>
+            `;
+            html += cities.map(city=>`
+                <div class="city-filter-item ${currentCityFilter===city?'active-city':''}" onclick="filterByCity('${city.replace(/'/g, "\'")}')">
+                    <span><i class="fas fa-city"></i> ${city}</span>
+                    <span class="city-count">${counts[city]||0}</span>
+                </div>
+            `).join('');
+
+            if(cities.length===0){
+                html += '<div class="suggestion-empty">لا توجد مدن بعد</div>';
+            }
+
+            listDiv.innerHTML = html;
+            document.getElementById('cityFilterModal').classList.add('active');
+        }
+
+        window.closeCityFilter = function(){
+            document.getElementById('cityFilterModal').classList.remove('active');
+        }
+
+        window.filterByCity = function(city){
+            currentCityFilter = city;
+            closeCityFilter();
+            document.querySelectorAll('.filter-tab').forEach(tab=> tab.classList.remove('active'));
+            // keep city tab active visually
+            const tabs = document.querySelectorAll('.filter-tab');
+            tabs.forEach(t=>{ if(t.textContent.includes('المدينة')) t.classList.add('active'); });
+
+            if(city==='all'){
+                currentFilter='all';
+                document.querySelectorAll('.filter-tab')[0].classList.add('active');
+                tabs.forEach(t=>{ if(t.textContent.includes('المدينة')) t.classList.remove('active'); });
+                applyFilter('all');
+                showToast('عرض جميع المدن');
+                return;
+            }
+
+            const filtered = {};
+            Object.keys(allCustomers).forEach(key=>{
+                const c = allCustomers[key];
+                if((c.city||'').trim().toLowerCase() === city.toLowerCase()){
+                    filtered[key]=c;
+                }
+            });
+            renderCustomers(filtered);
+            showToast(`مدينة ${city} - ${Object.keys(filtered).length} زبون`);
+        }
+
 
        window.openRoute = function() {
     window.location.href = 'route.html';
