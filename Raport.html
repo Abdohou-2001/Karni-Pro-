@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raport Pro</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Cairo',sans-serif;
+}
+
+body{
+background:#f0fdfd;
+padding-bottom:100px;
+}
+
+.header{
+background:linear-gradient(135deg,#0f766e,#14b8a6);
+padding:25px;
+text-align:center;
+color:white;
+box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+.header h1{
+font-size:28px;
+font-weight:bold;
+}
+
+.container{
+padding:15px;
+}
+
+.stats-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-bottom:15px;
+}
+
+.stat-card{
+background:white;
+border-radius:18px;
+padding:18px;
+text-align:center;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.stat-value{
+font-size:28px;
+font-weight:bold;
+color:#0f766e;
+margin-bottom:5px;
+}
+
+.stat-label{
+font-size:14px;
+color:#666;
+}
+
+.tools-box{
+display:flex;
+flex-direction:column;
+gap:10px;
+margin-bottom:20px;
+}
+
+.tools-box input{
+padding:14px;
+border-radius:12px;
+border:2px solid #ccfbf1;
+font-size:16px;
+background:white;
+}
+
+.report-section{
+background:white;
+padding:15px;
+border-radius:18px;
+margin-bottom:15px;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.report-section h2{
+margin-bottom:15px;
+font-size:18px;
+}
+
+.report-row{
+display:flex;
+justify-content:space-between;
+padding:10px 0;
+border-bottom:1px solid #eee;
+font-size:15px;
+}
+
+.report-row:last-child{
+border-bottom:none;
+}
+
+.bottom-buttons{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+padding:10px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+box-shadow:0 -3px 15px rgba(0,0,0,.1);
+}
+
+.bottom-buttons button{
+padding:14px;
+border:none;
+border-radius:12px;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+}
+
+#whatsappBtn{
+background:#25D366;
+color:white;
+}
+
+#pdfBtn{
+background:#ef4444;
+color:white;
+}
+
+#excelBtn{
+background:#22c55e;
+color:white;
+}
+
+#homeBtn{
+background:#0f766e;
+color:white;
+}
+
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+<body>
+
+<header class="header">
+    <h1>📊 Raport Pro</h1>
+</header>
+
+<div class="container">
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-value" id="totalReceived">0</div>
+            <div class="stat-label">🟢 الاستلامات</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value" id="totalPaid">0</div>
+            <div class="stat-label">🔴 الدفعات</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value" id="netTotal">0</div>
+            <div class="stat-label">📈 الصافي</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value" id="customersCount">0</div>
+            <div class="stat-label">👥 الزبناء</div>
+        </div>
+
+    </div>
+
+    <div class="tools-box">
+
+      <input
+type="date"
+id="reportDate">
+
+<input
+type="time"
+id="fromTime"
+value="00:00">
+
+<input
+type="time"
+id="toTime"
+value="23:59">
+
+<input
+type="text"
+id="searchInput"
+placeholder="🔍 ابحث عن زبون">
+    </div>
+
+    <div class="report-section">
+
+        <h2>🟢 الاستلامات</h2>
+
+        <div id="receivedList">
+
+        </div>
+
+    </div>
+
+    <div class="report-section">
+
+        <h2>🔴 الدفعات</h2>
+
+        <div id="paidList">
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="bottom-buttons">
+
+    <button id="whatsappBtn">
+        📱 واتساب
+    </button>
+
+    <button id="pdfBtn">
+        📄 PDF
+    </button>
+
+    <button id="excelBtn">
+        📊 Excel
+    </button>
+
+    <button id="homeBtn">
+        🏠 الرئيسية
+    </button>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    get
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyBCVOOouLET3GDGyHj2i7ncvUZBjUUVB7Y",
+  authDomain: "karni-b9b34.firebaseapp.com",
+  databaseURL: "https://karni-b9b34-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "karni-b9b34",
+  storageBucket: "karni-b9b34.firebasestorage.app",
+  messagingSenderId: "489835094040",
+  appId: "1:489835094040:web:109e20fe7b65516903236d"
+
+};
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getDatabase(app);
+
+let allCustomers = {};
+
+const reportDate =
+document.getElementById('reportDate');
+
+const today =
+new Date().toISOString().split('T')[0];
+
+reportDate.value = today;
+
+async function loadCustomers(){
+
+    const snapshot =
+    await get(ref(db,'customers'));
+
+    if(!snapshot.exists()) return;
+
+    allCustomers =
+    snapshot.val();
+
+    generateReport(today);
+
+}
+
+loadCustomers();
+
+function generateReport(selectedDate){
+
+    const receivedMap = {};
+const remainingMap = {};
+const paidMap = {};
+
+    let totalReceived = 0;
+    let totalPaid = 0;
+    let operationsCount = 0;
+
+    Object.keys(allCustomers).forEach(customerId=>{
+
+        const customer =
+        allCustomers[customerId];
+
+        const operations =
+        customer.operations || [];
+
+        operations.forEach(op=>{
+
+           if(op.date !== selectedDate){
+    return;
+}
+
+const fromTime =
+document.getElementById('fromTime').value;
+
+const toTime =
+document.getElementById('toTime').value;
+
+const opTime =
+op.time || "00:00";
+
+if(opTime < fromTime || opTime > toTime){
+    return;
+}
+            operationsCount++;
+
+            if(op.type === 'received'){
+
+                totalReceived +=
+                Number(op.amount);
+
+                if(!receivedMap[customer.name]){
+
+                    receivedMap[customer.name] = 0;
+
+                }
+
+                receivedMap[customer.name] +=
+Number(op.amount);
+
+let totalPaidAll = 0;
+let totalReceivedAll = 0;
+
+operations.forEach(operation=>{
+
+    if(operation.type === "paid"){
+        totalPaidAll += Number(operation.amount || 0);
+    }
+
+    if(operation.type === "received"){
+        totalReceivedAll += Number(operation.amount || 0);
+    }
+
+});
+
+remainingMap[customer.name] =
+Number(customer.amount || 0)
++
+totalPaidAll
+-
+totalReceivedAll;
+            }
+
+            if(op.type === 'paid'){
+
+                totalPaid +=
+                Number(op.amount);
+
+                if(!paidMap[customer.name]){
+
+                    paidMap[customer.name] = 0;
+
+                }
+
+                paidMap[customer.name] +=
+                Number(op.amount);
+
+            }
+
+        });
+
+    });
+
+    const receivedList =
+    document.getElementById('receivedList');
+
+    const paidList =
+    document.getElementById('paidList');
+
+    receivedList.innerHTML = '';
+    paidList.innerHTML = '';
+
+    Object.keys(receivedMap).forEach(name=>{
+
+        const remaining =
+Math.round(Number(remainingMap[name] || 0));
+receivedList.innerHTML += `
+<div class="report-row" style="display:block">
+
+<div style="display:flex;justify-content:space-between">
+<span>${name}</span>
+<span>${receivedMap[name]} درهم</span>
+</div>
+
+<div style="margin-top:6px;
+font-weight:bold;
+color:${remaining>0?'red':'green'}">
+
+${remaining>0
+?`🔴 باقي : ${remaining} درهم`
+:`🟢 خالص 0 درهم`}
+
+</div>
+
+</div>
+`;
+
+    });
+
+    Object.keys(paidMap).forEach(name=>{
+
+        paidList.innerHTML += `
+            <div class="report-row">
+                <span>${name}</span>
+                <span>${paidMap[name]} درهم</span>
+            </div>
+        `;
+
+    });
+
+    const netTotal =
+    totalReceived - totalPaid;
+
+    document.getElementById('totalReceived')
+    .textContent =
+    totalReceived;
+
+    document.getElementById('totalPaid')
+    .textContent =
+    totalPaid;
+
+    document.getElementById('netTotal')
+    .textContent =
+    netTotal;
+
+    const uniqueCustomers =
+    new Set([
+        ...Object.keys(receivedMap),
+        ...Object.keys(paidMap)
+    ]);
+
+    document.getElementById('customersCount')
+    .textContent =
+    uniqueCustomers.size;
+
+}
+
+reportDate.addEventListener('change',()=>{
+
+    generateReport(
+        reportDate.value
+    );
+
+});
+
+document.getElementById('fromTime')
+.addEventListener('change',()=>{
+
+    generateReport(
+        reportDate.value
+    );
+
+});
+
+document.getElementById('toTime')
+.addEventListener('change',()=>{
+
+    generateReport(
+        reportDate.value
+    );
+
+});
+document.getElementById('searchInput')
+.addEventListener('input',()=>{
+
+    const search =
+    document.getElementById('searchInput')
+    .value
+    .trim()
+    .toLowerCase();
+
+    const rows =
+    document.querySelectorAll('.report-row');
+
+    rows.forEach(row=>{
+
+        const text =
+        row.textContent.toLowerCase();
+
+        row.style.display =
+        text.includes(search)
+        ? 'flex'
+        : 'none';
+
+    });
+
+});
+
+document.getElementById('homeBtn')
+.addEventListener('click',()=>{
+
+    window.location.href =
+    'index.html';
+
+});
+
+document.getElementById('whatsappBtn')
+.addEventListener('click',()=>{
+
+    const selectedDate =
+    reportDate.value;
+
+    let reportText =
+`📊 تقرير يوم ${selectedDate}
+
+`;
+
+    const receivedRows =
+    document.querySelectorAll(
+        '#receivedList .report-row'
+    );
+
+    if(receivedRows.length > 0){
+
+        reportText +=
+`🟢 الاستلامات
+
+`;
+
+        receivedRows.forEach(row=>{
+
+            const cols =
+            row.querySelectorAll('span');
+
+            reportText +=
+`${cols[0].textContent} - ${cols[1].textContent}
+`;
+
+        });
+
+    }
+
+    reportText += '\n';
+
+    const paidRows =
+    document.querySelectorAll(
+        '#paidList .report-row'
+    );
+
+    if(paidRows.length > 0){
+
+        reportText +=
+`🔴 الدفعات
+
+`;
+
+        paidRows.forEach(row=>{
+
+            const cols =
+            row.querySelectorAll('span');
+
+            reportText +=
+`${cols[0].textContent} - ${cols[1].textContent}
+`;
+
+        });
+
+    }
+
+    reportText += `
+
+📈 الصافي:
+${document.getElementById('netTotal').textContent} درهم
+
+👥 عدد الزبناء:
+${document.getElementById('customersCount').textContent}
+
+Karni Pro`;
+
+    window.open(
+        'https://wa.me/212708457258?text=' +
+        encodeURIComponent(reportText),
+        '_blank'
+    );
+
+});
+
+document.getElementById('pdfBtn')
+.addEventListener('click',()=>{
+
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF();
+
+    const selectedDate =
+    reportDate.value;
+
+    let content =
+`Raport Pro
+
+Date: ${selectedDate}
+
+Received:
+${document.getElementById('receivedList').innerText}
+
+Paid:
+${document.getElementById('paidList').innerText}
+
+Net:
+${document.getElementById('netTotal').textContent}
+
+Customers:
+${document.getElementById('customersCount').textContent}
+`;
+
+    doc.text(content,10,10);
+
+    doc.save(
+        'Raport-' +
+        selectedDate +
+        '.pdf'
+    );
+
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+</body>
+</html>
