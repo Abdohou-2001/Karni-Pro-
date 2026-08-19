@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة الباركود - WEST</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+    * { font-family: 'Cairo', sans-serif; }
+
+  body {
+    background: #f8fafc;
+  }
+
+ .soft-shadow {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+ .soft-shadow-lg {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+ .product-card {
+    transition: all 0.3s ease;
+  }
+
+ .product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
+  }
+
+ .product-card.selected {
+    border-color: #10b981;
+    background: #f0fdf4;
+  }
+
+ .modal-backdrop {
+    backdrop-filter: blur(4px);
+  }
+
+ .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+ .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  #reader {
+    width: 100%!important;
+    border: none!important;
+    border-radius: 1rem!important;
+  }
+
+  #reader video {
+    border-radius: 1rem!important;
+  }
+
+ .scan-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 280px;
+    height: 180px;
+    border: 3px solid #10b981;
+    border-radius: 1rem;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+ .scan-line {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #10b981, transparent);
+    animation: scan 2s linear infinite;
+  }
+
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+  }
+
+ .corner {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border: 4px solid #10b981;
+  }
+ .corner-tl { top: -3px; left: -3px; border-right: 0; border-bottom: 0; border-radius: 1rem 0 0 0; }
+ .corner-tr { top: -3px; right: -3px; border-left: 0; border-bottom: 0; border-radius: 0 1rem 0 0; }
+ .corner-bl { bottom: -3px; left: -3px; border-right: 0; border-top: 0; border-radius: 0 0 0 1rem; }
+ .corner-br { bottom: -3px; right: -3px; border-left: 0; border-top: 0; border-radius: 0 0 1rem 0; }
+
+ .badge-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+
+ .badge-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+ .badge-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+</style>
+</head>
+<body class="pb-24">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm sticky top-0 z-40 border-b-2 border-emerald-500">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fa-solid fa-barcode text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-xl md:text-2xl font-bold text-gray-900">إدارة الباركود</h1>
+            <p class="text-xs text-gray-500">WEST Store Manager</p>
+          </div>
+        </div>
+        <button onclick="openScanModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 md:px-6 py-2.5 rounded-xl font-semibold transition shadow-md flex items-center gap-2">
+          <i class="fa-solid fa-qrcode"></i>
+          <span class="hidden sm:inline">مسح باركود</span>
+        </button>
+      </div>
+
+      <!-- Search -->
+      <div class="relative">
+        <input type="text" id="searchInput" placeholder="ابحث عن منتج بالاسم أو الباركود..."
+               class="w-full pr-12 pl-4 py-3 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition">
+        <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 pt-6 pb-6">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div class="bg-white rounded-xl soft-shadow p-4 border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-xs mb-1">إجمالي المنتجات</p>
+            <p class="text-2xl font-bold text-gray-900" id="totalProducts">0</p>
+          </div>
+          <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-box text-blue-600"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl soft-shadow p-4 border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-xs mb-1">بباركود</p>
+            <p class="text-2xl font-bold text-emerald-600" id="withBarcode">0</p>
+          </div>
+          <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-barcode text-emerald-600"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl soft-shadow p-4 border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-xs mb-1">بدون باركود</p>
+            <p class="text-2xl font-bold text-amber-600" id="withoutBarcode">0</p>
+          </div>
+          <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl soft-shadow p-4 border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-xs mb-1">النسبة</p>
+            <p class="text-2xl font-bold text-violet-600" id="percentage">0%</p>
+          </div>
+          <div class="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-chart-pie text-violet-600"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+      <button class="filter-btn active px-5 py-2.5 rounded-xl font-semibold transition whitespace-nowrap bg-emerald-600 text-white shadow-md" data-filter="all">
+        الكل
+      </button>
+      <button class="filter-btn px-5 py-2.5 rounded-xl font-semibold transition whitespace-nowrap bg-white text-gray-700 border-2 border-gray-200" data-filter="with">
+        بباركود
+      </button>
+      <button class="filter-btn px-5 py-2.5 rounded-xl font-semibold transition whitespace-nowrap bg-white text-gray-700 border-2 border-gray-200" data-filter="without">
+        بدون باركود
+      </button>
+    </div>
+
+    <!-- Products Grid -->
+    <div id="productsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-16">
+      <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+        <i class="fa-solid fa-box-open text-4xl text-gray-400"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">لا توجد منتجات</h3>
+      <p class="text-gray-500">لم يتم العثور على منتجات</p>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-4 h-16">
+        <button onclick="window.location.href='Menu.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-house text-xl"></i>
+          <span class="text-xs font-medium">الرئيسية</span>
+        </button>
+        <button onclick="window.location.href='products.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-box text-xl"></i>
+          <span class="text-xs font-medium">المنتجات</span>
+        </button>
+        <button class="flex flex-col items-center justify-center gap-1 text-emerald-600 relative">
+          <div class="absolute -top-1 w-12 h-1 bg-emerald-600 rounded-full"></div>
+          <i class="fa-solid fa-barcode text-xl"></i>
+          <span class="text-xs font-semibold">الباركود</span>
+        </button>
+        <button onclick="window.location.href='customers.html'" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-users text-xl"></i>
+          <span class="text-xs font-medium">العملاء</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Scan Modal -->
+  <div id="scanModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="modal-backdrop absolute inset-0 bg-black/70" onclick="closeScanModal()"></div>
+    <div class="relative bg-white rounded-3xl soft-shadow-lg w-full max-w-lg animate-slide-up overflow-hidden">
+      <div class="bg-emerald-600 px-6 py-4 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-white">مسح الباركود</h2>
+        <button onclick="closeScanModal()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/20 hover:bg-white/30 transition">
+          <i class="fa-solid fa-xmark text-white"></i>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-3 mb-4">
+          <div class="flex items-center gap-2 text-emerald-700">
+            <i class="fa-solid fa-circle-info"></i>
+            <span class="text-sm font-semibold">وجه الكاميرا نحو الباركود</span>
+          </div>
+        </div>
+
+        <div class="relative rounded-2xl overflow-hidden mb-4 bg-black">
+          <div id="reader"></div>
+          <div class="scan-overlay">
+            <div class="corner corner-tl"></div>
+            <div class="corner corner-tr"></div>
+            <div class="corner corner-bl"></div>
+            <div class="corner corner-br"></div>
+            <div class="scan-line"></div>
+          </div>
+        </div>
+
+        <button onclick="closeScanModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Barcode Modal -->
+  <div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeEditModal()"></div>
+    <div class="relative bg-white rounded-3xl soft-shadow-lg w-full max-w-md animate-slide-up">
+      <div class="bg-emerald-600 px-6 py-4 rounded-t-3xl">
+        <h2 class="text-xl font-bold text-white">تعديل الباركود</h2>
+      </div>
+
+      <div class="p-6">
+        <div class="flex items-center gap-4 mb-6">
+          <img id="editProductImage" src="" class="w-20 h-20 rounded-xl object-cover border-2 border-emerald-100">
+          <div class="flex-1">
+            <h3 id="editProductName" class="font-bold text-lg text-gray-900 mb-1"></h3>
+            <p id="editProductPrice" class="text-emerald-600 font-bold"></p>
+          </div>
+        </div>
+
+        <div id="currentBarcodeAlert" class="hidden bg-amber-50 border-2 border-amber-200 rounded-xl p-4 mb-4">
+          <div class="flex items-start gap-3">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 text-xl"></i>
+            <div class="flex-1">
+              <p class="font-semibold text-amber-900 mb-1">المنتج لديه باركود حالياً</p>
+              <p class="text-sm text-amber-700 font-mono" id="currentBarcodeText"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">الباركود الجديد</label>
+          <div class="flex gap-2">
+            <input type="text" id="barcodeInput" placeholder="أدخل الباركود أو امسحه"
+                   class="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition font-mono">
+            <button onclick="openScanModalForInput()" class="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition">
+              <i class="fa-solid fa-qrcode"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button onclick="saveBarcode()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition shadow-lg">
+            <i class="fa-solid fa-check ml-2"></i>حفظ
+          </button>
+          <button onclick="closeEditModal()" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition">
+            إلغاء
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+    <div class="bg-gray-900 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 min-w-[300px]">
+      <i id="toastIcon" class="fa-solid fa-check-circle text-emerald-400"></i>
+      <span id="toastMessage"></span>
+    </div>
+  </div>
+
+  <!-- Audio -->
+  <audio id="beepSound" src="beep.mp3" preload="auto"></audio>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD5KnoOye-Ns7RNQq9KqGNSmakYydIoLAw",
+  authDomain: "my-store-4f430.firebaseapp.com",
+  databaseURL: "https://my-store-4f430-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "my-store-4f430",
+  storageBucket: "my-store-4f430.firebasestorage.app",
+  messagingSenderId: "674007434765",
+  appId: "1:674007434765:web:c4005d096ab86167cc3744"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let products = [];
+let filteredProducts = [];
+let currentFilter = 'all';
+let searchQuery = '';
+let selectedProductId = null;
+let html5QrCode = null;
+let isScanning = false;
+let lastScannedCode = null;
+let lastScanTime = 0;
+
+// تشغيل الصوت
+function playBeep() {
+  const beep = document.getElementById('beepSound');
+  beep.currentTime = 0;
+  beep.play().catch(e => console.log('Audio play failed:', e));
+}
+
+// منع التكرار
+function canScan(code) {
+  const now = Date.now();
+  if (code === lastScannedCode && (now - lastScanTime) < 2000) {
+    return false;
+  }
+  lastScannedCode = code;
+  lastScanTime = now;
+  return true;
+}
+
+// تحميل المنتجات
+function loadProducts() {
+  onValue(ref(db, 'products'), (snapshot) => {
+    products = [];
+    if (snapshot.exists()) {
+      snapshot.forEach(child => {
+        products.push({
+          id: child.key,
+         ...child.val()
+        });
+      });
+    }
+    updateStats();
+    filterAndRender();
+  });
+}
+
+// تحديث الإحصائيات
+function updateStats() {
+  const total = products.length;
+  const withBarcode = products.filter(p => p.barcode).length;
+  const withoutBarcode = total - withBarcode;
+  const percentage = total > 0? Math.round((withBarcode / total) * 100) : 0;
+
+  document.getElementById('totalProducts').textContent = total;
+  document.getElementById('withBarcode').textContent = withBarcode;
+  document.getElementById('withoutBarcode').textContent = withoutBarcode;
+  document.getElementById('percentage').textContent = percentage + '%';
+}
+
+// فلترة وعرض
+function filterAndRender() {
+  filteredProducts = products.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (p.barcode && p.barcode.includes(searchQuery));
+    const matchesFilter = currentFilter === 'all' ||
+                         (currentFilter === 'with' && p.barcode) ||
+                         (currentFilter === 'without' &&!p.barcode);
+    return matchesSearch && matchesFilter;
+  });
+
+  renderProducts();
+}
+
+// عرض المنتجات
+function renderProducts() {
+  const container = document.getElementById('productsContainer');
+  const emptyState = document.getElementById('emptyState');
+
+  if (filteredProducts.length === 0) {
+    container.innerHTML = '';
+    emptyState.classList.remove('hidden');
+  } else {
+    emptyState.classList.add('hidden');
+    container.innerHTML = filteredProducts.map(p => createProductCard(p)).join('');
+  }
+}
+
+// إنشاء بطاقة منتج
+function createProductCard(product) {
+  const hasBarcode =!!product.barcode;
+  const badgeClass = hasBarcode? 'badge-success' : 'badge-warning';
+  const badgeText = hasBarcode? 'بباركود' : 'بدون باركود';
+  const badgeIcon = hasBarcode? 'fa-barcode' : 'fa-triangle-exclamation';
+
+  return `
+    <div class="product-card bg-white rounded-2xl soft-shadow border-2 border-gray-100 overflow-hidden">
+      <div class="p-5">
+        <div class="flex items-start gap-4 mb-4">
+          <img src="${product.image || 'https://via.placeholder.com/80'}"
+               alt="${product.name}"
+               class="w-20 h-20 rounded-xl object-cover border-2 border-gray-100">
+          <div class="flex-1">
+            <h3 class="font-bold text-gray-900 text-lg mb-1">${product.name}</h3>
+            <p class="text-sm text-gray-500 mb-2">${product.category || 'بدون تصنيف'}</p>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white ${badgeClass}">
+              <i class="fa-solid ${badgeIcon}"></i>
+              ${badgeText}
+            </span>
+          </div>
+        </div>
+
+        <div class="space-y-2 mb-4">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-500">السعر:</span>
+            <span class="font-bold text-emerald-600">${product.price} درهم</span>
+          </div>
+          ${hasBarcode? `
+            <div class="bg-gray-50 rounded-lg p-3">
+              <p class="text-xs text-gray-500 mb-1">الباركود الحالي:</p>
+              <p class="font-mono font-bold text-gray-900 text-sm">${product.barcode}</p>
+            </div>
+          ` : ''}
+        </div>
+
+        <button type="button"
+        onclick="window.openEditModal('${product.id}')"
+        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-semibold transition flex items-center justify-center gap-2">
+  <i class="fa-solid fa-pen-to-square"></i>
+  ${hasBarcode ? 'تعديل الباركود' : 'إضافة باركود'}
+</button>
+      </div>
+    </div>
+  `;
+}
+
+// فتح مودال التعديل
+window.openEditModal = function(productId) {
+
+  console.log("Product ID =", productId);
+console.log("Products =", products);
+
+  selectedProductId = productId;
+
+  const product = products.find(
+    p => String(p.id) === String(productId)
+);
+  if (!product) {
+    alert("المنتج غير موجود");
+    return;
+  }
+
+  document.getElementById('editProductImage').src =
+      product.image || 'https://via.placeholder.com/80';
+
+  document.getElementById('editProductName').textContent = product.name;
+
+  document.getElementById('editProductPrice').textContent =
+      `${product.price} درهم`;
+
+  document.getElementById('barcodeInput').value =
+      product.barcode || '';
+
+  if (product.barcode) {
+      document.getElementById('currentBarcodeAlert').classList.remove('hidden');
+      document.getElementById('currentBarcodeText').textContent = product.barcode;
+  } else {
+      document.getElementById('currentBarcodeAlert').classList.add('hidden');
+  }
+
+  document.getElementById('editModal').classList.remove('hidden');
+}
+
+// إغلاق مودال التعديل
+window.closeEditModal = function() {
+  document.getElementById('editModal').classList.add('hidden');
+  selectedProductId = null;
+}
+
+// فتح مودال المسح
+window.openScanModal = function() {
+  document.getElementById('scanModal').classList.remove('hidden');
+  startScanning();
+}
+
+// فتح المسح للإدخال
+window.openScanModalForInput = function() {
+
+  // نخفي النافذة فقط بدون حذف المنتج المحدد
+  document.getElementById('editModal').classList.add('hidden');
+
+  setTimeout(() => {
+    document.getElementById('scanModal').classList.remove('hidden');
+    startScanning();
+  }, 300);
+}
+// إغلاق مودال المسح
+window.closeScanModal = function() {
+  stopScanning();
+  document.getElementById('scanModal').classList.add('hidden');
+}
+
+// بدء المسح
+async function startScanning() {
+  if (html5QrCode && isScanning) return;
+
+  html5QrCode = new Html5Qrcode("reader");
+
+  const config = {
+    fps: 10,
+    qrbox: { width: 250, height: 150 },
+    formatsToSupport: [
+      Html5QrcodeSupportedFormats.EAN_13,
+      Html5QrcodeSupportedFormats.CODE_128
+    ]
+  };
+
+  try {
+    await html5QrCode.start(
+      { facingMode: "environment" },
+      config,
+      onScanSuccess,
+      () => {}
+    );
+    isScanning = true;
+  } catch (err) {
+    console.error('Error starting camera:', err);
+    showToast('فشل تشغيل الكاميرا', 'error');
+  }
+}
+
+// إيقاف المسح
+async function stopScanning() {
+  if (html5QrCode && isScanning) {
+    try {
+      await html5QrCode.stop();
+      isScanning = false;
+    } catch (err) {
+      console.error('Error stopping camera:', err);
+    }
+  }
+}
+
+// نجاح المسح
+async function onScanSuccess(decodedText) {
+  if (!canScan(decodedText)) return;
+
+  playBeep();
+
+  if (navigator.vibrate) {
+    navigator.vibrate(200);
+  }
+
+  document.getElementById('barcodeInput').value = decodedText;
+  closeScanModal();
+
+  setTimeout(() => {
+    document.getElementById('editModal').classList.remove('hidden');
+    showToast('تم قراءة الباركود بنجاح', 'success');
+  }, 300);
+}
+
+// حفظ الباركود
+window.saveBarcode = async function() {
+  const barcode = document.getElementById('barcodeInput').value.trim();
+
+  if (!barcode) {
+    showToast('يرجى إدخال الباركود', 'error');
+    return;
+  }
+
+  if (!selectedProductId) {
+    showToast('لم يتم تحديد منتج', 'error');
+    return;
+  }
+
+  // التحقق من التكرار
+  const existingProduct = products.find(p => p.barcode === barcode && p.id!== selectedProductId);
+  if (existingProduct) {
+    showToast(`هذا الباركود موجود بالفعل عند: ${existingProduct.name}`, 'error');
+    return;
+  }
+
+  try {
+    await update(ref(db, `products/${selectedProductId}`), {
+      barcode: barcode
+    });
+
+    showToast('تم حفظ الباركود بنجاح', 'success');
+    closeEditModal();
+  } catch (error) {
+    console.error('Error saving barcode:', error);
+    showToast('فشل حفظ الباركود', 'error');
+  }
+}
+
+// البحث
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  searchQuery = e.target.value;
+  filterAndRender();
+});
+
+// الفلترة
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentFilter = btn.dataset.filter;
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.classList.remove('active', 'bg-emerald-600', 'text-white', 'shadow-md');
+      b.classList.add('bg-white', 'text-gray-700', 'border-2', 'border-gray-200');
+    });
+    btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-200');
+    btn.classList.add('active', 'bg-emerald-600', 'text-white', 'shadow-md');
+    filterAndRender();
+  });
+});
+
+// عرض التوست
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const icon = document.getElementById('toastIcon');
+  document.getElementById('toastMessage').textContent = message;
+
+  if (type === 'error') {
+    icon.className = 'fa-solid fa-circle-xmark text-red-400';
+  } else {
+    icon.className = 'fa-solid fa-check-circle text-emerald-400';
+  }
+
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 3000);
+}
+
+// بدء التطبيق
+document.addEventListener('DOMContentLoaded', () => {
+  loadProducts();
+});
+
+// إيقاف الكاميرا عند الخروج
+window.addEventListener('beforeunload', () => {
+  stopScanning();
+});
+</script>
+
+</body>
+</html>
