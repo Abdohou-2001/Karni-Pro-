@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
+<head><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f766e">
@@ -233,6 +254,94 @@
             font-size: 15px;
             background: transparent;
             color: var(--text);
+        }
+
+
+        /* ========== Search Suggestions - NEW ========== */
+     .search-wrapper {
+            position: relative;
+            margin: 0 20px 15px;
+        }
+     .search-wrapper .search-box {
+            margin: 0;
+        }
+     .search-suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow-lg);
+            max-height: 380px;
+            overflow-y: auto;
+            z-index: 500;
+            display: none;
+            animation: slideUp 0.25s ease-out;
+        }
+     .search-suggestions.active {
+            display: block;
+        }
+     .suggestion-item {
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+     .suggestion-item:last-child {
+            border-bottom: none;
+        }
+     .suggestion-item:hover {
+            background: var(--bg);
+        }
+     .suggestion-item:active {
+            transform: scale(0.98);
+            background: var(--bg);
+        }
+     .suggestion-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        [data-theme="dark"] .suggestion-avatar {
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
+        }
+     .suggestion-info {
+            flex: 1;
+            min-width: 0;
+        }
+     .suggestion-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 3px;
+        }
+     .suggestion-amount {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+     .suggestion-empty {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 14px;
         }
 
         /* ========== Filter Tabs ========== */
@@ -618,11 +727,13 @@ title="التقارير">
     <!-- تم حذف زر التقارير -->
 </div>
 
-    <div class="search-box">
-        <i class="fas fa-search"></i>
-        <input type="text"
-placeholder="ابحث عن زبون..."
-id="searchInput">
+    <div class="search-wrapper" id="searchWrapper">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="ابحث عن زبون..." id="searchInput" autocomplete="off">
+            <i class="fas fa-times" id="clearSearch" style="cursor:pointer; display:none; color: var(--text-muted);"></i>
+        </div>
+        <div class="search-suggestions" id="searchSuggestions"></div>
     </div>
 
     <div class="filter-tabs">
@@ -705,15 +816,33 @@ let searchTimer;
     setTodayDate();
     initFirebase();
 
-    document.getElementById('searchInput')
-    .addEventListener('input', function(){
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearch');
+    const wrapper = document.getElementById('searchWrapper');
 
+    searchInput.addEventListener('input', function(){
         clearTimeout(searchTimer);
-
         searchTimer = setTimeout(() => {
             searchCustomer();
-        }, 300);
+        }, 150);
+    });
 
+    searchInput.addEventListener('focus', function(){
+        if(this.value.trim()) showSuggestions(this.value);
+    });
+
+    clearBtn.addEventListener('click', function(){
+        searchInput.value='';
+        hideSuggestions();
+        applyFilter(currentFilter);
+        searchInput.focus();
+        this.style.display='none';
+    });
+
+    document.addEventListener('click', function(e){
+        if(!wrapper.contains(e.target)){
+            hideSuggestions();
+        }
     });
 });
 
@@ -775,6 +904,24 @@ let searchTimer;
             showToast('تم الحذف');
         }
 
+        // ========== حساب المبلغ الحقيقي - نفس منطق person.html ==========
+        function getCustomerRealTotal(customer){
+            const base = parseFloat(customer.amount) || 0;
+            let totalPaid = 0;
+            let totalReceived = 0;
+            const ops = customer.operations || [];
+            // ops قد تكون object أو array - نوحدها
+            const opsArray = Array.isArray(ops) ? ops : Object.values(ops);
+            opsArray.forEach(op=>{
+                if(!op) return;
+                const amt = Number(op.amount) || 0;
+                if(op.type === 'paid') totalPaid += amt;
+                if(op.type === 'received') totalReceived += amt;
+            });
+            // القاعدة من person.html: الإجمالي = الأساسي + دفع - استلام
+            return Math.round(base + totalPaid - totalReceived);
+        }
+
         // ========== Render Functions ==========
         function renderCustomers(customers) {
             const list = document.getElementById('customersList');
@@ -800,29 +947,30 @@ let searchTimer;
 
             Object.keys(customers).forEach((key, index) => {
                 const customer = customers[key];
+                const realTotal = getCustomerRealTotal(customer);
                 customersCount++;
-                totalAmount += parseInt(customer.amount) || 0;
+                totalAmount += realTotal;
 
-                if(customer.date === today) todayCount++;
-                else if(customer.date < today) overdueCount++;
+                const custDate = customer.date || customer.paymentDate || '';
+                if(custDate === today) todayCount++;
+                else if(custDate && custDate < today) overdueCount++;
 
-                const overdueClass = customer.date < today? 'overdue' : '';
+                const overdueClass = custDate && custDate < today ? 'overdue' : '';
 
                 const card = `
                     <div class="customer-card ${overdueClass}" onclick="openDetails('${key}')" style="animation-delay: ${index * 0.05}s">
                         <div class="customer-header">
-                            <div class="customer-avatar">${customer.name.charAt(0)}</div>
+                            <div class="customer-avatar">${(customer.name||'?').charAt(0).toUpperCase()}</div>
                             <div class="customer-info">
-                                <div class="customer-name">${customer.name}</div>
-                                <div class="customer-amount">${customer.amount} درهم</div>
+                                <div class="customer-name">${customer.name||'بدون اسم'}</div>
+                                <div class="customer-amount">${realTotal} درهم</div>
                                 <div class="customer-meta">
                                     <span><i class="fas fa-phone"></i> ${customer.phone || '-'}</span>
-                                    <span><i class="fas fa-calendar"></i> ${customer.date}</span>
+                                    <span><i class="fas fa-calendar"></i> ${custDate || '-'}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="customer-actions">
-   <div class="customer-actions">
 
 <button class="btn btn-profile"
 onclick="event.stopPropagation(); openDetails('${key}')">
@@ -849,7 +997,7 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
 <i class="fas fa-trash"></i>
 </button>
 
-</div>
+                        </div>
                     </div>
                 `;
                 list.innerHTML += card;
@@ -909,35 +1057,97 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             currentFilter = filter;
             document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
+            hideSuggestions();
             applyFilter(filter);
         }
 
         function applyFilter(filter) {
             const filtered = {};
             const today = new Date().toISOString().split('T')[0];
-            const weekStart = new Date();
-            weekStart.setDate(weekStart.getDate() - 7);
 
             Object.keys(allCustomers).forEach(key => {
                 const customer = allCustomers[key];
+                const custDate = customer.date || customer.paymentDate || '';
                 if(filter === 'all') filtered[key] = customer;
-                else if(filter === 'today' && customer.date === today) filtered[key] = customer;
-                else if(filter === 'overdue' && customer.date < today) filtered[key] = customer;
-                else if(filter === 'upcoming' && customer.date > today) filtered[key] = customer;
+                else if(filter === 'today' && custDate === today) filtered[key] = customer;
+                else if(filter === 'overdue' && custDate && custDate < today) filtered[key] = customer;
+                else if(filter === 'upcoming' && custDate && custDate > today) filtered[key] = customer;
             });
 
             renderCustomers(filtered);
         }
 
-        window.searchCustomer = function() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = {};
-            Object.keys(allCustomers).forEach(key => {
-                if(allCustomers[key].name.toLowerCase().includes(search)) {
-                    filtered[key] = allCustomers[key];
-                }
+        function hideSuggestions(){
+            const box = document.getElementById('searchSuggestions');
+            if(box){ box.classList.remove('active'); box.innerHTML=''; }
+            const clearBtn = document.getElementById('clearSearch');
+            if(clearBtn && !document.getElementById('searchInput').value) clearBtn.style.display='none';
+        }
+
+        function showSuggestions(query){
+            const box = document.getElementById('searchSuggestions');
+            const input = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearSearch');
+            if(!box || !input) return;
+
+            const q = query.trim().toLowerCase();
+            if(!q){
+                hideSuggestions();
+                clearBtn.style.display='none';
+                applyFilter(currentFilter);
+                return;
+            }
+            clearBtn.style.display='block';
+
+            const matches = Object.entries(allCustomers).filter(([k,c])=>{
+                const name = (c.name||'').toLowerCase();
+                return name.includes(q);
             });
+
+            if(matches.length === 0){
+                box.innerHTML = `<div class="suggestion-empty">🔍 لا توجد نتائج لـ "${query}"</div>`;
+                box.classList.add('active');
+                // ايضا فلترة القائمة الرئيسية فارغة
+                renderCustomers({});
+                return;
+            }
+
+            // ترتيب: اللي يبدأ بالحرف أولا
+            matches.sort((a,b)=>{
+                const an = (a[1].name||'').toLowerCase();
+                const bn = (b[1].name||'').toLowerCase();
+                const aStarts = an.startsWith(q) ? 0 : 1;
+                const bStarts = bn.startsWith(q) ? 0 : 1;
+                if(aStarts!==bStarts) return aStarts-bStarts;
+                return an.localeCompare(bn);
+            });
+
+            box.innerHTML = matches.slice(0,20).map(([key,c])=>{
+                const realTotal = getCustomerRealTotal(c);
+                const initial = (c.name||'?').charAt(0).toUpperCase();
+                const safeName = (c.name||'بدون اسم').replace(/</g,'&lt;');
+                return `
+                <div class="suggestion-item" onclick="openDetails('${key}')">
+                    <div class="suggestion-avatar">${initial}</div>
+                    <div class="suggestion-info">
+                        <div class="suggestion-name">${safeName}</div>
+                        <div class="suggestion-amount">${realTotal} Amount</div>
+                    </div>
+                    <i class="fas fa-chevron-left" style="color: var(--text-muted); font-size:12px;"></i>
+                </div>`;
+            }).join('');
+
+            box.classList.add('active');
+
+            // كذلك فلترة القائمة الرئيسية Live
+            const filtered = {};
+            matches.forEach(([k,c])=> filtered[k]=c);
             renderCustomers(filtered);
+        }
+
+        window.searchCustomer = function() {
+            const search = document.getElementById('searchInput').value;
+            showSuggestions(search);
         }
 
         // ========== Theme Functions ==========
@@ -1091,5 +1301,5 @@ if ('serviceWorker' in navigator) {
     });
 }
 </script>
-</body>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
