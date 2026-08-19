@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المنتجات - إدارة المخزون</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+
+    * {
+    font-family: 'Cairo', sans-serif;
+  }
+
+  body {
+    background: #f8fafc;
+  }
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+.modal-backdrop {
+    backdrop-filter: blur(4px);
+  }
+
+.animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+.animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+.product-card:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+</style>
+</head>
+<body class="pb-24">
+
+  <main class="max-w-7xl mx-auto px-4 pt-6 pb-6">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+      <div class="bg-white rounded-xl shadow-sm p-4 md:p-5 border border-gray-100">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 text-xs md:text-sm mb-1">قيمة المخزون</p>
+            <p class="text-xl md:text-2xl font-bold text-gray-900" id="totalValue">0</p>
+            <p class="text-xs text-gray-500 mt-1">درهم</p>
+          </div>
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-coins text-emerald-600 text-lg md:text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm p-4 md:p-5 border border-gray-100">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 text-xs md:text-sm mb-1">إجمالي المخزون</p>
+            <p class="text-xl md:text-2xl font-bold text-gray-900" id="totalStock">0</p>
+            <p class="text-xs text-gray-500 mt-1">وحدة</p>
+          </div>
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-boxes-stacked text-blue-600 text-lg md:text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm p-4 md:p-5 border border-gray-100">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 text-xs md:text-sm mb-1">منتجات منخفضة</p>
+            <p class="text-xl md:text-2xl font-bold text-amber-600" id="lowStockCount">0</p>
+            <p class="text-xs text-gray-500 mt-1">منتج</p>
+          </div>
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg md:text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm p-4 md:p-5 border border-gray-100">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 text-xs md:text-sm mb-1">إجمالي المنتجات</p>
+            <p class="text-xl md:text-2xl font-bold text-gray-900" id="totalProducts">0</p>
+            <p class="text-xs text-gray-500 mt-1">منتج</p>
+          </div>
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-violet-100 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-cube text-violet-600 text-lg md:text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-gray-100">
+      <div class="flex gap-2">
+        <div class="flex-1 relative">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="البحث عن منتج..."
+            class="w-full pr-10 pl-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition text-sm md:text-base"
+          >
+          <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        </div>
+        <button id="filterBtn" class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition flex items-center gap-2 text-gray-700">
+          <i class="fa-solid fa-sliders"></i>
+          <span class="hidden sm:inline text-sm font-medium">تصفية</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Category Pills -->
+    <div class="mb-6 overflow-x-auto scrollbar-hide">
+      <div class="flex gap-2 pb-2">
+        <button class="category-pill active px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition bg-emerald-600 text-white shadow-md" data-category="الكل">
+          الكل
+        </button>
+        <button class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition bg-white text-gray-700 border-gray-200 hover:border-emerald-500" data-category="كوش">
+          كوش
+        </button>
+        <button class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition bg-white text-gray-700 border border-gray-200 hover:border-emerald-500" data-category="سوائل">
+          سوائل
+        </button>
+        <button class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition bg-white text-gray-700 border border-gray-200 hover:border-emerald-500" data-category="منظفات">
+          منظفات
+        </button>
+        <button class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition bg-white text-gray-700 border border-gray-200 hover:border-emerald-500" data-category="مواد غذائية">
+          مواد غذائية
+        </button>
+        <button class="category-pill px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition bg-white text-gray-700 border-gray-200 hover:border-emerald-500" data-category="أخرى">
+          أخرى
+        </button>
+      </div>
+    </div>
+
+    <!-- Products List -->
+    <div id="productsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Products will be rendered here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-16">
+      <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+        <i class="fa-solid fa-box-open text-4xl text-gray-400"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">لا توجد منتجات</h3>
+      <p class="text-gray-500 mb-6">ابدأ بإضافة منتجك الأول</p>
+      <button onclick="openAddModal()" class="bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition">
+        <i class="fa-solid fa-plus ml-2"></i>
+        إضافة منتج
+      </button>
+    </div>
+  </main>
+
+  <!-- Floating Add Button -->
+  <button id="fabBtn" class="fixed bottom-24 left-4 md:left-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center z-30">
+    <i class="fa-solid fa-plus text-xl"></i>
+  </button>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-5 h-16">
+        <button onclick="navigateToHome()" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-house text-xl"></i>
+          <span class="text-xs font-medium">الرئيسية</span>
+        </button>
+        <button onclick="navigateToCustomers()" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-users text-xl"></i>
+          <span class="text-xs font-medium">العملاء</span>
+        </button>
+        <button class="flex flex-col items-center justify-center gap-1 text-emerald-600 relative">
+          <div class="absolute -top-1 w-12 h-1 bg-emerald-600 rounded-full"></div>
+          <i class="fa-solid fa-box text-xl"></i>
+          <span class="text-xs font-semibold">المنتجات</span>
+        </button>
+        <button onclick="navigateToSales()" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-cart-shopping text-xl"></i>
+          <span class="text-xs font-medium">المبيعات</span>
+        </button>
+        <button onclick="navigateToReports()" class="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-emerald-600 transition">
+          <i class="fa-solid fa-chart-simple text-xl"></i>
+          <span class="text-xs font-medium">التقارير</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Add/Edit Product Modal -->
+  <div id="productModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeProductModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-slide-up">
+      <div class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
+        <h2 id="modalTitle" class="text-xl font-bold text-gray-900">إضافة منتج جديد</h2>
+        <button onclick="closeProductModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition">
+          <i class="fa-solid fa-xmark text-gray-500"></i>
+        </button>
+      </div>
+      <form id="productForm" class="p-6 space-y-4">
+        <input type="hidden" id="productId">
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">اسم المنتج *</label>
+          <input type="text" id="productName" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition" placeholder="exemple : dalaa bakal">
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">الفئة *</label>
+          <select id="productCategory" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition">
+            <option value="">اختر الفئة</option>
+            <option value="كوش">كوش</option>
+            <option value="مناديل">مناديل</option>
+            <option value="منظفات">منظفات</option>
+            <option value="مواد غذائية">مواد غذائية</option>
+            <option value="أخرى">أخرى</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">السعر (درهم) *</label>
+            <input type="number" id="productPrice" required min="0" step="0.01" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition" placeholder="0.00">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">الكمية *</label>
+            <input type="number" id="productStock" required min="0" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition" placeholder="0">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">حد التنبيه للكمية المنخفضة</label>
+          <input type="number" id="lowStockThreshold" min="0" value="10" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition" placeholder="10">
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">رابط الصورة (اختياري)</label>
+          <input type="url" id="productImage" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition" placeholder="https://example.com/image.jpg">
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-semibold transition shadow-md">
+            <i class="fa-solid fa-check ml-2"></i>
+            حفظ
+          </button>
+          <button type="button" onclick="closeProductModal()" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition">
+            إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeDeleteModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md animate-slide-up">
+      <div class="p-6">
+        <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+          <i class="fa-solid fa-trash text-2xl text-red-600"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 text-center mb-2">حذف المنتج</h3>
+        <p class="text-gray-600 text-center mb-6">هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.</p>
+        <div class="flex gap-3">
+          <button id="confirmDeleteBtn" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition">
+            نعم، احذف
+          </button>
+          <button onclick="closeDeleteModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold transition">
+            إلغاء
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Modal -->
+  <div id="filterModal" class="hidden fixed inset-0 z-50 flex items-end md:items-center justify-center md:p-4">
+    <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeFilterModal()"></div>
+    <div class="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md animate-slide-up">
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">تصفية المنتجات</h2>
+        <button onclick="closeFilterModal()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition">
+          <i class="fa-solid fa-xmark text-gray-500"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">الحالة</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 rounded-lg border-gray-200 hover:bg-gray-50 cursor-pointer">
+              <input type="radio" name="statusFilter" value="all" checked class="w-4 h-4 text-emerald-600">
+              <span>الكل</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-lg border-gray-200 hover:bg-gray-50 cursor-pointer">
+              <input type="radio" name="statusFilter" value="available" class="w-4 h-4 text-emerald-600">
+              <span>متوفر</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+              <input type="radio" name="statusFilter" value="low" class="w-4 h-4 text-emerald-600">
+              <span>منخفض</span>
+            </label>
+          </div>
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button onclick="applyFilters()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-semibold transition">
+            تطبيق
+          </button>
+          <button onclick="resetFilters()" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition">
+            إعادة تعيين
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+    <div class="bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+      <i id="toastIcon" class="fa-solid fa-check-circle text-emerald-400"></i>
+      <span id="toastMessage"></span>
+    </div>
+  </div>
+
+<script type="module">
+  // Initial Demo Data - الأثمنة كاملين 0
+  const initialProducts = [
+  { id: 1, name: 'Asperox Magic Yellow', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/Qjz9xgdQ/1779799104968.png', hidden: false },
+  { id: 2, name: 'Luisa', category: 'كوش', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/KxShH2Df/file-00000000923471f6b71cffcbf83f6797-1.png', hidden: false },
+  { id: 3, name: 'Cadum', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/bjd7DZdY/file-000000004c5871fd8cfa806c66400729.png', hidden: false },
+  { id: 4, name: 'Got a Got', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/TsJGWTL/1781809150946.png', hidden: false },
+  { id: 5, name: 'Elsada', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/RGyYxy3N/Screenshot-2026-06-23-17-12-38-928-edit-com-miui-gallery.jpg', hidden: false },
+  { id: 6, name: 'Furniture', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/ynKTPbtH/file-00000000c68c7243a531bf23a8f49777.png', hidden: false },
+  { id: 7, name: 'Deryla', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/rKgwTd7b/file-00000000eee471f4b08023912cdc3e70.png', hidden: false },
+  { id: 8, name: 'Chef', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/fV8GKV3r/file-0000000099bc71f6953cd75b065c9df4.png', hidden: false },
+  { id: 9, name: 'Head & Shoulders', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/d4c35tv8/file-000000007f6871f48179dd4b9a7a7c95.png', hidden: false },
+  { id: 10, name: 'manchebois', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/JRcpJLbx/Screenshot-2026-06-05-22-39-44-643-edit-com-miui-gallery.jpg', hidden: false },
+  { id: 11, name: 'Manche 1.40m Milk', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/Xxp1V7pX/In-Shot-20260606-160924857.jpg', hidden: false },
+  { id: 12, name: 'Sango', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/DPpHSZcq/In-Shot-20260530-153859085.jpg', hidden: false },
+  { id: 13, name: 'Pando', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/SDGv6jvV/file-000000004e2c720ab1fe9ae4a0e6ca9a.png', hidden: false },
+  { id: 14, name: 'Perux', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/5hXzdh9F/1780765578878.png', hidden: false },
+  { id: 15, name: 'Clenix Pando', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/S7VDkpwM/Screenshot-2026-05-29-17-30-05-109-edit-com-miui-gallery.jpg', hidden: false },
+  { id: 16, name: 'Clenix Feida', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/JFHXK7gS/Screenshot-2026-05-29-17-51-31-684-edit-com-miui-gallery.jpg', hidden: false },
+  { id: 17, name: 'Clenix Dalaa 300', category: 'كوش', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/knQPBKw/Screenshot-2026-05-29-17-05-17-197-edit-com-miui-gallery.jpg', hidden: false },
+  { id: 18, name: 'Calin Bakal', category: 'كوش', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/dwsTwsLT/file-00000000f50471f4a419039dc918775f.png', hidden: false },
+  { id: 19, name: 'Dalaa Bakal', category: 'كوش', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/ZpHpNCTn/file-00000000292871f499592098370e346d.png', hidden: false },
+  { id: 20, name: 'Yes Eco', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/mVgg6QS5/file-000000004aec71f49da017a9de10178b.png', hidden: false },
+  { id: 21, name: 'Yes', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/Rp560jzy/file-0000000022c4720aad543248150319de.png', hidden: false },
+  { id: 22, name: 'Winy RP', category: 'كوش', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/dNBFMT7/1780920654208.png', hidden: false },
+  { id: 23, name: 'Winy VP', category: 'كوش', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/v67ZDtWr/file-00000000604071fd9eb08e74aa2e18b1.png', hidden: false },
+  { id: 24, name: 'Calin RP', category: 'كوش', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/d4YFWqj5/file-00000000279871fd8d085fe626feb38a.png', hidden: false },
+  { id: 25, name: 'Dalaa RP', category: 'كوش', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/hJvRtzpB/1777563253651.png', hidden: false },
+  { id: 26, name: 'Dalaa VP', category: 'كوش', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/Rp8j2rqP/file-00000000543471f4bcf8601f10f68835.png', hidden: false },
+  { id: 27, name: 'Prima', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/21HQF2sv/In-Shot-20260623-170828056.jpg', hidden: false },
+  { id: 28, name: 'Prima Chort', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/q34L7RtC/file-00000000683471f4872a8323ef7b0e63.png', hidden: false },
+  { id: 29, name: 'Lingette Glaze', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/RGJKx3T1/file-000000007cfc71f4a180680fa94e77ad.png', hidden: false },
+  { id: 30, name: 'Calin Lingette', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/Z66RNqtk/file-00000000c3f07243920ce189c9083200.png', hidden: false },
+  { id: 31, name: 'Lingette 60', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/F4xbTnZm/1777667389783.png', hidden: false },
+  { id: 32, name: 'Lingette 100', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/BVbxptCQ/file-00000000728871f4848915a6d26f3487.png', hidden: false },
+  { id: 33, name: 'Suresan', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/RT02M69c/file-00000000494471f4bab3b4f8d705eab4.png', hidden: false },
+  { id: 34, name: 'Mia 14', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/wN4x2sQt/file-000000000c88724680f12521488b4dd1.png', hidden: false },
+  { id: 35, name: 'Mia 12 XL', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/4Rqhx2K2/file-0000000019b07246b5220004d18ff6f1.png', hidden: false },
+  { id: 36, name: 'Mia 9', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/HTs4h4LN/1777667972444.png', hidden: false },
+  { id: 37, name: 'Mia 8', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/1t8L7x9M/file-00000000b8647246b57103f294ac2d45.png', hidden: false },
+  { id: 38, name: 'Mia Ultra', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/1fhT12XD/1777667827108.png', hidden: false },
+  { id: 39, name: 'Colgate Dentiva', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/xqmNfTZS/file-00000000003c7243b69a17befba4272d.png', hidden: false },
+  { id: 40, name: 'Colgate Max White', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/HLZXYwQt/1777417525496.png', hidden: false },
+  { id: 41, name: 'Colgate Protection 25ml', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/35KvLwmV/file-00000000e6b071f486c73e31bb0aa693.png', hidden: false },
+  { id: 42, name: 'Colgate Triple Action 125ml', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/zWzzn7Lr/file-00000000a23071f4b9465cd2e0888f25.png', hidden: false },
+  { id: 43, name: 'Colgate Triple Action 25ml', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/FL58fb3K/file-00000000ca08724396eb0d7d76c63508.png', hidden: false },
+  { id: 44, name: 'Colgate Max White Fakhr', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/PbDpVQj/file-00000000fb647243a2bd0e68f9c20d3a.png', hidden: false },
+  { id: 45, name: 'Bros Gooral', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/q3Nvpxfc/file-00000000873471f88c38714200baf77b.png', hidden: false },
+  { id: 46, name: 'Lotus', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/FLgjy5pB/1778694797776.png', hidden: false },
+  { id: 47, name: 'Perkins', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/JwDjQ1Ns/file-00000000dcd871f4869e6e4677053148.png', hidden: false },
+  { id: 48, name: 'Bros O.R.B', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/TxF66NKh/file-00000000d66472468efbc4d5f3b18951.png', hidden: false },
+  { id: 49, name: 'Brose', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/B2psHFDz/1777299097714.png', hidden: false },
+  { id: 50, name: 'PH Dalaa', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/mrb4g1tn/file-000000003414720aa14076fe4e92f8f6.png', hidden: false },
+  { id: 51, name: 'Diva Classique', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/gLzZbX6W/file-00000000328471f4a3819cd56fb32147.png', hidden: false },
+  { id: 52, name: 'Ph Sany', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/kV6DLZWy/file-00000000d6f471f498e86a965decdf88.png', hidden: false },
+  { id: 53, name: 'Silk Ever', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/4RtDbhGt/Screenshot-2026-06-06-14-37-30-970-edit-com-miui-gallery.jpg', hidden: false },
+  { id: 54, name: 'Yes 10', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/4ZtVHRQQ/file-00000000a54071fd9d56aba14620d96e-1.png', hidden: false },
+  { id: 55, name: 'Sac Poubelle 20', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/tTwWH7CZ/file-00000000db7071f4aa68f3a350cd7e87.png', hidden: false },
+  { id: 56, name: 'Sac Poubelle 40', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/tpMqf92r/1777415515779.png', hidden: false },
+  { id: 57, name: 'Sac Poubelle 10', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/6cy4Ynn7/file-00000000cc0c71f49193c041e2886758.png', hidden: false },
+  { id: 58, name: 'Sac Poubelle 30', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/4n9Zdpbq/In-Shot-20260521-131648198.jpg', hidden: false },
+  { id: 59, name: 'Sac Poubelle 50', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/DHKcdXD4/file-0000000076b87246987e28ebd33ec28b.png', hidden: false },
+  { id: 60, name: 'Deter Aryalya', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/ksHfKkKy/file-00000000e21071f48baaff01cdc41795.png', hidden: false },
+  { id: 61, name: 'Arial', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/Gv77Z5GF/file-000000007b6871f4bf930d8d6333e16e.png', hidden: false },
+  { id: 62, name: 'Rexy', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/6cjgSBTc/file-00000000250071fda4b27bc31ed174c6.png', hidden: false },
+  { id: 63, name: 'Silk', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/60qLT208/file-00000000871871f8b7c44a0c2df41df3.png', hidden: false },
+  { id: 64, name: 'Vanish', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/YFDx1gZ9/1777298505376.png', hidden: false },
+  { id: 65, name: 'Peros 3L', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/jP3QDPk3/file-000000007df471f4a67a4a9e4b94e849.png', hidden: false },
+  { id: 66, name: 'Javel Dossy', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/PvQxRJwm/Screenshot-2026-06-06-16-30-13-584-edit-com-miui-gallery.jpg', hidden: false },
+  { id: 67, name: 'Rimi', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/674Nzxqs/Screenshot-2026-05-30-15-06-12-732-edit-com-miui-gallery.jpg', hidden: false },
+  { id: 68, name: 'Rimi Savon', category: 'منظفات', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/353DW68J/file-00000000342071f4a2f54519e2bb4588.png', hidden: false },
+  { id: 69, name: 'Damti', category: 'مواد غذائية', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/Dg6NLGB6/In-Shot-20260427-164243487.jpg', hidden: false },
+  { id: 70, name: 'Indomi', category: 'مواد غذائية', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/93mprnQK/1780766581940.png', hidden: false },
+  { id: 71, name: 'Baybay', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/ymd42ztf/file-00000000338c71f4a2da0f1230824b03.png', hidden: false },
+  { id: 72, name: 'Dove', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/cKX1Q9Lh/file-0000000063d071f4828f8c475c36879c.png', hidden: false },
+  { id: 73, name: 'Savon Zahr Zaytoun', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/6RrN9KfV/file-00000000cd4471f487961abc74c93ffd.png', hidden: false },
+  { id: 74, name: 'Film Etirable', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/1YfDzndj/file-00000000a0fc7246a599c55a2207b798.png', hidden: false },
+  { id: 75, name: 'Film Nor', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/bgkdP6hs/file-00000000e5c471f4b3a0e576bb4f947f.png', hidden: false },
+  { id: 76, name: 'Film 900', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/h1gQxTDy/In-Shot-20260608-140629528.jpg', hidden: false },
+  { id: 77, name: 'Film Coflo', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/JFMWw8qV/Screenshot-2026-06-08-14-09-53-897-edit-com-openai-chatgpt.jpg', hidden: false },
+  { id: 78, name: 'Film Alimentaire', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/sdc9SB4Y/file-000000003e3c71f698d210e0f3b1af08.png', hidden: false },
+  { id: 79, name: 'Raclette 55cm', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/9HsDymw2/file-00000000d62071f4a5a8901af2acc61e.png', hidden: false },
+  { id: 80, name: 'Tiger', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/QFLHqgYb/file-00000000bd28720a8864af9b4bfd3e25.png', hidden: false },
+  { id: 81, name: 'Baygon', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/CpKkkR8n/Screenshot-2026-06-06-14-40-51-531-edit-com-miui-gallery.jpg', hidden: false },
+  { id: 82, name: 'Strome', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/BVvm5YZ0/1777418221945.png', hidden: false },
+  { id: 83, name: 'Chifon', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/Ps228FnC/Screenshot-2026-06-06-14-35-07-988-edit-com-miui-gallery.jpg', hidden: false },
+  { id: 84, name: 'Chiffon Microfibre', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/gLxK94Jc/file-000000006484720a99261baf117b6ca1.png', hidden: false },
+  { id: 85, name: 'Chifon Micro', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/VWQ10F3f/file-000000005a9471f691381f5a161f8006.png', hidden: false },
+  { id: 86, name: 'Bic', category: 'أخرى', price: 0, stock: 0, lowStockThreshold: 10, image: 'https://i.ibb.co/3yRzxVGM/file-000000008ec471f4afb19af6bf2dafa1.png', hidden: false }
+];
+  // State
+  let products = [];
+  let currentFilter = 'الكل';
+  let statusFilter = 'all';
+  let searchQuery = '';
+  let editingProductId = null;
+  let deletingProductId = null;
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', async () => {
+  await loadProducts();
+  renderProducts();
+  updateStats();
+  setupEventListeners();
+});
+
+import { db } from "./firebase.js";
+import {
+  ref,
+  get,
+  set
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+async function loadProducts() {
+  const snapshot = await get(ref(db, "products"));
+
+  if (snapshot.exists()) {
+    products = Object.values(snapshot.val());
+
+    products = products.map(p => ({
+      ...p,
+      hidden: p.hidden || false
+    }));
+  } else {
+    products = [...initialProducts];
+    await saveProducts();
+  }
+}
+
+async function saveProducts() {
+  const data = {};
+
+  products.forEach(product => {
+    data[product.id] = product;
+  });
+
+  await set(ref(db, "products"), data);
+}
+  function setupEventListeners() {
+    document.getElementById('fabBtn').addEventListener('click', openAddModal);
+    document.getElementById('filterBtn').addEventListener('click', openFilterModal);
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    renderProducts();
+});
+    document.getElementById('productForm').addEventListener('submit', handleFormSubmit);
+    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+
+    document.querySelectorAll('.category-pill').forEach(pill => {
+      pill.addEventListener('click', () => filterByCategory(pill.dataset.category, pill));
+    });
+  }
+
+  function renderProducts() {
+    const container = document.getElementById('productsContainer');
+    const emptyState = document.getElementById('emptyState');
+
+    let filtered = products.filter(p => {
+
+    const matchesSearch = (p.name || "").toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = currentFilter === 'الكل' || p.category === currentFilter;
+    const isLow = p.stock <= p.lowStockThreshold;
+
+    const matchesStatus =
+        statusFilter === 'all' ||
+        (statusFilter === 'low' && isLow) ||
+        (statusFilter === 'available' && !isLow);
+
+    return matchesSearch && matchesCategory && matchesStatus;
+});
+
+// ترتيب المنتجات من A إلى Z
+filtered.sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
+
+if (filtered.length === 0) {
+      container.innerHTML = '';
+      emptyState.classList.remove('hidden');
+    } else {
+      emptyState.classList.add('hidden');
+      container.innerHTML = filtered.map(p => createProductCard(p)).join('');
+    }
+  }
+
+  function createProductCard(product) {
+    const isLow = product.stock <= product.lowStockThreshold;
+    const statusClass = isLow? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700';
+    const statusText = isLow? 'منخفض' : 'متوفر';
+    const defaultImage = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop';
+    const hideBtnClass = product.hidden? 'bg-green-100 hover:bg-green-200 text-green-700' : 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700';
+    const hideBtnIcon = product.hidden? 'fa-eye' : 'fa-eye-slash';
+    const hideBtnText = product.hidden? 'إظهار' : 'إخفاء';
+
+    return `
+      <div class="product-card bg-white rounded-xl shadow-sm border-gray-100 overflow-hidden transition-all ${product.hidden? 'opacity-60' : ''}">
+        <div class="p-4">
+          <div class="flex gap-4">
+            <div class="w-20 h-20 md:w-24 md:h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+              <img src="${product.image || defaultImage}" alt="${product.name}" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <h3 class="font-semibold text-gray-900 text-sm md:text-base line-clamp-2">${product.name}</h3>
+                <span class="px-2.5 py-1 rounded-full text-xs font-medium ${statusClass} whitespace-nowrap">
+                  ${statusText}
+                </span>
+              </div>
+              <p class="text-xs text-gray-500 mb-2">${product.category}</p>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-lg md:text-xl font-bold text-emerald-600">${product.price.toFixed(2)} <span class="text-xs font-normal text-gray-500">درهم</span></p>
+                  <p class="text-xs text-gray-500 mt-0.5">المخزون: ${product.stock}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+            <button onclick="toggleHideProduct(${product.id})" class="flex-1 px-3 py-2 ${hideBtnClass} rounded-lg text-sm font-medium transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid ${hideBtnIcon} text-xs"></i>
+              <span>${hideBtnText}</span>
+            </button>
+            <button onclick="editProduct(${product.id})" class="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button onclick="deleteProduct(${product.id})" class="px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function updateStats() {
+    const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
+    const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock), 0);
+    const lowStockCount = products.filter(p => p.stock <= p.lowStockThreshold).length;
+
+    document.getElementById('totalStock').textContent = totalStock.toLocaleString('ar-MA');
+    document.getElementById('totalValue').textContent = totalValue.toLocaleString('ar-MA', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    document.getElementById('lowStockCount').textContent = lowStockCount;
+    document.getElementById('totalProducts').textContent = products.length;
+  }
+
+  function filterByCategory(category, pill) {
+    currentFilter = category;
+    document.querySelectorAll('.category-pill').forEach(p => {
+      p.classList.remove('active', 'bg-emerald-600', 'text-white', 'shadow-md');
+      p.classList.add('bg-white', 'text-gray-700', 'border', 'border-gray-200');
+    });
+    pill.classList.remove('bg-white', 'text-gray-700', 'border', 'border-gray-200');
+    pill.classList.add('active', 'bg-emerald-600', 'text-white', 'shadow-md');
+    renderProducts();
+  }
+
+  function openAddModal() {
+    editingProductId = null;
+    document.getElementById('modalTitle').textContent = 'إضافة منتج جديد';
+    document.getElementById('productForm').reset();
+    document.getElementById('productModal').classList.remove('hidden');
+  }
+
+  window.editProduct = function(id) {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    editingProductId = id;
+    document.getElementById('modalTitle').textContent = 'تعديل المنتج';
+    document.getElementById('productId').value = product.id;
+    document.getElementById('productName').value = product.name;
+    document.getElementById('productCategory').value = product.category;
+    document.getElementById('productPrice').value = product.price;
+    document.getElementById('productStock').value = product.stock;
+    document.getElementById('lowStockThreshold').value = product.lowStockThreshold;
+    document.getElementById('productImage').value = product.image || '';
+    document.getElementById('productModal').classList.remove('hidden');
+  }
+
+  function closeProductModal() {
+    document.getElementById('productModal').classList.add('hidden');
+    document.getElementById('productForm').reset();
+  }
+
+  async function handleFormSubmit(e) {
+    e.preventDefault();
+
+    const productData = {
+      name: document.getElementById('productName').value.trim(),
+      category: document.getElementById('productCategory').value,
+      price: parseFloat(document.getElementById('productPrice').value),
+      stock: parseInt(document.getElementById('productStock').value),
+      lowStockThreshold: parseInt(document.getElementById('lowStockThreshold').value),
+      image: document.getElementById('productImage').value.trim(),
+      hidden: false
+    };
+
+    if (editingProductId) {
+      const index = products.findIndex(p => p.id === editingProductId);
+      products[index] = {...products[index],...productData };
+      showToast('تم تحديث المنتج بنجاح', 'success');
+    } else {
+      const newProduct = {
+        id: Date.now(),
+       ...productData
+      };
+      products.push(newProduct);
+      showToast('تم إضافة المنتج بنجاح', 'success');
+    }
+
+    await saveProducts();
+    renderProducts();
+    updateStats();
+    closeProductModal();
+  }
+
+  window.toggleHideProduct = async function(id) {
+    const product = products.find(p => p.id === id);
+    if (product) {
+      product.hidden =!product.hidden;
+      await saveProducts();
+      renderProducts();
+      showToast(product.hidden? 'تم إخفاء المنتج من الرئيسية' : 'تم إظهار المنتج في الرئيسية', 'success');
+    }
+  }
+
+  window.deleteProduct = function(id) {
+    deletingProductId = id;
+    document.getElementById('deleteModal').classList.remove('hidden');
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+    deletingProductId = null;
+  }
+
+  async function confirmDelete() {
+    if (deletingProductId) {
+      products = products.filter(p => p.id!== deletingProductId);
+      await saveProducts();
+      renderProducts();
+      updateStats();
+      showToast('تم حذف المنتج بنجاح', 'success');
+      closeDeleteModal();
+    }
+  }
+
+  function openFilterModal() {
+    document.getElementById('filterModal').classList.remove('hidden');
+  }
+
+  function closeFilterModal() {
+    document.getElementById('filterModal').classList.add('hidden');
+  }
+
+  function applyFilters() {
+    const selected = document.querySelector('input[name="statusFilter"]:checked').value;
+    statusFilter = selected;
+    renderProducts();
+    closeFilterModal();
+    showToast('تم تطبيق التصفية', 'success');
+  }
+
+  function resetFilters() {
+    statusFilter = 'all';
+    document.querySelector('input[name="statusFilter"][value="all"]').checked = true;
+    renderProducts();
+    closeFilterModal();
+    showToast('تم إعادة تعيين التصفية', 'info');
+  }
+
+  function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const icon = document.getElementById('toastIcon');
+    const msg = document.getElementById('toastMessage');
+
+    msg.textContent = message;
+
+    if (type === 'success') {
+      icon.className = 'fa-solid fa-check-circle text-emerald-400';
+    } else if (type === 'info') {
+      icon.className = 'fa-solid fa-info-circle text-blue-400';
+    }
+
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+      toast.classList.add('hidden');
+    }, 3000);
+  }
+
+  // Placeholder navigation functions - ready for your custom code
+  function navigateToHome() {
+    window.location.href = "menu.html";
+  }
+
+  function navigateToCustomers() {
+    window.location.href = "customers.html";
+}
+
+  function navigateToSales() {
+    window.location.href = "barcode-manager.html";
+}
+
+  function navigateToReports() {
+    window.location.href = "reports.html";
+}
+
+  const menuBtn = document.getElementById('menuBtn');
+
+if (menuBtn) {
+  menuBtn.addEventListener('click', () => {
+    showToast('القائمة الجانبية - جاهزة للتطوير', 'info');
+  });
+}
+
+// إصلاح أزرار onclick
+window.openAddModal = openAddModal;
+window.closeProductModal = closeProductModal;
+window.closeDeleteModal = closeDeleteModal;
+window.openFilterModal = openFilterModal;
+window.closeFilterModal = closeFilterModal;
+window.applyFilters = applyFilters;
+window.resetFilters = resetFilters;
+window.navigateToHome = navigateToHome;
+window.navigateToCustomers = navigateToCustomers;
+window.navigateToSales = navigateToSales;
+window.navigateToReports = navigateToReports;
+</script>
+
+</body>
+</html>
