@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route Manual</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Tahoma',sans-serif}
+body{background:#f5f5f5;padding:15px;padding-bottom:120px}
+
+.header{background:#0F766E;color:white;padding:18px 20px;border-radius:25px;text-align:center;font-size:22px;font-weight:bold;margin-bottom:18px;position:relative;display:flex;align-items:center;justify-content:space-between}
+.back-btn{background:white;width:40px;height:40px;border-radius:12px;border:none;font-size:22px;cursor:pointer;color:#0F766E;display:flex;align-items:center;justify-content:center}
+.map-btn{background:white;color:#0F766E;border:none;padding:8px 16px;border-radius:12px;font-size:14px;font-weight:bold;cursor:pointer}
+.reset-btn{background:#ef4444;color:white;border:none;padding:8px 16px;border-radius:12px;font-size:14px;font-weight:bold;cursor:pointer}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px}
+.stat-card{background:white;padding:18px 8px;border-radius:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.stat-number{font-size:28px;font-weight:bold;color:#0F766E;margin-bottom:4px}
+.stat-label{font-size:13px;color:#6b7280}
+
+.legend{display:flex;justify-content:space-around;margin:15px 0 20px;font-size:12px;color:#6b7280;flex-wrap:wrap;gap:8px}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend-dot{width:12px;height:12px;border-radius:50%}
+
+.add-box{background:white;padding:20px;border-radius:20px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.add-box input{width:100%;padding:16px;border:2px solid #e5e7eb;border-radius:14px;font-size:16px;text-align:right;background:#f9fafb}
+.add-box input:focus{border-color:#0F766E;outline:none;background:white}
+.add-btn{width:100%;padding:16px;margin-top:12px;border:none;border-radius:14px;background:#0F766E;color:white;font-size:17px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+
+.route-card{background:white;padding:16px;border-radius:20px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.06);display:flex;align-items:center;gap:12px;position:relative;border-right:5px solid transparent;transition:0.2s;cursor:grab}
+.route-card.dragging{opacity:0.5;transform:scale(0.98)}
+.route-card.current{border-right-color:#2563eb}
+.route-card.visited{border-right-color:#9ca3af;opacity:0.7}
+.route-card.closed{border-right-color:#1f2937;opacity:0.6}
+.route-card.closed-note{border-right-color:#dc2626}
+.route-card.postponed{border-right-color:#f97316}
+
+.drag-handle{font-size:24px;color:#d1d5db;cursor:grab;padding:5px;user-select:none}
+.drag-handle:active{cursor:grabbing}
+
+.route-number{width:50px;height:50px;border-radius:50%;background:#2563eb;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px;flex-shrink:0}
+.route-number.visited{background:#9ca3af}
+.route-number.closed{background:#1f2937}
+.route-number.closed-note{background:#dc2626}
+.route-number.postponed{background:#f97316}
+
+.route-info{flex:1;text-align:right}
+.route-name{font-size:14px;font-weight:bold;color:#1f2937;margin-bottom:3px;}
+.route-status{font-size:13px;color:#2563eb;margin-bottom:8px}
+.route-status.visited{color:#9ca3af}
+.route-status.closed{color:#1f2937}
+.route-status.closed-note{color:#dc2626}
+.route-status.postponed{color:#f97316}
+.route-note{font-size:12px;color:#dc2626;margin-top:4px;display:flex;align-items:center;gap:5px}
+
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.actions button{padding:7px 10px;border-radius:10px;border:none;cursor:pointer;font-size:12px;font-weight:bold;white-space:nowrap}
+.btn-done{background:#16a34a;color:white}
+.btn-closed{background:#1f2937;color:white}
+.btn-note{background:#dc2626;color:white}
+.btn-postpone{background:#f97316;color:white}
+.btn-delete{background:#fee2e2;color:#ef4444;padding:7px 10px}
+
+.clear-btn{width:100%;padding:18px;border:none;border-radius:18px;background:#ef4444;color:white;font-size:18px;font-weight:bold;margin-top:25px}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 24px;border-radius:12px;z-index:999;font-weight:bold;box-shadow:0 4px 12px rgba(22,163,74,0.3)}
+</style>
+</head>
+<body>
+
+<<div class="header">
+<button class="back-btn" onclick="window.location.href='index.html'">⬅️</button>
+
+<div style="display:flex;gap:8px">
+
+<button class="map-btn"
+onclick="window.location.href='route.html'">
+🗺️ خريطة
+</button>
+
+<button class="map-btn"
+onclick="window.location.href='Raport.html'">
+📊 تقرير
+</button>
+
+<button class="reset-btn"
+onclick="resetRoute()">
+إعادة تعيين
+</button>
+
+</div>
+
+</div>
+
+<div class="stats">
+<div class="stat-card">
+<div class="stat-number" id="totalCount">0</div>
+<div class="stat-label">Total</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="visitedCount">0</div>
+<div class="stat-label">Visited</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="currentCount">0</div>
+<div class="stat-label">Current</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="pendingCount">0</div>
+<div class="stat-label">Pending</div>
+</div>
+</div>
+
+<div class="legend">
+<span><div class="legend-dot" style="background:#f97316"></div> Postponed</span>
+<span><div class="legend-dot" style="background:#dc2626"></div> Note</span>
+<span><div class="legend-dot" style="background:#1f2937"></div> Closed</span>
+<span><div class="legend-dot" style="background:#9ca3af"></div> Visited</span>
+<span><div class="legend-dot" style="background:#2563eb"></div> Current</span>
+</div>
+
+<!-- تم حذف add-box -->
+
+<div id="routeList"></div>
+
+<button class="clear-btn" onclick="clearAll()">🗑️ مسح كل شيء</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getDatabase, ref, set, remove, onValue, get } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBCVOOouLET3GDGyHj2i7ncvUZBjUUVB7Y",
+  authDomain: "karni-b9b34.firebaseapp.com",
+  databaseURL: "https://karni-b9b34-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "karni-b9b34",
+  storageBucket: "karni-b9b34.firebasestorage.app",
+  messagingSenderId: "489835094040",
+  appId: "1:489835094040:web:109e20fe7b65516903236d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let routeList = [];
+let draggedItem = null;
+
+checkAndLoadTodayCustomers();
+
+setInterval(checkAndLoadTodayCustomers, 10000);
+  
+onValue(ref(db, 'routeManual'), (snapshot)=>{
+    routeList = snapshot.exists()? snapshot.val() : [];
+    renderRoute();
+});
+
+async function checkAndLoadTodayCustomers(){
+
+    const today =
+    new Date().toISOString().split('T')[0];
+
+    const customersSnapshot =
+    await get(ref(db,'customers'));
+
+    const routeSnapshot =
+    await get(ref(db,'routeManual'));
+
+    let routeListData =
+    routeSnapshot.exists() ? routeSnapshot.val() : [];
+
+    if(!customersSnapshot.exists()) return;
+
+    const customers = customersSnapshot.val();
+
+    Object.keys(customers).forEach(key=>{
+
+        const customer = customers[key];
+
+        if(customer.date === today){
+
+            const exists = routeListData.some(
+                item => item.id === (customer.id || key)
+            );
+
+            if(!exists){
+
+                routeListData.push({
+                    id: customer.id || key,
+                    name: customer.name,
+                    status: 'pending',
+                    note: ''
+                });
+
+            }
+
+        }
+
+    });
+
+    set(ref(db,'routeManual'), routeListData);
+}
+
+async function loadTodayCustomers(){
+
+    const today =
+    new Date().toISOString().split('T')[0];
+
+    const snapshot =
+    await get(ref(db,'customers'));
+
+    if(!snapshot.exists()) return;
+
+    const customers = snapshot.val();
+
+    let todayCustomers = [];
+
+    Object.keys(customers).forEach(key=>{
+
+        const customer = customers[key];
+
+        if(customer.date === today){
+
+            todayCustomers.push({
+                id: customer.id || key,
+                name: customer.name,
+                status: 'pending',
+                note: ''
+            });
+
+        }
+
+    });
+
+    set(ref(db,'routeManual'), todayCustomers);
+}
+  
+function showToast(msg){
+    let toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.remove(), 1800);
+}
+
+function saveToFirebase(){
+    set(ref(db, 'routeManual'), routeList).then(()=>{
+        showToast('✅ تم الحفظ');
+    });
+}
+
+// لم نعد نستعمل الإضافة اليدوية
+  
+// تم الحذف
+
+window.markDone = function(id){
+    let idx = routeList.findIndex(c => c.id === id);
+    if(idx!== -1){
+        routeList[idx].status = 'visited';
+        saveToFirebase();
+    }
+}
+
+window.markClosed = function(id){
+    let idx = routeList.findIndex(c => c.id === id);
+    if(idx!== -1){
+        routeList[idx].status = 'closed';
+        routeList[idx].note = '';
+        saveToFirebase();
+    }
+}
+
+window.addNote = function(id){
+    let note = prompt('اكتب الرسالة/الملاحظة:');
+    if(note){
+        let idx = routeList.findIndex(c => c.id === id);
+        if(idx!== -1){
+            routeList[idx].status = 'closed-note';
+            routeList[idx].note = note;
+            saveToFirebase();
+        }
+    }
+}
+
+window.postpone = function(id){
+    let idx = routeList.findIndex(c => c.id === id);
+    if(idx!== -1){
+        let customer = routeList.splice(idx, 1)[0];
+        customer.status = 'postponed';
+        routeList.push(customer);
+        saveToFirebase();
+    }
+}
+
+window.deleteCustomer = function(id){
+    if(confirm('مسح هاد الزبون؟')){
+        routeList = routeList.filter(c => c.id!== id);
+        saveToFirebase();
+    }
+}
+
+window.resetRoute = function(){
+    if(confirm('إعادة تعيين الكل ـ pending؟')){
+        routeList.forEach(c => {
+            c.status = 'pending';
+            c.note = '';
+        });
+        saveToFirebase();
+    }
+}
+
+window.clearAll = function(){
+    if(confirm('⚠️ مسح الكل؟')){
+        remove(ref(db, 'routeManual'));
+    }
+}
+
+function renderRoute(){
+    let html = '';
+    let pending = 0;
+    let current = 0;
+    let visited = 0;
+
+    if(routeList.length === 0){
+        html = '<div style="text-align:center;padding:60px;color:#999">الليست خاوية</div>';
+    }else{
+        routeList.forEach((item, index)=>{
+            if(item.status === 'pending') pending++;
+            if(item.status === 'current') current++;
+            if(item.status === 'visited') visited++;
+
+            if(pending > 0 && item.status === 'pending' && current === 0){
+                item.status = 'current';
+                current = 1;
+                pending--;
+            }
+
+            let cardClass = item.status;
+            let numberClass = item.status;
+            let statusText = item.status === 'current'? 'Current' :
+                            item.status === 'visited'? 'Visited' :
+                            item.status === 'closed'? 'Closed' :
+                            item.status === 'closed-note'? 'Closed' :
+                            item.status === 'postponed'? 'Postponed' : 'Pending';
+
+            html += `
+            <div class="route-card ${cardClass}"
+draggable="true"
+data-index="${index}"
+onclick="window.location.href='person.html?id=${item.id}'">
+                <div class="drag-handle">⋮</div>
+                <div class="route-number ${numberClass}">${index+1}</div>
+                <div class="route-info">
+                    <div class="route-name">${item.name}</div>
+                    <div class="route-status ${item.status}">${statusText}</div>
+                    ${item.note? `<div class="route-note">✏️ ${item.note}</div>` : ''}
+                    <div class="actions">
+                        ${item.status!== 'visited'? `<button class="btn-done" onclick="event.stopPropagation();markDone('${item.id}')">✅ تم</button>` : ''}
+
+<button class="btn-closed" onclick="event.stopPropagation();markClosed('${item.id}')">مسدود</button>
+
+<button class="btn-note" onclick="event.stopPropagation();addNote('${item.id}')">✏️ رسالة</button>
+
+<button class="btn-postpone" onclick="event.stopPropagation();postpone('${item.id}')">أجل</button>
+
+<button class="btn-delete" onclick="event.stopPropagation();deleteCustomer('${item.id}')">🗑️</button>
+                    </div>
+                </div>
+            </div>
+            `;
+        });
+    }
+
+    document.getElementById('routeList').innerHTML = html;
+    document.getElementById('pendingCount').innerText = pending;
+    document.getElementById('currentCount').innerText = current;
+    document.getElementById('visitedCount').innerText = visited;
+    document.getElementById('totalCount').innerText = routeList.length;
+
+    // تفعيل السحب والإفلات
+    document.querySelectorAll('.route-card').forEach(card=>{
+        card.addEventListener('dragstart', e=>{
+            draggedItem = e.target;
+            e.target.classList.add('dragging');
+        });
+        card.addEventListener('dragend', e=>{
+            e.target.classList.remove('dragging');
+        });
+        card.addEventListener('dragover', e=>e.preventDefault());
+        card.addEventListener('drop', e=>{
+            e.preventDefault();
+            if(draggedItem && draggedItem!== e.currentTarget){
+                let fromIndex = parseInt(draggedItem.dataset.index);
+                let toIndex = parseInt(e.currentTarget.dataset.index);
+
+                let item = routeList.splice(fromIndex, 1)[0];
+                routeList.splice(toIndex, 0, item);
+
+                saveToFirebase();
+            }
+        });
+    });
+}
+</script>
+</body>
+</html>
