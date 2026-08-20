@@ -29,7 +29,6 @@
 <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo','Tahoma',sans-serif}
     body{background:#f5f7fa;min-height:100vh}
-
  .header{background:linear-gradient(135deg, #00b894 0%, #00cec9 100%);padding:30px 20px 60px;border-radius:0 0 30px 30px;box-shadow:0 4px 20px rgba(0,184,148,0.3);position:relative}
  .header h1{color:white;font-size:28px;text-align:center;margin-bottom:10px}
  .back-btn{position:absolute;top:20px;right:20px;width:45px;height:45px;border-radius:15px;background:rgba(255,255,255,0.2);border:none;color:white;font-size:22px;cursor:pointer;backdrop-filter:blur(10px)}
@@ -52,10 +51,8 @@
  .save-btn:active{transform:scale(0.97);box-shadow:0 2px 8px rgba(0,184,148,0.2)}
  .loading{text-align:center;padding:50px;color:#636e72;font-size:18px}
  .date-label{font-size:12px;color:#74b9ff;margin-top:5px;font-weight:normal}
-
  .paid-input{border:2px solid #ff7675!important;background:#fff5f5!important}
  .received-input{border:2px solid #00b894!important;background:#f0fff4!important}
-
  .history-title{font-size:18px;font-weight:bold;color:#2d3436;margin:25px 0 15px}
  .history-item{background:#f8f9fa;border-right:4px solid #00b894;padding:12px 15px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
  .history-paid{border-right-color:#ff7675!important}
@@ -63,34 +60,29 @@
  .history-paid.history-amount{color:#ff7675}
  .history-received.history-amount{color:#00b894}
  .history-date{font-size:13px;color:#636e72}
-
 .whatsapp-btn{background:#25D366;color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;}
 .confirm-btn{background:#2563eb;color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;}
 
- /* ========== City Select NEW ========== */
- .city-wrapper{position:relative;width:100%;}
- .city-btn{
-    width:100%;padding:16px;border:2px solid #dfe6e9;border-radius:15px;
-    background:#f8f9fa;font-size:16px;font-weight:700;
-    display:flex;justify-content:space-between;align-items:center;
-    cursor:pointer;transition:0.3s;font-family:'Cairo',sans-serif;
+ /* ========== City 3 buttons - person ========== */
+ .city-quick-person{
+    display:flex;gap:8px;margin-top:8px;
  }
- .city-btn:focus{border-color:#00b894;background:white;outline:none;}
- .city-dropdown{
-    position:absolute;top:calc(100% + 6px);left:0;right:0;
-    background:white;border:2px solid #dfe6e9;border-radius:15px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.15);max-height:240px;
-    overflow-y:auto;z-index:1000;display:none;
+ .city-quick-btn-person{
+    flex:1;padding:12px 10px;border-radius:14px;
+    font-size:14px;font-weight:800;
+    border:2px solid #dfe6e9;background:#f8f9fa;
+    color:#636e72;cursor:pointer;transition:0.25s;
+    font-family:'Cairo',sans-serif;
  }
- .city-dropdown.active{display:block;animation:slideUp 0.2s ease;}
- .city-option{
-    padding:12px 16px;cursor:pointer;font-weight:700;font-size:14px;
-    display:flex;justify-content:space-between;align-items:center;
-    border-bottom:1px solid #f0f0f0;transition:0.2s;
+ .city-quick-btn-person:hover{
+    border-color:#00b894;color:#00b894;transform:scale(1.02);
  }
- .city-option:last-child{border-bottom:none;}
- .city-option:hover{background:#f5f7fa;}
- .city-option.selected{background:#00b894;color:white;}
+ .city-quick-btn-person.active-city{
+    background:linear-gradient(135deg,#00b894 0%, #00cec9 100%);
+    color:white;border-color:transparent;
+    box-shadow:0 4px 15px rgba(0,184,148,0.3);
+ }
+ .city-quick-btn-person:active{transform:scale(0.96);}
 </style>
 </head>
 <body>
@@ -117,15 +109,13 @@
             <label class="label">💰 المبلغ الأساسي</label>
             <input type="number" id="amount" class="input" placeholder="0" readonly>
 
-            <label class="label">📍 المدينة / City</label>
-            <div class="city-wrapper" id="cityWrapper">
-                <button type="button" class="city-btn" id="cityBtn" onclick="toggleCityDropdown()">
-                    <span id="cityText">اختر المدينة - Select City</span>
-                    <span>▼</span>
-                </button>
-                <div class="city-dropdown" id="cityDropdown"></div>
-                <input type="hidden" id="cityValue">
+            <label class="label">📍 المدينة / City - اختر واحدة</label>
+            <div class="city-quick-person" id="cityQuickPerson">
+                <button class="city-quick-btn-person" data-city="TanTan" onclick="selectCityPerson('TanTan')">TanTan</button>
+                <button class="city-quick-btn-person" data-city="Ouatia" onclick="selectCityPerson('Ouatia')">Ouatia</button>
+                <button class="city-quick-btn-person" data-city="Gulmim" onclick="selectCityPerson('Gulmim')">Gulmim</button>
             </div>
+            <input type="hidden" id="cityValue">
 
             <label class="label">📅 تاريخ الأداء</label>
             <input type="date" id="date" class="input">
@@ -176,45 +166,17 @@ const content = document.getElementById('content');
 if(!id){alert('خطأ: ما كاينش id');window.location.href = 'index.html';}
 const customerRef = ref(db, 'customers/' + id);
 
-// ========== Cities System NEW ==========
-const DEFAULT_CITIES = ["Gulmim","TanTan","Toronto","ouatia","Laksabi","Sidi Ifni","Tiznit","Agadir","Laayoune","Dakhla"];
+let customerOperations = [];
 let currentCity = "";
 
-function getCitiesForDropdown(){
-    const set = new Set(DEFAULT_CITIES);
-    if(currentCity) set.add(currentCity);
-    return Array.from(set).sort((a,b)=> a.localeCompare(b));
-}
-
-window.toggleCityDropdown = function(){
-    const dd = document.getElementById('cityDropdown');
-    if(dd.classList.contains('active')){ dd.classList.remove('active'); return; }
-    const cities = getCitiesForDropdown();
-    const selected = document.getElementById('cityValue').value;
-    dd.innerHTML = cities.map(c=>`
-        <div class="city-option ${c===selected?'selected':''}" onclick="selectCity('${c.replace(/'/g,"\\'")}')">
-            <span>🏙️ ${c}</span>
-            ${c===selected?'✅':''}
-        </div>
-    `).join('');
-    dd.classList.add('active');
-}
-
-window.selectCity = function(city){
-    document.getElementById('cityValue').value = city;
-    document.getElementById('cityText').textContent = city;
+window.selectCityPerson = function(city){
     currentCity = city;
-    document.getElementById('cityDropdown').classList.remove('active');
+    document.getElementById('cityValue').value = city;
+    document.querySelectorAll('.city-quick-btn-person').forEach(btn=>{
+        if(btn.dataset.city === city) btn.classList.add('active-city');
+        else btn.classList.remove('active-city');
+    });
 }
-
-document.addEventListener('click', (e)=>{
-    const wrapper = document.getElementById('cityWrapper');
-    if(wrapper && !wrapper.contains(e.target)){
-        document.getElementById('cityDropdown').classList.remove('active');
-    }
-});
-
-let customerOperations = [];
 
 function calculateTotal(){
     const amount = parseFloat(document.getElementById('amount').value) || 0;
@@ -241,9 +203,7 @@ function showHistory(data){
         div.className = 'history-item ' + (op.type === 'paid' ? 'history-paid' : 'history-received');
         div.innerHTML = `
 <div>
-    <div class="history-amount">
-        ${op.amount} درهم - ${op.type === 'paid' ? 'دفع' : 'استلام'}
-    </div>
+    <div class="history-amount">${op.amount} درهم - ${op.type === 'paid' ? 'دفع' : 'استلام'}</div>
     <div class="history-date">📅 ${op.date || '--'}</div>
 </div>
 <div style="display:flex;gap:6px">
@@ -270,11 +230,12 @@ get(customerRef).then((snapshot)=>{
         document.getElementById('paid').value = data.paid || '';
         document.getElementById('received').value = data.received || '';
 
-        // City - handle old customers
         const city = data.city || '';
         currentCity = city;
         document.getElementById('cityValue').value = city;
-        document.getElementById('cityText').textContent = city || 'اختر المدينة - Select City';
+        if(city){
+            selectCityPerson(city);
+        }
 
         if(data.paidDate) document.getElementById('paidDate').textContent = 'تاريخ الدفع: ' + data.paidDate;
         if(data.receivedDate) document.getElementById('receivedDate').textContent = 'تاريخ الاستلام: ' + data.receivedDate;
@@ -303,7 +264,7 @@ document.getElementById('saveBtn').addEventListener('click', ()=>{
     const date = document.getElementById('date').value;
     const paid = parseFloat(document.getElementById('paid').value) || 0;
     const received = parseFloat(document.getElementById('received').value) || 0;
-    const city = document.getElementById('cityValue').value || '';
+    const city = document.getElementById('cityValue').value || currentCity || '';
 
     const now = new Date();
     const today = now.toISOString().split('T')[0];
