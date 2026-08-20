@@ -33,132 +33,81 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0f766e;
-            --primary-light: #14b8a6;
+            --primary: #0f766e; --primary-light: #14b8a6;
             --gradient: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #2dd4bf 100%);
-            --accent: #3b82f6;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --success: #22c55e;
-            --bg: #f0fdfd;
-            --card: #ffffff;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --border: #ccfbf1;
-            --shadow-md: 0 4px 15px rgba(15, 118, 110, 0.1);
-            --shadow-lg: 0 10px 30px rgba(15, 118, 110, 0.15);
-            --radius: 18px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --danger: #ef4444; --warning: #f59e0b; --success: #22c55e;
+            --bg: #f0fdfd; --card: #ffffff; --text: #0f172a; --text-muted: #64748b; --border: #ccfbf1;
+            --shadow-md: 0 4px 15px rgba(15, 118, 110, 0.1); --shadow-lg: 0 10px 30px rgba(15, 118, 110, 0.15);
+            --radius: 18px; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        [data-theme="dark"] {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --text: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
+        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --text-muted: #94a3b8; --border: #334155; --shadow-md: 0 4px 15px rgba(0,0,0,0.4); --shadow-lg: 0 10px 30px rgba(0,0,0,0.5); }
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:120px;transition:var(--transition);font-weight:500}
         .header{background:var(--gradient);color:white;padding:35px 20px 25px;text-align:center;border-radius:0 0 35px 35px;box-shadow:var(--shadow-lg);position:sticky;top:0;z-index:100}
         .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
         .header h1{font-size:34px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:12px}
         .icon-btn{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
-        .icon-btn:active{transform:scale(0.9);background:rgba(255,255,255,0.3)}
         .sync-status{background:rgba(255,255,255,0.25);padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px;margin-top:10px}
         .sync-status.online i{color:#4ade80;animation:pulse 2s infinite}
         @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.2)}}
         .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding:24px 20px 10px}
         .stat-card{background:var(--card);padding:24px 15px;border-radius:var(--radius);text-align:center;box-shadow:var(--shadow-md);border:1px solid var(--border);transition:var(--transition);cursor:pointer}
-        .stat-card:active{transform:scale(0.96)}
+        .stat-card.active-stat{border:2px solid var(--primary);background:linear-gradient(135deg,var(--card) 0%,#ccfbf1 100%);transform:scale(0.97)}
         .stat-number{font-size:30px;font-weight:900;color:var(--primary);margin-bottom:6px}
         .stat-label{font-size:13px;color:var(--text-muted);font-weight:700}
-        .stat-card.active-stat{border:2px solid var(--primary);background:linear-gradient(135deg,var(--card) 0%,#ccfbf1 100%);transform:scale(0.97)}
-        [data-theme="dark"] .stat-card.active-stat{background:linear-gradient(135deg,var(--card) 0%,#1e3a3a 100%)}
-        /* Risk Dashboard NEW */
         .risk-dashboard{margin:15px 20px;padding:18px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-md);border:1px solid var(--border)}
         .risk-title{font-size:16px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
         .risk-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
         .risk-card{padding:12px 6px;border-radius:14px;text-align:center;cursor:pointer;border:2px solid transparent;transition:var(--transition);background:var(--bg)}
-        .risk-card:active{transform:scale(0.93)}
         .risk-card.active-risk{border-color:var(--primary);transform:scale(0.97);box-shadow:var(--shadow-md)}
         .risk-emoji{font-size:22px;margin-bottom:4px}
         .risk-count{font-size:18px;font-weight:900;color:var(--text)}
         .risk-label{font-size:10px;font-weight:800;color:var(--text-muted);margin-top:2px}
-        .risk-card.good{background:linear-gradient(135deg,#dcfce7,#bbf7d0)}
-        .risk-card.medium{background:linear-gradient(135deg,#fef9c3,#fde68a)}
-        .risk-card.weak{background:linear-gradient(135deg,#ffedd5,#fed7aa)}
-        .risk-card.veryWeak{background:linear-gradient(135deg,#fecaca,#fca5a5)}
-        .risk-card.dangerous{background:linear-gradient(135deg,#fecaca,#ef4444);animation:shake 2s infinite}
-        [data-theme="dark"] .risk-card.good{background:linear-gradient(135deg,#14532d,#166534)}
-        [data-theme="dark"] .risk-card.medium{background:linear-gradient(135deg,#854d0e,#a16207)}
-        [data-theme="dark"] .risk-card.weak{background:linear-gradient(135deg,#9a3412,#c2410c)}
-        [data-theme="dark"] .risk-card.veryWeak{background:linear-gradient(135deg,#991b1b,#dc2626)}
-        [data-theme="dark"] .risk-card.dangerous{background:linear-gradient(135deg,#7f1d1d,#b91c1c)}
-        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-1px)}75%{transform:translateX(1px)}}
         .daily-alert{margin:0 20px 12px;padding:14px 16px;background:linear-gradient(135deg,#fef2f2,#fecaca);border:2px solid #fca5a5;border-radius:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
         [data-theme="dark"] .daily-alert{background:linear-gradient(135deg,#450a0a,#7f1d1d);border-color:#dc2626;color:white}
         .actions-row{padding:15px 20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
         .action-btn{background:var(--card);border:2px solid var(--border);padding:16px 14px;border-radius:var(--radius);font-family:'Cairo',sans-serif;font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:var(--transition);color:var(--text);box-shadow:var(--shadow-md)}
         .action-btn.primary{background:var(--gradient);color:white;border-color:transparent}
-        .action-btn:active{transform:scale(0.95)}
         .search-wrapper{position:relative;margin:0 20px 15px}
         .search-box{background:var(--card);padding:14px 18px;border-radius:var(--radius);box-shadow:var(--shadow-md);display:flex;align-items:center;gap:10px;border:2px solid var(--border)}
         .search-box input{border:none;outline:none;flex:1;font-family:'Cairo',sans-serif;font-size:15px;background:transparent;color:var(--text)}
-        .search-suggestions{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--card);border:2px solid var(--border);border-radius:18px;box-shadow:var(--shadow-lg);max-height:380px;overflow-y:auto;z-index:500;display:none;animation:slideUp 0.25s ease-out}
+        .search-suggestions{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--card);border:2px solid var(--border);border-radius:18px;box-shadow:var(--shadow-lg);max-height:380px;overflow-y:auto;z-index:500;display:none}
         .search-suggestions.active{display:block}
-        .suggestion-item{padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;border-bottom:1px solid var(--border);transition:var(--transition)}
-        .suggestion-item:last-child{border-bottom:none}
-        .suggestion-item:hover{background:var(--bg)}
+        .suggestion-item{padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;border-bottom:1px solid var(--border)}
         .suggestion-avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#e2e8f0 0%,#cbd5e1 100%);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--primary);flex-shrink:0}
-        .suggestion-info{flex:1;min-width:0}
-        .suggestion-name{font-size:16px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
-        .suggestion-amount{font-size:14px;font-weight:700;color:var(--primary)}
-        .suggestion-risk{font-size:12px;font-weight:700}
-        .suggestion-empty{padding:20px;text-align:center;color:var(--text-muted);font-weight:700;font-size:14px}
         .filter-tabs{display:flex;gap:8px;padding:15px 20px;overflow-x:auto;scrollbar-width:none}
         .filter-tabs::-webkit-scrollbar{display:none}
-        .filter-tab{background:var(--card);border:2px solid var(--border);padding:10px 18px;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:var(--transition);color:var(--text-muted)}
+        .filter-tab{background:var(--card);border:2px solid var(--border);padding:10px 18px;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;color:var(--text-muted)}
         .filter-tab.active{background:var(--gradient);color:white;border-color:transparent}
         .customers-list{padding:0 20px;display:flex;flex-direction:column;gap:14px}
-        .customer-card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-md);border:1px solid var(--border);transition:var(--transition);cursor:pointer;animation:slideUp 0.4s ease-out backwards}
+        .customer-card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-md);border:1px solid var(--border);cursor:pointer;animation:slideUp 0.4s ease-out backwards;transition:var(--transition)}
         @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-        .customer-card:active{transform:scale(0.98)}
         .customer-card.overdue{border-right:5px solid var(--danger)}
-        .customer-header{display:flex;gap:14px;margin-bottom:12px}
-        .customer-avatar{width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,#e2e8f0 0%,#cbd5e1 100%);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:var(--primary)}
-        .customer-info{flex:1}
-        .customer-name{font-size:19px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:8px}
-        .customer-amount{font-size:22px;font-weight:900;color:var(--primary);margin-bottom:8px}
-        .customer-meta{display:flex;gap:12px;font-size:13px;color:var(--text-muted);flex-wrap:wrap}
+        .customer-header{display:flex;gap:14px;margin-bottom:10px}
+        .customer-avatar{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#e2e8f0 0%,#cbd5e1 100%);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--primary);flex-shrink:0}
+        .customer-info{flex:1;min-width:0}
+        .customer-name{font-size:18px;font-weight:800;margin-bottom:2px;display:flex;align-items:center;gap:8px}
+        .customer-city{font-size:12px;color:var(--text-muted);font-weight:700;margin-bottom:6px}
+        .customer-amount{font-size:22px;font-weight:900;color:var(--primary);margin-bottom:6px}
+        .customer-meta{display:flex;gap:10px;font-size:12px;color:var(--text-muted);flex-wrap:wrap;margin-bottom:8px}
         .risk-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800}
         .risk-badge.good{background:#dcfce7;color:#166534}
         .risk-badge.medium{background:#fef9c3;color:#854d0e}
         .risk-badge.weak{background:#ffedd5;color:#9a3412}
         .risk-badge.veryWeak{background:#fecaca;color:#991b1b}
         .risk-badge.dangerous{background:#ef4444;color:white}
-        [data-theme="dark"] .risk-badge.good{background:#14532d;color:#bbf7d0}
-        [data-theme="dark"] .risk-badge.medium{background:#713f12;color:#fde68a}
-        [data-theme="dark"] .risk-badge.weak{background:#7c2d12;color:#fed7aa}
-        [data-theme="dark"] .risk-badge.veryWeak{background:#7f1d1d;color:#fecaca}
-        .debt-summary{font-size:12px;color:var(--text-muted);margin-top:6px;font-weight:700}
-        .customer-actions{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;gap:8px;margin-top:14px}
-        .btn{padding:12px 16px;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:var(--transition)}
-        .btn:active{transform:scale(0.95)}
+        .debt-mini-list{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+        .debt-mini{font-size:11px;font-weight:700;color:var(--text-muted);background:var(--bg);padding:5px 10px;border-radius:20px;display:inline-flex;gap:6px;align-items:center;width:fit-content;max-width:100%}
+        .customer-actions{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;margin-top:12px}
+        .btn{padding:11px 14px;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
         .btn-profile{background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);color:white}
-        .btn-collect{background:linear-gradient(135deg,var(--success) 0%,#16a34a 100%);color:white}
         .btn-delete{background:linear-gradient(135deg,var(--danger) 0%,#dc2626 100%);color:white}
-        .btn-edit-name{background:linear-gradient(135deg,#f59e0b 0%,#ea580c 100%);color:white}
-        .btn-edit-amount{background:linear-gradient(135deg,#22c55e 0%,#15803d 100%);color:white}
-        .btn-edit-phone{background:linear-gradient(135deg,#06b6d4 0%,#2563eb 100%);color:white}
         .btn-calendar{background:linear-gradient(135deg,#14b8a6 0%,#0f766e 100%);color:white}
-        .fab{position:fixed;bottom:30px;left:30px;width:65px;height:65px;border-radius:50%;background:var(--gradient);color:white;border:none;font-size:32px;cursor:pointer;box-shadow:0 10px 30px rgba(15,118,110,0.4);display:flex;align-items:center;justify-content:center;z-index:999;transition:var(--transition)}
-        .fab:active{transform:scale(0.9)}
+        .btn-phone{background:linear-gradient(135deg,#06b6d4 0%,#2563eb 100%);color:white}
+        .fab{position:fixed;bottom:30px;left:30px;width:65px;height:65px;border-radius:50%;background:var(--gradient);color:white;border:none;font-size:32px;cursor:pointer;box-shadow:0 10px 30px rgba(15,118,110,0.4);display:flex;align-items:center;justify-content:center;z-index:999}
         .modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:1000;backdrop-filter:blur(8px)}
         .modal.active{display:flex;align-items:center;justify-content:center;padding:20px}
-        .modal-content{background:var(--card);border-radius:25px;padding:30px 25px;width:100%;max-width:450px;box-shadow:var(--shadow-lg);animation:slideUpModal 0.3s}
-        @keyframes slideUpModal{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
+        .modal-content{background:var(--card);border-radius:25px;padding:30px 25px;width:100%;max-width:450px;box-shadow:var(--shadow-lg)}
         .form-group{margin-bottom:20px}
         .form-label{display:block;font-size:14px;font-weight:700;margin-bottom:8px}
         .form-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-family:'Cairo',sans-serif;font-size:15px;background:var(--bg);color:var(--text)}
@@ -168,59 +117,52 @@
         .toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-150px);background:var(--card);padding:14px 20px;border-radius:14px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;font-weight:700;z-index:2000;transition:transform 0.3s}
         .toast.show{transform:translateX(-50%) translateY(0)}
         .empty-state{text-align:center;padding:60px 20px;color:var(--text-muted)}
-        .empty-icon{font-size:64px;margin-bottom:15px;opacity:0.3}
-        .city-quick{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
-        .city-quick-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:800;border:2px solid var(--border);background:var(--card);color:var(--text-muted);cursor:pointer;transition:var(--transition);font-family:'Cairo',sans-serif}
-        .city-quick-btn:hover{border-color:var(--primary-light);color:var(--primary);transform:scale(1.05)}
-        .city-quick-btn.active-city-btn{background:var(--gradient);color:white;border-color:transparent;box-shadow:0 4px 12px rgba(15,118,110,0.3)}
-        .city-quick-btn:active{transform:scale(0.93)}
-        .city-filter-item{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-bottom:1px solid var(--border);transition:var(--transition);font-weight:700}
-        .city-filter-item:hover{background:var(--bg)}
+        .city-quick{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+        .city-quick-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800;border:2px solid var(--border);background:var(--card);color:var(--text-muted);cursor:pointer;font-family:'Cairo',sans-serif}
+        .city-quick-btn.active-city-btn{background:var(--gradient);color:white;border-color:transparent}
+        .city-filter-item{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-bottom:1px solid var(--border);font-weight:700}
         .city-filter-item.active-city{background:var(--gradient);color:white}
         .city-count{background:var(--bg);color:var(--text-muted);padding:2px 10px;border-radius:20px;font-size:12px;font-weight:800}
-        .city-filter-item.active-city .city-count{background:rgba(255,255,255,0.25);color:white}
-        @media (max-width:380px){.stats-grid{grid-template-columns:1fr}.risk-grid{grid-template-columns:repeat(3,1fr)}}
+        @media (max-width:380px){.stats-grid{grid-template-columns:1fr}}
         @media (min-width:768px){body{max-width:600px;margin:0 auto}}
     </style>
 </head>
 <body>
     <header class="header">
         <div class="header-top">
-            <button class="icon-btn" onclick="toggleTheme()" title="تبديل الوضع"><i class="fas fa-moon" id="themeIcon"></i></button>
+            <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
             <h1><span>📓</span> Karni Pro</h1>
-            <button class="icon-btn" onclick="openReportsPage()" title="التقارير"><i class="fas fa-chart-bar"></i></button>
+            <button class="icon-btn" onclick="openReportsPage()"><i class="fas fa-chart-bar"></i></button>
         </div>
         <div class="sync-status online" id="syncStatus"><i class="fas fa-circle"></i> جاري الاتصال بـ Firebase...</div>
     </header>
 
     <div class="stats-grid">
-        <div class="stat-card" onclick="filterByStatus('all')" title="عرض الكل"><div class="stat-number"><span id="totalAmount">0</span> درهم</div><div class="stat-label">💰 المبلغ الإجمالي</div></div>
-        <div class="stat-card" id="statCustomers" onclick="filterByStatus('all')" title="عرض جميع الزبناء"><div class="stat-number" id="totalCustomers">0</div><div class="stat-label">👥 الزبناء</div></div>
-        <div class="stat-card" id="statOverdue" onclick="filterByStatus('overdue')" title="عرض المتأخرين"><div class="stat-number" id="overdueCount">0</div><div class="stat-label">🔴 متأخر</div></div>
-        <div class="stat-card" id="statToday" onclick="filterByStatus('today')" title="عرض زبناء اليوم"><div class="stat-number" id="todayCount">0</div><div class="stat-label">🟢 اليوم</div></div>
-        <div class="stat-card" id="statUpcoming" onclick="filterByStatus('upcoming')" title="عرض القادمين" style="grid-column: span 2;"><div class="stat-number" id="upcomingCount">0</div><div class="stat-label">🔵 قادم</div></div>
+        <div class="stat-card" onclick="filterByStatus('all')"><div class="stat-number"><span id="totalAmount">0</span> درهم</div><div class="stat-label">💰 المبلغ الإجمالي</div></div>
+        <div class="stat-card" id="statCustomers" onclick="filterByStatus('all')"><div class="stat-number" id="totalCustomers">0</div><div class="stat-label">👥 الزبناء</div></div>
+        <div class="stat-card" id="statOverdue" onclick="filterByStatus('overdue')"><div class="stat-number" id="overdueCount">0</div><div class="stat-label">🔴 متأخر</div></div>
+        <div class="stat-card" id="statToday" onclick="filterByStatus('today')"><div class="stat-number" id="todayCount">0</div><div class="stat-label">🟢 اليوم</div></div>
+        <div class="stat-card" id="statUpcoming" onclick="filterByStatus('upcoming')" style="grid-column: span 2;"><div class="stat-number" id="upcomingCount">0</div><div class="stat-label">🔵 قادم</div></div>
     </div>
 
-    <!-- Risk Dashboard NEW -->
     <div class="risk-dashboard">
-        <div class="risk-title"><i class="fas fa-shield-alt" style="color:var(--primary)"></i> لوحة المخاطر الذكية - Smart Risk</div>
+        <div class="risk-title"><i class="fas fa-shield-alt" style="color:var(--primary)"></i> لوحة المخاطر الذكية</div>
         <div class="risk-grid">
-            <div class="risk-card good" id="riskGood" onclick="filterByRisk('good')"><div class="risk-emoji">🟢</div><div class="risk-count" id="countGood">0</div><div class="risk-label">جيد</div></div>
-            <div class="risk-card medium" id="riskMedium" onclick="filterByRisk('medium')"><div class="risk-emoji">🟡</div><div class="risk-count" id="countMedium">0</div><div class="risk-label">متوسط</div></div>
-            <div class="risk-card weak" id="riskWeak" onclick="filterByRisk('weak')"><div class="risk-emoji">🟠</div><div class="risk-count" id="countWeak">0</div><div class="risk-label">ضعيف</div></div>
-            <div class="risk-card veryWeak" id="riskVeryWeak" onclick="filterByRisk('veryWeak')"><div class="risk-emoji">🔴</div><div class="risk-count" id="countVeryWeak">0</div><div class="risk-label">ضعيف جدا</div></div>
-            <div class="risk-card dangerous" id="riskDangerous" onclick="filterByRisk('dangerous')"><div class="risk-emoji">🚨</div><div class="risk-count" id="countDangerous">0</div><div class="risk-label">خطر</div></div>
+            <div class="risk-card" id="riskGood" onclick="filterByRisk('good')"><div class="risk-emoji">🟢</div><div class="risk-count" id="countGood">0</div><div class="risk-label">جيد</div></div>
+            <div class="risk-card" id="riskMedium" onclick="filterByRisk('medium')"><div class="risk-emoji">🟡</div><div class="risk-count" id="countMedium">0</div><div class="risk-label">متوسط</div></div>
+            <div class="risk-card" id="riskWeak" onclick="filterByRisk('weak')"><div class="risk-emoji">🟠</div><div class="risk-count" id="countWeak">0</div><div class="risk-label">ضعيف</div></div>
+            <div class="risk-card" id="riskVeryWeak" onclick="filterByRisk('veryWeak')"><div class="risk-emoji">🔴</div><div class="risk-count" id="countVeryWeak">0</div><div class="risk-label">ضعيف جدا</div></div>
+            <div class="risk-card" id="riskDangerous" onclick="filterByRisk('dangerous')"><div class="risk-emoji">🚨</div><div class="risk-count" id="countDangerous">0</div><div class="risk-label">خطر</div></div>
         </div>
     </div>
 
     <div id="dailyAlert" class="daily-alert" style="display:none" onclick="filterByRisk('dangerous')">
-        <div style="display:flex;align-items:center;gap:10px"><i class="fas fa-exclamation-triangle" style="color:#ef4444"></i><div><div style="font-weight:800;font-size:14px" id="alertTitle">تنبيه</div><div style="font-size:12px" id="alertDesc"></div></div></div>
-        <i class="fas fa-chevron-left"></i>
+        <div style="display:flex;align-items:center;gap:10px"><i class="fas fa-exclamation-triangle" style="color:#ef4444"></i><div><div style="font-weight:800;font-size:14px" id="alertTitle">تنبيه</div><div style="font-size:12px" id="alertDesc"></div></div></div><i class="fas fa-chevron-left"></i>
     </div>
 
     <div class="actions-row">
-        <button class="action-btn primary" onclick="openCalendar()"><i class="fas fa-calendar-alt"></i> Calendar - المواعيد</button>
-        <button class="action-btn" onclick="openRoute()"><i class="fas fa-route"></i> Route - المسار</button>
+        <button class="action-btn primary" onclick="openCalendar()"><i class="fas fa-calendar-alt"></i> Calendar</button>
+        <button class="action-btn" onclick="openRoute()"><i class="fas fa-route"></i> Route</button>
     </div>
 
     <div class="search-wrapper" id="searchWrapper">
@@ -237,43 +179,18 @@
         <button class="filter-tab" id="riskFilterTab" onclick="filterByRisk('all')" style="display:none"><i class="fas fa-filter"></i> <span id="riskFilterText"></span> ✕</button>
     </div>
 
-    <div class="customers-list" id="customersList"><div class="empty-state"><div class="empty-icon">📋</div><p>جاري تحميل الزبناء من Firebase...</p></div></div>
+    <div class="customers-list" id="customersList"><div class="empty-state"><div style="font-size:64px;opacity:0.3">📋</div><p>جاري التحميل...</p></div></div>
     <button class="fab" onclick="showAddModal()">+</button>
 
-    <div class="modal" id="cityFilterModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom:20px; font-size:22px; display:flex; align-items:center; gap:8px;"><i class="fas fa-city" style="color:var(--primary)"></i> اختر المدينة</h3>
-            <div id="cityFilterList" style="max-height:350px; overflow-y:auto; border:2px solid var(--border); border-radius:14px;"></div>
-            <div class="form-buttons" style="margin-top:15px;">
-                <button class="btn btn-save" onclick="filterByCity('all')"><i class="fas fa-sync"></i> 🔄 All - الكل</button>
-                <button class="btn btn-cancel" onclick="closeCityFilter()"><i class="fas fa-times"></i> إغلاق</button>
-            </div>
-        </div>
-    </div>
+    <div class="modal" id="cityFilterModal"><div class="modal-content"><h3 style="margin-bottom:20px;font-size:22px"><i class="fas fa-city" style="color:var(--primary)"></i> اختر المدينة</h3><div id="cityFilterList" style="max-height:350px;overflow-y:auto;border:2px solid var(--border);border-radius:14px"></div><div class="form-buttons" style="margin-top:15px"><button class="btn btn-save" onclick="filterByCity('all')">🔄 الكل</button><button class="btn btn-cancel" onclick="closeCityFilter()">إغلاق</button></div></div></div>
 
-    <div class="modal" id="customerModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 20px; font-size: 22px;">إضافة زبون جديد</h3>
-            <form id="customerForm" onsubmit="saveCustomer(event)">
-                <input type="hidden" id="customerId">
-                <div class="form-group"><label class="form-label">اسم الزبون *</label><input type="text" class="form-input" id="customerName" required></div>
-                <div class="form-group"><label class="form-label">رقم الهاتف</label><input type="tel" class="form-input" id="customerPhone"></div>
-                <div class="form-group"><label class="form-label">المبلغ *</label><input type="number" class="form-input" id="customerAmount" required></div>
-                <div class="form-group"><label class="form-label">تاريخ الاستحقاق *</label><input type="date" class="form-input" id="customerDate" required></div>
-                <div class="form-buttons">
-                    <button type="submit" class="btn btn-save"><i class="fas fa-save"></i> حفظ</button>
-                    <button type="button" class="btn btn-cancel" onclick="closeModal()"><i class="fas fa-times"></i> إلغاء</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <div class="modal" id="customerModal"><div class="modal-content"><h3 style="margin-bottom:20px;font-size:22px">إضافة زبون جديد</h3><form id="customerForm" onsubmit="saveCustomer(event)"><input type="hidden" id="customerId"><div class="form-group"><label class="form-label">اسم الزبون *</label><input type="text" class="form-input" id="customerName" required></div><div class="form-group"><label class="form-label">رقم الهاتف</label><input type="tel" class="form-input" id="customerPhone"></div><div class="form-group"><label class="form-label">المبلغ *</label><input type="number" class="form-input" id="customerAmount" required></div><div class="form-group"><label class="form-label">تاريخ الاستحقاق *</label><input type="date" class="form-input" id="customerDate" required></div><div class="form-buttons"><button type="submit" class="btn btn-save"><i class="fas fa-save"></i> حفظ</button><button type="button" class="btn btn-cancel" onclick="closeModal()">إلغاء</button></div></form></div></div>
 
     <div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMessage">تم الحفظ</span></div>
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getDatabase, ref, onValue, set, push, remove, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-
         const firebaseConfig = {
           apiKey: "AIzaSyBCVOOouLET3GDGyHj2i7ncvUZBjUUVB7Y",
           authDomain: "karni-b9b34.firebaseapp.com",
@@ -292,7 +209,6 @@
         let currentRiskFilter = 'all';
         let currentSearchQuery = '';
         let searchTimer;
-
         const DEFAULT_CITIES = ["TanTan", "Ouatia", "Gulmim"];
         const RISK_LEVELS = {
             good:{emoji:'🟢',label:'جيد',css:'good',score:1},
@@ -302,125 +218,39 @@
             dangerous:{emoji:'🚨',label:'خطر',css:'dangerous',score:5},
             paid:{emoji:'✅',label:'مسدد',css:'good',score:0}
         };
-
-        // ===== SMART ENGINE =====
-        function toDateObj(str){
-            if(!str) return null;
-            const d = new Date(str);
-            if(isNaN(d)) return null;
-            d.setHours(0,0,0,0);
-            return d;
-        }
-        function daysBetween(a,b){
-            const da = toDateObj(a);
-            const db = toDateObj(b);
-            if(!da||!db) return null;
-            return Math.floor((db-da)/86400000);
-        }
-        function addDays(dateStr, days){
-            const d = toDateObj(dateStr);
-            if(!d) return null;
-            d.setDate(d.getDate()+days);
-            return d.toISOString().split('T')[0];
-        }
-        function getOpsArray(customer){
-            const ops = customer.operations || [];
-            let arr = Array.isArray(ops) ? ops : Object.values(ops);
-            return arr.filter(o=>o).sort((a,b)=> new Date(a.date||0)-new Date(b.date||0));
-        }
+        function toDateObj(str){ if(!str) return null; const d=new Date(str); if(isNaN(d)) return null; d.setHours(0,0,0,0); return d; }
+        function addDays(dateStr, days){ const d=toDateObj(dateStr); if(!d) return null; d.setDate(d.getDate()+days); return d.toISOString().split('T')[0]; }
+        function daysBetween(a,b){ const da=toDateObj(a), db=toDateObj(b); if(!da||!db) return null; return Math.floor((db-da)/86400000); }
+        function getOpsArray(customer){ const ops = customer.operations || []; let arr = Array.isArray(ops) ? ops : Object.values(ops); return arr.filter(o=>o).sort((a,b)=> new Date(a.date||0)-new Date(b.date||0)); }
         function getCustomerAvgInterval(customer){
             const ops = getOpsArray(customer).filter(o=>o.type==='received');
             if(ops.length < 2) return 14;
-            let intervals = [];
-            for(let i=1;i<ops.length;i++){
-                const diff = daysBetween(ops[i-1].date, ops[i].date);
-                if(diff!==null && diff>0 && diff<90) intervals.push(diff);
-            }
-            if(intervals.length===0) return 14;
-            // trimmed average to avoid outliers
-            intervals.sort((a,b)=>a-b);
-            // remove extremes if many
-            if(intervals.length>4){
-                intervals = intervals.slice(1,-1);
-            }
-            const avg = intervals.reduce((s,v)=>s+v,0)/intervals.length;
-            return Math.max(3, Math.round(avg));
+            let intervals = []; for(let i=1;i<ops.length;i++){ const diff = daysBetween(ops[i-1].date, ops[i].date); if(diff!==null && diff>0 && diff<90) intervals.push(diff); }
+            if(intervals.length===0) return 14; intervals.sort((a,b)=>a-b); if(intervals.length>4) intervals = intervals.slice(1,-1);
+            const avg = intervals.reduce((s,v)=>s+v,0)/intervals.length; return Math.max(3, Math.round(avg));
         }
         function ensureDebts(customer){
-            // if already has debts with smart structure, recalc remaining
             if(customer.debts && Array.isArray(customer.debts) && customer.debts.length>0){
-                return customer.debts.map(d=>{
-                    const pays = d.payments||[];
-                    const sum = pays.reduce((s,p)=>s+Number(p.amount||0),0);
-                    const rem = Math.max(0, (Number(d.originalAmount)||0)-sum);
-                    return {...d, remainingAmount: rem, payments:pays, startDate: d.startDate||customer.date, originalAmount: Number(d.originalAmount)||0};
-                });
+                return customer.debts.map(d=>{ const pays = d.payments||[]; const sum = pays.reduce((s,p)=>s+Number(p.amount||0),0); const rem = Math.max(0, (Number(d.originalAmount)||0)-sum); return {...d, remainingAmount: rem, payments:pays, startDate: d.startDate||customer.date, originalAmount: Number(d.originalAmount)||0}; });
             }
-            // migrate legacy
-            let debts = [];
-            const base = parseFloat(customer.amount)||0;
-            if(base>0){
-                debts.push({
-                    id: 'debt_'+(customer.id||'legacy')+'_base',
-                    originalAmount: base,
-                    startDate: customer.date || customer.paymentDate || (customer.createdAt? customer.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]),
-                    payments: [],
-                    createdAt: customer.createdAt || new Date().toISOString(),
-                    expectedDate: null
-                });
-            }
+            let debts = []; const base = parseFloat(customer.amount)||0;
+            if(base>0){ debts.push({ id: 'debt_'+(customer.id||'legacy')+'_base', originalAmount: base, startDate: customer.date || customer.paymentDate || (customer.createdAt? customer.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]), payments: [], createdAt: customer.createdAt || new Date().toISOString(), expectedDate: null }); }
             const ops = getOpsArray(customer);
-            // create debts for each paid (increase)
-            ops.forEach((op, idx)=>{
-                if(op.type==='paid' && Number(op.amount)>0){
-                    debts.push({
-                        id: 'debt_'+(customer.id||'c')+'_paid_'+idx+'_'+Date.now(),
-                        originalAmount: Number(op.amount),
-                        startDate: op.date || customer.date,
-                        payments: [],
-                        createdAt: op.date || new Date().toISOString(),
-                        expectedDate: null
-                    });
-                }
-            });
-            if(debts.length===0){
-                // if no base but has operations, create empty to avoid crash
-                debts.push({
-                    id: 'debt_empty_'+Date.now(),
-                    originalAmount: 0,
-                    startDate: new Date().toISOString().split('T')[0],
-                    payments: [],
-                    createdAt: new Date().toISOString()
-                });
-            }
+            ops.forEach((op, idx)=>{ if(op.type==='paid' && Number(op.amount)>0){ debts.push({ id: 'debt_'+(customer.id||'c')+'_paid_'+idx+'_'+Date.now(), originalAmount: Number(op.amount), startDate: op.date || customer.date, payments: [], createdAt: op.date || new Date().toISOString(), expectedDate: null }); } });
+            if(debts.length===0){ debts.push({ id: 'debt_empty_'+Date.now(), originalAmount: 0, startDate: new Date().toISOString().split('T')[0], payments: [], createdAt: new Date().toISOString() }); }
             debts.sort((a,b)=> new Date(a.startDate)-new Date(b.startDate));
             const received = ops.filter(o=>o.type==='received' && Number(o.amount)>0).sort((a,b)=> new Date(a.date)-new Date(b.date));
-            received.forEach(rec=>{
-                let left = Number(rec.amount);
-                for(let debt of debts){
-                    if(left<=0) break;
-                    const paidSum = (debt.payments||[]).reduce((s,p)=>s+Number(p.amount),0);
-                    const rem = debt.originalAmount - paidSum;
-                    if(rem<=0) continue;
-                    const take = Math.min(rem, left);
-                    debt.payments.push({amount: take, date: rec.date, time: rec.time||''});
-                    left -= take;
-                }
-            });
-            debts.forEach(d=>{
-                const sum = (d.payments||[]).reduce((s,p)=>s+Number(p.amount),0);
-                d.remainingAmount = Math.max(0, d.originalAmount - sum);
-            });
+            received.forEach(rec=>{ let left = Number(rec.amount); for(let debt of debts){ if(left<=0) break; const paidSum = (debt.payments||[]).reduce((s,p)=>s+Number(p.amount),0); const rem = debt.originalAmount - paidSum; if(rem<=0) continue; const take = Math.min(rem, left); debt.payments.push({amount: take, date: rec.date, time: rec.time||''}); left -= take; } });
+            debts.forEach(d=>{ const sum = (d.payments||[]).reduce((s,p)=>s+Number(p.amount),0); d.remainingAmount = Math.max(0, d.originalAmount - sum); });
             return debts;
         }
+        // === FIXED RISK LOGIC: Good impossible if overdue ===
         function calcDebtRisk(debt, avgInterval){
             const remaining = Number(debt.remainingAmount||0);
             const original = Number(debt.originalAmount||0);
-            if(remaining<=0.5) return {level:'paid', ...RISK_LEVELS.paid, daysLate:0, remaining, original, pct:0};
-            // determine expectedDate
+            if(remaining<=0.5) return {level:'paid', ...RISK_LEVELS.paid, daysLate:0, remaining, original, pct:0, expectedDate: debt.expectedDate};
             let expectedStr = debt.expectedDate;
             if(!expectedStr){
-                // last payment date or startDate + avg
                 const lastPay = (debt.payments && debt.payments.length>0) ? debt.payments[debt.payments.length-1].date : null;
                 const baseDate = lastPay || debt.startDate;
                 expectedStr = addDays(baseDate, avgInterval||14) || debt.startDate;
@@ -429,286 +259,171 @@
             const exp = toDateObj(expectedStr);
             let daysLate = 0;
             if(exp) daysLate = Math.floor((today-exp)/86400000);
-            const pct = original>0 ? remaining/original : 1;
-            let level = 'good';
+            // GOLDEN RULE: if Remaining>0 and Today>Expected => cannot be Good
+            let level;
             if(daysLate<=0) level='good';
-            else if(daysLate<=7) level='medium';
-            else if(daysLate<=14) level='weak';
-            else if(daysLate<=30) level='veryWeak';
+            else if(daysLate>=1 && daysLate<=6) level='medium';
+            else if(daysLate>=7 && daysLate<=14) level='weak';
+            else if(daysLate>=15 && daysLate<=29) level='veryWeak';
             else level='dangerous';
-            // boost if high remaining and late
-            if(pct>0.7 && daysLate>14 && level==='weak') level='veryWeak';
-            if(pct>0.5 && daysLate>21 && level!=='dangerous') level='dangerous';
-            if(pct<0.15 && daysLate>0 && daysLate<=14) {
-                // small remaining downgrade one level
-                if(level==='veryWeak') level='weak';
-                else if(level==='weak') level='medium';
-            }
-            return {level, ...RISK_LEVELS[level], daysLate, remaining, original, pct, expectedDate: expectedStr};
+            return {level, ...RISK_LEVELS[level], daysLate, remaining, original, pct: original>0? remaining/original:1, expectedDate: expectedStr};
         }
         function getCustomerSmartData(customer){
             const avg = getCustomerAvgInterval(customer);
             const debts = ensureDebts(customer);
             let enriched = debts.map(d=>{
-                // ensure expectedDate calculated
                 if(!d.expectedDate){
                     const lastPay = (d.payments && d.payments.length>0) ? d.payments[d.payments.length-1].date : null;
                     const base = lastPay || d.startDate;
                     d.expectedDate = addDays(base, avg) || d.startDate;
                 }
                 const risk = calcDebtRisk(d, avg);
-                d.risk = risk;
-                d.daysLate = risk.daysLate;
-                return d;
+                d.risk = risk; d.daysLate = risk.daysLate; return d;
             });
             const totalRemaining = enriched.reduce((s,d)=>s+Number(d.remainingAmount||0),0);
             const unpaid = enriched.filter(d=>d.remainingAmount>0.5);
             const paid = enriched.filter(d=>d.remainingAmount<=0.5);
-            // worst risk among unpaid
             let worst = {level:'good',score:0, ...RISK_LEVELS.good};
             let worstScore = 0;
-            unpaid.forEach(d=>{
-                if(d.risk.score>worstScore){worstScore=d.risk.score; worst=d.risk;}
-            });
-            // status flags for Today/Overdue/Upcoming
+            unpaid.forEach(d=>{ if(d.risk.score>worstScore){worstScore=d.risk.score; worst=d.risk;} });
             const todayStr = new Date().toISOString().split('T')[0];
             const hasToday = enriched.some(d=> d.remainingAmount>0.5 && d.expectedDate===todayStr);
             const hasOverdue = enriched.some(d=> d.remainingAmount>0.5 && d.risk.daysLate>0);
             const hasUpcoming = enriched.some(d=> d.remainingAmount>0.5 && d.risk.daysLate<=0);
-            return {debts: enriched, totalRemaining, unpaidCount: unpaid.length, paidCount: paid.length, worstRisk: worst, avgInterval: avg, hasToday, hasOverdue, hasUpcoming};
+            // next payment = earliest expected among unpaid
+            let nextDate = null;
+            if(unpaid.length>0){
+                const sorted = [...unpaid].sort((a,b)=> new Date(a.expectedDate)-new Date(b.expectedDate));
+                nextDate = sorted[0].expectedDate;
+            }
+            return {debts: enriched, totalRemaining, unpaidCount: unpaid.length, paidCount: paid.length, worstRisk: worst, avgInterval: avg, hasToday, hasOverdue, hasUpcoming, nextPaymentDate: nextDate};
         }
-
-        // ===== existing functions adapted =====
         function getAllCities(){return [...DEFAULT_CITIES];}
         function getCityCounts(filteredCustomers = null){
             const source = filteredCustomers || allCustomers;
             const counts = {"TanTan":0,"Ouatia":0,"Gulmim":0};
-            Object.values(source).forEach(c=>{
-                const city = (c.city||'').trim();
-                if(!city) return;
-                const normalized = DEFAULT_CITIES.find(dc=> dc.toLowerCase()===city.toLowerCase());
-                const key = normalized || city;
-                if(counts.hasOwnProperty(key)) counts[key]++;
-            });
+            Object.values(source).forEach(c=>{ const city = (c.city||'').trim(); if(!city) return; const normalized = DEFAULT_CITIES.find(dc=> dc.toLowerCase()===city.toLowerCase()); const key = normalized || city; if(counts.hasOwnProperty(key)) counts[key]++; });
             return counts;
         }
-
         function applyAllFilters(){
             let filtered = {...allCustomers};
             if(currentSearchQuery){
                 const q = currentSearchQuery.toLowerCase();
-                const temp = {};
-                Object.keys(filtered).forEach(key=>{
-                    const name = (filtered[key].name||'').toLowerCase();
-                    if(name.includes(q)) temp[key]=filtered[key];
-                });
-                filtered = temp;
+                const temp = {}; Object.keys(filtered).forEach(key=>{ const name = (filtered[key].name||'').toLowerCase(); if(name.includes(q)) temp[key]=filtered[key]; }); filtered = temp;
             }
             if(currentCityFilter !== 'all'){
-                const temp = {};
-                Object.keys(filtered).forEach(key=>{
-                    const city = (filtered[key].city||'').trim().toLowerCase();
-                    if(city === currentCityFilter.toLowerCase()) temp[key]=filtered[key];
-                });
-                filtered = temp;
+                const temp = {}; Object.keys(filtered).forEach(key=>{ const city = (filtered[key].city||'').trim().toLowerCase(); if(city === currentCityFilter.toLowerCase()) temp[key]=filtered[key]; }); filtered = temp;
             }
             if(currentStatusFilter !== 'all'){
-                const today = new Date().toISOString().split('T')[0];
-                const temp = {};
-                Object.keys(filtered).forEach(key=>{
-                    const sd = getCustomerSmartData(filtered[key]);
-                    if(currentStatusFilter==='today' && sd.hasToday) temp[key]=filtered[key];
-                    else if(currentStatusFilter==='overdue' && sd.hasOverdue) temp[key]=filtered[key];
-                    else if(currentStatusFilter==='upcoming' && sd.hasUpcoming) temp[key]=filtered[key];
-                });
-                filtered = temp;
+                const temp = {}; Object.keys(filtered).forEach(key=>{ const sd = getCustomerSmartData(filtered[key]); if(currentStatusFilter==='today' && sd.hasToday) temp[key]=filtered[key]; else if(currentStatusFilter==='overdue' && sd.hasOverdue) temp[key]=filtered[key]; else if(currentStatusFilter==='upcoming' && sd.hasUpcoming) temp[key]=filtered[key]; }); filtered = temp;
             }
             if(currentRiskFilter !== 'all'){
-                const temp = {};
-                Object.keys(filtered).forEach(key=>{
-                    const sd = getCustomerSmartData(filtered[key]);
-                    if(sd.worstRisk.level===currentRiskFilter) temp[key]=filtered[key];
-                    // also if customer has at least one debt with that risk
-                    else if(sd.debts.some(d=>d.risk.level===currentRiskFilter && d.remainingAmount>0.5)) temp[key]=filtered[key];
-                });
-                filtered = temp;
+                const temp = {}; Object.keys(filtered).forEach(key=>{ const sd = getCustomerSmartData(filtered[key]); if(sd.worstRisk.level===currentRiskFilter) temp[key]=filtered[key]; else if(sd.debts.some(d=>d.risk.level===currentRiskFilter && d.remainingAmount>0.5)) temp[key]=filtered[key]; }); filtered = temp;
             }
-            renderCustomers(filtered);
-            updateActiveStates();
+            renderCustomers(filtered); updateActiveStates();
         }
         function updateActiveStates(){
             document.querySelectorAll('.filter-tab').forEach(tab=> tab.classList.remove('active'));
             const tabs = document.querySelectorAll('.filter-tab');
-            tabs.forEach(tab=>{
-                const txt = tab.textContent.trim();
-                if(currentStatusFilter==='all' && txt.includes('الكل') && !txt.includes('مدينة')) tab.classList.add('active');
-                if(currentStatusFilter==='today' && txt.includes('اليوم')) tab.classList.add('active');
-                if(currentStatusFilter==='overdue' && txt.includes('متأخر')) tab.classList.add('active');
-                if(currentStatusFilter==='upcoming' && txt.includes('قادم')) tab.classList.add('active');
-                if(currentCityFilter!=='all' && txt.includes('المدينة')) tab.classList.add('active');
-            });
+            tabs.forEach(tab=>{ const txt = tab.textContent.trim(); if(currentStatusFilter==='all' && txt.includes('الكل') && !txt.includes('مدينة')) tab.classList.add('active'); if(currentStatusFilter==='today' && txt.includes('اليوم')) tab.classList.add('active'); if(currentStatusFilter==='overdue' && txt.includes('متأخر')) tab.classList.add('active'); if(currentStatusFilter==='upcoming' && txt.includes('قادم')) tab.classList.add('active'); if(currentCityFilter!=='all' && txt.includes('المدينة')) tab.classList.add('active'); });
             document.querySelectorAll('.stat-card').forEach(c=> c.classList.remove('active-stat'));
             if(currentStatusFilter==='all') document.getElementById('statCustomers')?.classList.add('active-stat');
             if(currentStatusFilter==='overdue') document.getElementById('statOverdue')?.classList.add('active-stat');
             if(currentStatusFilter==='today') document.getElementById('statToday')?.classList.add('active-stat');
             if(currentStatusFilter==='upcoming') document.getElementById('statUpcoming')?.classList.add('active-stat');
             document.querySelectorAll('.risk-card').forEach(c=> c.classList.remove('active-risk'));
-            if(currentRiskFilter!=='all'){
-                const map = {good:'riskGood',medium:'riskMedium',weak:'riskWeak',veryWeak:'riskVeryWeak',dangerous:'riskDangerous'};
-                if(map[currentRiskFilter]) document.getElementById(map[currentRiskFilter])?.classList.add('active-risk');
-            }
-            const riskTab = document.getElementById('riskFilterTab');
-            const riskText = document.getElementById('riskFilterText');
-            if(currentRiskFilter==='all'){riskTab.style.display='none';}
-            else{ riskTab.style.display='flex'; riskText.textContent = RISK_LEVELS[currentRiskFilter]?.emoji+' '+RISK_LEVELS[currentRiskFilter]?.label; riskTab.classList.add('active'); }
+            if(currentRiskFilter!=='all'){ const map = {good:'riskGood',medium:'riskMedium',weak:'riskWeak',veryWeak:'riskVeryWeak',dangerous:'riskDangerous'}; if(map[currentRiskFilter]) document.getElementById(map[currentRiskFilter])?.classList.add('active-risk'); }
+            const riskTab = document.getElementById('riskFilterTab'); const riskText = document.getElementById('riskFilterText');
+            if(currentRiskFilter==='all'){riskTab.style.display='none';} else{ riskTab.style.display='flex'; riskText.textContent = RISK_LEVELS[currentRiskFilter]?.emoji+' '+RISK_LEVELS[currentRiskFilter]?.label; riskTab.classList.add('active'); }
         }
-
         document.addEventListener('DOMContentLoaded', function() {
-            loadTheme();
-            setTodayDate();
-            initFirebase();
-            const searchInput = document.getElementById('searchInput');
-            const clearBtn = document.getElementById('clearSearch');
-            const wrapper = document.getElementById('searchWrapper');
-            searchInput.addEventListener('input', function(){
-                clearTimeout(searchTimer);
-                searchTimer = setTimeout(() => { searchCustomer(); }, 150);
-            });
+            loadTheme(); setTodayDate(); initFirebase();
+            const searchInput = document.getElementById('searchInput'); const clearBtn = document.getElementById('clearSearch'); const wrapper = document.getElementById('searchWrapper');
+            searchInput.addEventListener('input', function(){ clearTimeout(searchTimer); searchTimer = setTimeout(() => { searchCustomer(); }, 150); });
             searchInput.addEventListener('focus', function(){ if(this.value.trim()) showSuggestions(this.value); });
-            clearBtn.addEventListener('click', function(){
-                searchInput.value=''; hideSuggestions(); currentSearchQuery=''; applyAllFilters(); searchInput.focus(); this.style.display='none';
-            });
-            document.addEventListener('click', function(e){
-                if(!wrapper.contains(e.target)){ hideSuggestions(); }
-                const cityModal = document.getElementById('cityFilterModal');
-                if(e.target === cityModal){ closeCityFilter(); }
-            });
+            clearBtn.addEventListener('click', function(){ searchInput.value=''; hideSuggestions(); currentSearchQuery=''; applyAllFilters(); searchInput.focus(); this.style.display='none'; });
+            document.addEventListener('click', function(e){ if(!wrapper.contains(e.target)){ hideSuggestions(); } const cityModal = document.getElementById('cityFilterModal'); if(e.target === cityModal){ closeCityFilter(); } });
         });
-
         function initFirebase() {
             onValue(customersRef, (snapshot) => {
-                const data = snapshot.val();
-                allCustomers = data || {};
-                applyAllFilters();
+                const data = snapshot.val(); allCustomers = data || {}; applyAllFilters();
                 document.getElementById('syncStatus').innerHTML = '<i class="fas fa-circle" style="color: #4ade80"></i> متصل بـ Firebase - Smart Mode 🧠';
-            }, (error) => {
-                console.error(error);
-                document.getElementById('syncStatus').innerHTML = '<i class="fas fa-circle" style="color: #ef4444"></i> غير متصل';
-            });
+            }, (error) => { console.error(error); document.getElementById('syncStatus').innerHTML = '<i class="fas fa-circle" style="color: #ef4444"></i> غير متصل'; });
         }
-
-        window.openCalendar = function() { filterByStatus('today'); showToast('عرض زبناء اليوم - Calendar'); window.scrollTo({top: 300, behavior: 'smooth'}); }
+        window.openCalendar = function() { filterByStatus('today'); showToast('عرض زبناء اليوم'); window.scrollTo({top: 300, behavior: 'smooth'}); }
         window.openRoute = function() { window.location.href = 'route.html'; }
-        window.viewCustomer = function(id) { localStorage.setItem('customerId', id); window.location.href = 'person.html'; }
         window.openDetails = function(id) { window.location.href = 'person.html?id=' + id; }
-
         async function addCustomer(customerData) {
-            const newRef = push(customersRef);
-            const today = new Date().toISOString().split('T')[0];
-            const debt = {
-                id: 'debt_'+newRef.key+'_1',
-                originalAmount: customerData.amount,
-                startDate: customerData.date || today,
-                expectedDate: addDays(customerData.date||today, 14) || today,
-                payments: [],
-                remainingAmount: customerData.amount,
-                createdAt: new Date().toISOString()
-            };
-            await set(newRef, {
-              ...customerData,
-                id: newRef.key,
-                createdAt: new Date().toISOString(),
-                status: 'pending',
-                collected: 0,
-                debts: [debt]
-            });
-            showToast('تم إضافة الزبون بنجاح');
+            const newRef = push(customersRef); const today = new Date().toISOString().split('T')[0];
+            const debt = { id: 'debt_'+newRef.key+'_1', originalAmount: customerData.amount, startDate: customerData.date || today, expectedDate: addDays(customerData.date||today, 14) || today, payments: [], remainingAmount: customerData.amount, createdAt: new Date().toISOString() };
+            await set(newRef, { ...customerData, id: newRef.key, createdAt: new Date().toISOString(), status: 'pending', collected: 0, debts: [debt] }); showToast('تم إضافة الزبون بنجاح');
         }
         async function updateCustomer(id, data) { await update(ref(db, 'customers/' + id), data); showToast('تم التحديث'); }
         async function deleteCustomer(id) { await remove(ref(db, 'customers/' + id)); showToast('تم الحذف'); }
 
         function renderCustomers(customers) {
-            const list = document.getElementById('customersList');
-            list.innerHTML = '';
+            const list = document.getElementById('customersList'); list.innerHTML = '';
             if(!customers || Object.keys(customers).length === 0) {
-                list.innerHTML = `<div class="empty-state"><div class="empty-icon">👥</div><p>لا توجد زبناء</p><p style="font-size: 13px;">اضغط + لإضافة زبون</p></div>`;
-                updateStats({totalAmount:0,customersCount:0,todayCount:0,overdueCount:0,upcomingCount:0});
-                updateRiskStats({});
-                return;
+                list.innerHTML = `<div class="empty-state"><div style="font-size:64px;opacity:0.3">👥</div><p>لا توجد زبناء</p></div>`;
+                updateStats({totalAmount:0,customersCount:0,todayCount:0,overdueCount:0,upcomingCount:0}); updateRiskStats({}); return;
             }
-            let totalAmount = 0;
-            let customersCount = 0;
-            let todayCount = 0;
-            let overdueCount = 0;
-            let upcomingCount = 0;
+            let totalAmount = 0; let customersCount = 0; let todayCount = 0; let overdueCount = 0; let upcomingCount = 0;
             let riskCounts = {good:0,medium:0,weak:0,veryWeak:0,dangerous:0};
-            let dangerousDebts = 0;
-
             Object.keys(customers).forEach((key, index) => {
                 const customer = customers[key];
                 const smart = getCustomerSmartData(customer);
                 const realTotal = smart.totalRemaining;
-                customersCount++;
-                totalAmount += realTotal;
-                if(smart.hasToday) todayCount++;
-                if(smart.hasOverdue) overdueCount++;
-                if(smart.hasUpcoming) upcomingCount++;
-                if(smart.worstRisk.level!=='paid'){
-                    riskCounts[smart.worstRisk.level] = (riskCounts[smart.worstRisk.level]||0)+1;
-                }
-                if(smart.worstRisk.level==='dangerous' || smart.worstRisk.level==='veryWeak') dangerousDebts++;
-
+                customersCount++; totalAmount += realTotal;
+                if(smart.hasToday) todayCount++; if(smart.hasOverdue) overdueCount++; if(smart.hasUpcoming) upcomingCount++;
+                if(smart.worstRisk.level!=='paid'){ riskCounts[smart.worstRisk.level] = (riskCounts[smart.worstRisk.level]||0)+1; }
                 const overdueClass = smart.hasOverdue ? 'overdue' : '';
                 const currentCity = (customer.city||'').trim();
                 const cityBtns = ["TanTan","Ouatia","Gulmim"].map(cityName => {
                     const isActive = currentCity.toLowerCase() === cityName.toLowerCase();
                     return `<button class="city-quick-btn ${isActive?'active-city-btn':''}" onclick="event.stopPropagation(); setCustomerCity('${key}', '${cityName}')">${cityName}</button>`;
                 }).join('');
-
-                const riskBadge = smart.unpaidCount>0 ? `<span class="risk-badge ${smart.worstRisk.css}">${smart.worstRisk.emoji} ${smart.worstRisk.label} ${smart.worstRisk.daysLate>0? '('+smart.worstRisk.daysLate+' يوم)':''}</span>` : `<span class="risk-badge good">✅ مسدد</span>`;
-                const debtSummary = smart.debts.length>1 ? `<div class="debt-summary">📦 ${smart.debts.length} ديون • ${smart.unpaidCount} غير مسددة • متوسط السداد ${smart.avgInterval} يوم</div>` : `<div class="debt-summary">⏱️ متوسط السداد: ${smart.avgInterval} يوم • ${smart.debts[0]?.expectedDate? 'متوقع: '+smart.debts[0].expectedDate:''}</div>`;
-
-                const custDate = (customer.date || customer.paymentDate || smart.debts[0]?.startDate || '-');
+                // simplified mini debts list
+                let miniDebtsHtml = '';
+                smart.debts.filter(d=>d.remainingAmount>0.5).slice(0,3).forEach((d,i)=>{
+                    miniDebtsHtml += `<div class="debt-mini">Debt #${i+1} • ${Math.round(d.remainingAmount)} DH • ${d.risk.emoji} ${d.risk.label}${d.risk.daysLate>0? ' '+d.risk.daysLate+'d':''}</div>`;
+                });
+                if(smart.debts.filter(d=>d.remainingAmount>0.5).length>3) miniDebtsHtml += `<div class="debt-mini">+${smart.debts.filter(d=>d.remainingAmount>0.5).length-3} أكثر</div>`;
+                const nextPayTxt = smart.nextPaymentDate ? `📅 Next: ${smart.nextPaymentDate}` : '';
+                const riskBadge = smart.unpaidCount>0 ? `<span class="risk-badge ${smart.worstRisk.css}">${smart.worstRisk.emoji} ${smart.worstRisk.label}${smart.worstRisk.daysLate>0? ' ('+smart.worstRisk.daysLate+' يوم)':''}</span>` : `<span class="risk-badge good">✅ مسدد</span>`;
                 const card = `
                     <div class="customer-card ${overdueClass}" onclick="openDetails('${key}')" style="animation-delay: ${index * 0.05}s">
                         <div class="customer-header">
                             <div class="customer-avatar">${(customer.name||'?').charAt(0).toUpperCase()}</div>
                             <div class="customer-info">
                                 <div class="customer-name">${customer.name||'بدون اسم'} ${riskBadge}</div>
-                                <div class="customer-amount">${Math.round(realTotal)} درهم</div>
-                                <div class="customer-meta">
-                                    <span><i class="fas fa-phone"></i> ${customer.phone || '-'}</span>
-                                    <span><i class="fas fa-calendar"></i> ${custDate || '-'}</span>
-                                </div>
-                                ${debtSummary}
+                                <div class="customer-city">${customer.city||'بدون مدينة'} • ${smart.unpaidCount} ديون غير مسددة</div>
+                                <div class="customer-amount">${Math.round(realTotal)} DH</div>
+                                <div class="customer-meta"><span>${nextPayTxt}</span></div>
+                                <div class="debt-mini-list">${miniDebtsHtml}</div>
                                 <div class="city-quick">${cityBtns}</div>
                             </div>
                         </div>
                         <div class="customer-actions">
                             <button class="btn btn-profile" onclick="event.stopPropagation(); openDetails('${key}')"><i class="fas fa-user"></i> التفاصيل</button>
-                            <button class="btn btn-edit-phone" onclick="event.stopPropagation(); editCustomerPhone('${key}')"><i class="fas fa-phone"></i></button>
-                            <button class="btn btn-edit-amount" onclick="event.stopPropagation(); editCustomerAmount('${key}')"><i class="fas fa-money-bill-wave"></i></button>
+                            <button class="btn btn-phone" onclick="event.stopPropagation(); editCustomerPhone('${key}')"><i class="fas fa-phone"></i></button>
                             <button class="btn btn-calendar" onclick="event.stopPropagation(); setPaymentDate('${key}')"><i class="fas fa-calendar-alt"></i></button>
                             <button class="btn btn-delete" onclick="event.stopPropagation(); confirmDelete('${key}')"><i class="fas fa-trash"></i></button>
-                            <button class="btn btn-collect" onclick="event.stopPropagation(); openDetails('${key}')"><i class="fas fa-list"></i></button>
                         </div>
                     </div>
                 `;
                 list.innerHTML += card;
             });
             updateStats({totalAmount, customersCount, todayCount, overdueCount, upcomingCount});
-            updateRiskStats(riskCounts, dangerousDebts);
+            updateRiskStats(riskCounts);
         }
-
         function updateStats(stats) {
             document.getElementById('totalAmount').textContent = Math.round(stats.totalAmount || 0);
             document.getElementById('totalCustomers').textContent = stats.customersCount || 0;
             document.getElementById('todayCount').textContent = stats.todayCount || 0;
             document.getElementById('overdueCount').textContent = stats.overdueCount || 0;
-            const upEl = document.getElementById('upcomingCount');
-            if(upEl) upEl.textContent = stats.upcomingCount || 0;
+            document.getElementById('upcomingCount').textContent = stats.upcomingCount || 0;
         }
-        function updateRiskStats(riskCounts, dangerousDebts){
+        function updateRiskStats(riskCounts){
             document.getElementById('countGood').textContent = riskCounts.good||0;
             document.getElementById('countMedium').textContent = riskCounts.medium||0;
             document.getElementById('countWeak').textContent = riskCounts.weak||0;
@@ -716,202 +431,42 @@
             document.getElementById('countDangerous').textContent = riskCounts.dangerous||0;
             const alertDiv = document.getElementById('dailyAlert');
             const totalRisk = (riskCounts.dangerous||0)+(riskCounts.veryWeak||0);
-            if(totalRisk>0){
-                alertDiv.style.display='flex';
-                document.getElementById('alertTitle').textContent = `🚨 ${totalRisk} ديون تحتاج متابعة اليوم`;
-                document.getElementById('alertDesc').textContent = `${riskCounts.dangerous||0} خطر • ${riskCounts.veryWeak||0} ضعيف جدا - اضغط للعرض`;
-            } else {
-                alertDiv.style.display='none';
-            }
+            if(totalRisk>0){ alertDiv.style.display='flex'; document.getElementById('alertTitle').textContent = `🚨 ${totalRisk} ديون تحتاج متابعة اليوم`; document.getElementById('alertDesc').textContent = `${riskCounts.dangerous||0} خطر • ${riskCounts.veryWeak||0} ضعيف جدا`; } else { alertDiv.style.display='none'; }
         }
-
-        window.showAddModal = function() {
-            document.getElementById('customerId').value = '';
-            document.getElementById('customerName').value = '';
-            document.getElementById('customerAmount').value = '';
-            document.getElementById('customerPhone').value = '';
-            setTodayDate();
-            document.getElementById('customerModal').classList.add('active');
-        }
+        window.showAddModal = function() { document.getElementById('customerId').value = ''; document.getElementById('customerName').value = ''; document.getElementById('customerAmount').value = ''; document.getElementById('customerPhone').value = ''; setTodayDate(); document.getElementById('customerModal').classList.add('active'); }
         window.closeModal = function() { document.getElementById('customerModal').classList.remove('active'); }
-        window.saveCustomer = async function(e) {
-            e.preventDefault();
-            const id = document.getElementById('customerId').value;
-            const data = {
-                name: document.getElementById('customerName').value,
-                amount: parseInt(document.getElementById('customerAmount').value),
-                phone: document.getElementById('customerPhone').value,
-                date: document.getElementById('customerDate').value,
-                paymentDate: document.getElementById('customerDate').value,
-                updatedAt: new Date().toISOString()
-            };
-            if(id) await updateCustomer(id, data);
-            else await addCustomer(data);
-            closeModal();
-        }
-        window.collectMoney = async function(id) { const amount = prompt('المبلغ المحصل:'); if(amount) await updateCustomer(id, {collected: parseInt(amount), status: 'collected'}); }
+        window.saveCustomer = async function(e) { e.preventDefault(); const id = document.getElementById('customerId').value; const data = { name: document.getElementById('customerName').value, amount: parseInt(document.getElementById('customerAmount').value), phone: document.getElementById('customerPhone').value, date: document.getElementById('customerDate').value, paymentDate: document.getElementById('customerDate').value, updatedAt: new Date().toISOString() }; if(id) await updateCustomer(id, data); else await addCustomer(data); closeModal(); }
         window.confirmDelete = function(id) { if(confirm('متأكد من الحذف؟')) deleteCustomer(id); }
-        window.filterBy = function(filter) { filterByStatus(filter); }
-        window.filterByStatus = function(status){
-            currentStatusFilter = status;
-            hideSuggestions();
-            applyAllFilters();
-            window.scrollTo({top: 300, behavior: 'smooth'});
-        }
-        window.filterByRisk = function(risk){
-            if(currentRiskFilter===risk){ currentRiskFilter='all'; }
-            else { currentRiskFilter = risk; }
-            hideSuggestions();
-            applyAllFilters();
-            if(risk!=='all') showToast(`فلتر المخاطر: ${RISK_LEVELS[risk]?.emoji||''} ${RISK_LEVELS[risk]?.label||risk}`);
-            window.scrollTo({top: 350, behavior: 'smooth'});
-        }
-        function hideSuggestions(){
-            const box = document.getElementById('searchSuggestions');
-            if(box){ box.classList.remove('active'); box.innerHTML=''; }
-            const clearBtn = document.getElementById('clearSearch');
-            if(clearBtn && !document.getElementById('searchInput').value) clearBtn.style.display='none';
-        }
+        window.filterByStatus = function(status){ currentStatusFilter = status; hideSuggestions(); applyAllFilters(); }
+        window.filterByRisk = function(risk){ if(currentRiskFilter===risk){ currentRiskFilter='all'; } else { currentRiskFilter = risk; } hideSuggestions(); applyAllFilters(); }
+        function hideSuggestions(){ const box = document.getElementById('searchSuggestions'); if(box){ box.classList.remove('active'); box.innerHTML=''; } const clearBtn = document.getElementById('clearSearch'); if(clearBtn && !document.getElementById('searchInput').value) clearBtn.style.display='none'; }
         function showSuggestions(query){
-            const box = document.getElementById('searchSuggestions');
-            const input = document.getElementById('searchInput');
-            const clearBtn = document.getElementById('clearSearch');
-            if(!box || !input) return;
-            const q = query.trim().toLowerCase();
-            currentSearchQuery = query.trim();
-            if(!q){ hideSuggestions(); clearBtn.style.display='none'; applyAllFilters(); return; }
-            clearBtn.style.display='block';
-            let matches = Object.entries(allCustomers).filter(([k,c])=>{
-                const name = (c.name||'').toLowerCase();
-                return name.includes(q);
-            });
-            if(matches.length === 0){
-                box.innerHTML = `<div class="suggestion-empty">🔍 لا توجد نتائج لـ "${query}"</div>`;
-                box.classList.add('active');
-                renderCustomers({});
-                return;
-            }
-            matches.sort((a,b)=>{
-                const an = (a[1].name||'').toLowerCase();
-                const bn = (b[1].name||'').toLowerCase();
-                const aStarts = an.startsWith(q) ? 0 : 1;
-                const bStarts = bn.startsWith(q) ? 0 : 1;
-                if(aStarts!==bStarts) return aStarts-bStarts;
-                return an.localeCompare(bn);
-            });
-            box.innerHTML = matches.slice(0,20).map(([key,c])=>{
-                const smart = getCustomerSmartData(c);
-                const initial = (c.name||'?').charAt(0).toUpperCase();
-                const safeName = (c.name||'بدون اسم').replace(/</g,'&lt;');
-                const cityTxt = c.city ? ` • ${c.city}` : '';
-                const riskTxt = smart.worstRisk.emoji+' '+smart.worstRisk.label;
-                return `
-                <div class="suggestion-item" onclick="openDetails('${key}')">
-                    <div class="suggestion-avatar">${initial}</div>
-                    <div class="suggestion-info">
-                        <div class="suggestion-name">${safeName}${cityTxt}</div>
-                        <div class="suggestion-amount">${Math.round(smart.totalRemaining)} درهم</div>
-                        <div class="suggestion-risk">${riskTxt} • ${smart.unpaidCount} ديون</div>
-                    </div>
-                    <i class="fas fa-chevron-left" style="color: var(--text-muted); font-size:12px;"></i>
-                </div>`;
-            }).join('');
-            box.classList.add('active');
-            applyAllFilters();
+            const box = document.getElementById('searchSuggestions'); const input = document.getElementById('searchInput'); const clearBtn = document.getElementById('clearSearch'); if(!box || !input) return;
+            const q = query.trim().toLowerCase(); currentSearchQuery = query.trim();
+            if(!q){ hideSuggestions(); clearBtn.style.display='none'; applyAllFilters(); return; } clearBtn.style.display='block';
+            let matches = Object.entries(allCustomers).filter(([k,c])=>{ const name = (c.name||'').toLowerCase(); return name.includes(q); });
+            if(matches.length === 0){ box.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted)">🔍 لا توجد نتائج</div>`; box.classList.add('active'); renderCustomers({}); return; }
+            matches.sort((a,b)=>{ const an = (a[1].name||'').toLowerCase(); const bn = (b[1].name||'').toLowerCase(); const aStarts = an.startsWith(q) ? 0 : 1; const bStarts = bn.startsWith(q) ? 0 : 1; if(aStarts!==bStarts) return aStarts-bStarts; return an.localeCompare(bn); });
+            box.innerHTML = matches.slice(0,20).map(([key,c])=>{ const smart = getCustomerSmartData(c); const initial = (c.name||'?').charAt(0).toUpperCase(); const safeName = (c.name||'بدون اسم').replace(/</g,'&lt;'); return `<div class="suggestion-item" onclick="openDetails('${key}')"><div class="suggestion-avatar">${initial}</div><div style="flex:1"><div style="font-weight:800">${safeName} • ${c.city||''}</div><div style="font-size:13px;color:var(--primary);font-weight:700">${Math.round(smart.totalRemaining)} DH • ${smart.worstRisk.emoji} ${smart.worstRisk.label}</div></div><i class="fas fa-chevron-left" style="color:var(--text-muted);font-size:12px"></i></div>`; }).join('');
+            box.classList.add('active'); applyAllFilters();
         }
         window.searchCustomer = function() { const search = document.getElementById('searchInput').value; showSuggestions(search); }
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            document.getElementById('themeIcon').className = savedTheme === 'dark'? 'fas fa-sun' : 'fas fa-moon';
-        }
-        window.toggleTheme = function() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark'? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            document.getElementById('themeIcon').className = newTheme === 'dark'? 'fas fa-sun' : 'fas fa-moon';
-        }
+        function loadTheme() { const savedTheme = localStorage.getItem('theme') || 'light'; document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeIcon').className = savedTheme === 'dark'? 'fas fa-sun' : 'fas fa-moon'; }
+        window.toggleTheme = function() { const currentTheme = document.documentElement.getAttribute('data-theme'); const newTheme = currentTheme === 'dark'? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); document.getElementById('themeIcon').className = newTheme === 'dark'? 'fas fa-sun' : 'fas fa-moon'; }
         function setTodayDate() { document.getElementById('customerDate').value = new Date().toISOString().split('T')[0]; }
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-        window.setCustomerCity = async function(customerId, cityName){
-            const customer = allCustomers[customerId];
-            if(!customer) return;
-            const oldCity = customer.city || '';
-            if(oldCity === cityName){ showToast(`مدينة ${customer.name} هي بالفعل ${cityName}`); return; }
-            customer.city = cityName;
-            allCustomers[customerId] = customer;
-            applyAllFilters();
-            try{
-                await update(ref(db, 'customers/' + customerId), { city: cityName, updatedAt: new Date().toISOString() });
-                showToast(`✅ ${customer.name} → ${cityName}`);
-            }catch(e){ console.error(e); showToast('خطأ في حفظ المدينة'); customer.city = oldCity; allCustomers[customerId] = customer; applyAllFilters(); }
-        }
+        function showToast(message) { const toast = document.getElementById('toast'); document.getElementById('toastMessage').textContent = message; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
+        window.setCustomerCity = async function(customerId, cityName){ const customer = allCustomers[customerId]; if(!customer) return; const oldCity = customer.city || ''; if(oldCity === cityName){ showToast(`مدينة ${customer.name} هي بالفعل ${cityName}`); return; } customer.city = cityName; allCustomers[customerId] = customer; applyAllFilters(); try{ await update(ref(db, 'customers/' + customerId), { city: cityName, updatedAt: new Date().toISOString() }); showToast(`✅ ${customer.name} → ${cityName}`); }catch(e){ console.error(e); showToast('خطأ'); customer.city = oldCity; allCustomers[customerId] = customer; applyAllFilters(); } }
         window.openCityFilter = function(){
-            const listDiv = document.getElementById('cityFilterList');
-            const statusFiltered = currentStatusFilter==='all' ? allCustomers : (()=>{let tmp={}; Object.keys(allCustomers).forEach(k=>{const sd=getCustomerSmartData(allCustomers[k]); if(currentStatusFilter==='today'&&sd.hasToday) tmp[k]=allCustomers[k]; else if(currentStatusFilter==='overdue'&&sd.hasOverdue) tmp[k]=allCustomers[k]; else if(currentStatusFilter==='upcoming'&&sd.hasUpcoming) tmp[k]=allCustomers[k]; else if(currentStatusFilter==='all') tmp[k]=allCustomers[k];}); return tmp;})();
-            const counts = getCityCounts(statusFiltered);
-            const cities = Object.keys(counts).filter(c=>c).sort((a,b)=> counts[b]-counts[a] || a.localeCompare(b));
-            const totalAll = Object.keys(statusFiltered).length;
-            let html = `<div class="city-filter-item ${currentCityFilter==='all'?'active-city':''}" onclick="filterByCity('all')"><span><i class="fas fa-globe"></i> 🔄 All - الكل</span><span class="city-count">${totalAll}</span></div>`;
-            if(cities.length>0){
-                html += cities.map(city=>`<div class="city-filter-item ${currentCityFilter===city?'active-city':''}" onclick="filterByCity('${city.replace(/'/g, "\'")}')"><span><i class="fas fa-city"></i> ${city}</span><span class="city-count">${counts[city]||0}</span></div>`).join('');
-            } else {
-                const allDefaults = getAllCities();
-                html += allDefaults.map(city=>`<div class="city-filter-item ${currentCityFilter===city?'active-city':''}" onclick="filterByCity('${city.replace(/'/g, "\'")}')"><span><i class="fas fa-city"></i> ${city}</span><span class="city-count">0</span></div>`).join('');
-            }
-            listDiv.innerHTML = html;
-            document.getElementById('cityFilterModal').classList.add('active');
+            const listDiv = document.getElementById('cityFilterList'); const statusFiltered = currentStatusFilter==='all' ? allCustomers : (()=>{let tmp={}; Object.keys(allCustomers).forEach(k=>{const sd=getCustomerSmartData(allCustomers[k]); if(currentStatusFilter==='today'&&sd.hasToday) tmp[k]=allCustomers[k]; else if(currentStatusFilter==='overdue'&&sd.hasOverdue) tmp[k]=allCustomers[k]; else if(currentStatusFilter==='upcoming'&&sd.hasUpcoming) tmp[k]=allCustomers[k]; else if(currentStatusFilter==='all') tmp[k]=allCustomers[k];}); return tmp;})();
+            const counts = getCityCounts(statusFiltered); const cities = Object.keys(counts).filter(c=>c).sort((a,b)=> counts[b]-counts[a] || a.localeCompare(b)); const totalAll = Object.keys(statusFiltered).length;
+            let html = `<div class="city-filter-item ${currentCityFilter==='all'?'active-city':''}" onclick="filterByCity('all')"><span><i class="fas fa-globe"></i> 🔄 الكل</span><span class="city-count">${totalAll}</span></div>`;
+            if(cities.length>0){ html += cities.map(city=>`<div class="city-filter-item ${currentCityFilter===city?'active-city':''}" onclick="filterByCity('${city.replace(/'/g, "\'")}')"><span><i class="fas fa-city"></i> ${city}</span><span class="city-count">${counts[city]||0}</span></div>`).join(''); } else { const allDefaults = getAllCities(); html += allDefaults.map(city=>`<div class="city-filter-item ${currentCityFilter===city?'active-city':''}" onclick="filterByCity('${city.replace(/'/g, "\'")}')"><span><i class="fas fa-city"></i> ${city}</span><span class="city-count">0</span></div>`).join(''); }
+            listDiv.innerHTML = html; document.getElementById('cityFilterModal').classList.add('active');
         }
         window.closeCityFilter = function(){ document.getElementById('cityFilterModal').classList.remove('active'); }
-        window.filterByCity = function(city){
-            currentCityFilter = city;
-            closeCityFilter();
-            applyAllFilters();
-            if(city==='all'){ showToast('عرض جميع المدن - الكل'); } else { showToast(`مدينة ${city}`); }
-        }
-        window.openReportsPage = function() {
-            const password = prompt('أدخل كلمة مرور المسؤول');
-            if(password === '1234@1234'){ alert('كلمة المرور صحيحة'); window.location.href = 'products.html'; } else { alert('كلمة المرور غير صحيحة'); }
-        }
-        window.setPaymentDate = function(id) {
-            const picker = document.createElement('input'); picker.type = 'date'; picker.value = allCustomers[id]?.date || '';
-            picker.onchange = async function() { await updateCustomer(id, { date: this.value, updatedAt: new Date().toISOString() }); showToast('تم تحديث موعد الأداء'); };
-            picker.showPicker?.(); if (!picker.showPicker) { picker.click(); }
-        }
-        window.editCustomerName = async function(id){ const currentName = allCustomers[id]?.name || ''; const newName = prompt('الاسم الجديد', currentName); if(!newName) return; await updateCustomer(id,{ name:newName, updatedAt:new Date().toISOString() }); showToast('تم تعديل الاسم'); }
-        window.editCustomerAmount = async function(id){
-            const currentAmount = getCustomerSmartData(allCustomers[id]).totalRemaining || 0;
-            const newAmount = prompt('إضافة دين جديد؟ أدخل المبلغ (سيتم إنشاء دين مستقل)', '');
-            if(!newAmount) return;
-            const amt = parseFloat(newAmount);
-            if(isNaN(amt)||amt<=0) return;
-            // create new debt via update
-            const customer = allCustomers[id];
-            const debts = ensureDebts(customer);
-            const today = new Date().toISOString().split('T')[0];
-            const avg = getCustomerAvgInterval(customer);
-            const newDebt = {
-                id: 'debt_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
-                originalAmount: amt,
-                startDate: today,
-                expectedDate: addDays(today, avg)||today,
-                payments: [],
-                remainingAmount: amt,
-                createdAt: new Date().toISOString()
-            };
-            debts.push(newDebt);
-            // also add operation for legacy
-            const ops = getOpsArray(customer);
-            ops.push({type:'paid', amount: amt, date: today, time: new Date().toTimeString().slice(0,5)});
-            await update(ref(db, 'customers/'+id), {debts: debts, operations: ops, amount: customer.amount||0, updatedAt: new Date().toISOString()});
-            showToast(`✅ تمت إضافة دين جديد ${amt} درهم - ${today}`);
-        }
+        window.filterByCity = function(city){ currentCityFilter = city; closeCityFilter(); applyAllFilters(); showToast(city==='all'?'عرض جميع المدن':`مدينة ${city}`); }
+        window.openReportsPage = function() { const password = prompt('أدخل كلمة مرور المسؤول'); if(password === '1234@1234'){ alert('كلمة المرور صحيحة'); window.location.href = 'products.html'; } else { alert('كلمة المرور غير صحيحة'); } }
+        window.setPaymentDate = function(id) { const picker = document.createElement('input'); picker.type = 'date'; picker.value = allCustomers[id]?.date || ''; picker.onchange = async function() { await updateCustomer(id, { date: this.value, updatedAt: new Date().toISOString() }); showToast('تم تحديث موعد الأداء'); }; picker.showPicker?.(); if (!picker.showPicker) { picker.click(); } }
         window.editCustomerPhone = async function(id){ const currentPhone = allCustomers[id]?.phone || ''; const newPhone = prompt('رقم الهاتف', currentPhone); if(!newPhone) return; await updateCustomer(id,{ phone:newPhone, updatedAt:new Date().toISOString() }); showToast('تم حفظ رقم الهاتف'); }
 </script>
 <script>
@@ -921,9 +476,7 @@ if(!localStorage.getItem("loggedIn")){ window.location.href = "login.html"; }
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { scope: './' });
-    });
+    window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { scope: './' }); });
 }
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
