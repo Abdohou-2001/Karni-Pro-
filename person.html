@@ -32,75 +32,69 @@
     .header{background:linear-gradient(135deg, #00b894 0%, #00cec9 100%);padding:30px 20px 60px;border-radius:0 0 30px 30px;box-shadow:0 4px 20px rgba(0,184,148,0.3);position:relative}
     .header h1{color:white;font-size:28px;text-align:center;margin-bottom:10px}
     .back-btn{position:absolute;top:20px;right:20px;width:45px;height:45px;border-radius:15px;background:rgba(255,255,255,0.2);border:none;color:white;font-size:22px;cursor:pointer;backdrop-filter:blur(10px)}
-    .back-btn:active{transform:scale(0.95)}
     .container{padding:20px;margin-top:-40px;position:relative;z-index:2}
     .card{background:white;border-radius:25px;padding:25px;margin-bottom:15px;box-shadow:0 4px 15px rgba(0,0,0,0.08);animation:slideUp 0.4s ease}
     @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
     .avatar{width:80px;height:80px;border-radius:25px;background:linear-gradient(135deg, #00b894, #00cec9);color:white;font-size:36px;font-weight:bold;display:flex;align-items:center;justify-content:center;margin:0 auto 15px}
     .name{text-align:center;font-size:24px;font-weight:bold;color:#2d3436;margin-bottom:5px}
     .phone{text-align:center;color:#636e72;font-size:16px;margin-bottom:20px}
-    .total-box{background:linear-gradient(135deg, #00b894 0%, #00cec9 100%);color:white;padding:20px;border-radius:20px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden}
-    .total-box::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);pointer-events:none}
+    .total-box{background:linear-gradient(135deg, #00b894 0%, #00cec9 100%);color:white;padding:20px;border-radius:20px;text-align:center;margin-bottom:20px}
     .total-label{font-size:14px;opacity:0.9;margin-bottom:5px}
     .total-value{font-size:32px;font-weight:bold}
     .total-sub{font-size:12px;opacity:0.8;margin-top:5px}
     .label{display:block;font-weight:bold;color:#2d3436;margin:15px 0 8px;font-size:15px}
-    .input{width:100%;padding:16px;border:2px solid #dfe6e9;border-radius:15px;font-size:16px;background:#f8f9fa;transition:0.3s; font-family:'Cairo',sans-serif;}
-    .input:focus{border-color:#00b894;background:white;outline:none;box-shadow:0 0 0 3px rgba(0,184,148,0.1)}
-    .input[readonly]{background:#e9ecef;color:#6c757d;cursor:not-allowed}
+    .input{width:100%;padding:16px;border:2px solid #dfe6e9;border-radius:15px;font-size:16px;background:#f8f9fa;transition:0.3s}
+    .input:focus{border-color:#00b894;background:white;outline:none}
+    .input[readonly]{background:#e9ecef;color:#6c757d}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .save-btn{width:100%;padding:18px;border:none;border-radius:15px;background:linear-gradient(135deg, #00b894 0%, #00cec9 100%);color:white;font-size:18px;font-weight:bold;cursor:pointer;margin-top:25px;box-shadow:0 4px 15px rgba(0,184,148,0.3);transition:0.2s}
-    .save-btn:active{transform:scale(0.97);box-shadow:0 2px 8px rgba(0,184,148,0.2)}
+    .save-btn{width:100%;padding:18px;border:none;border-radius:15px;background:linear-gradient(135deg, #00b894 0%, #00cec9 100%);color:white;font-size:18px;font-weight:bold;cursor:pointer;margin-top:25px;box-shadow:0 4px 15px rgba(0,184,148,0.3)}
     .loading{text-align:center;padding:50px;color:#636e72;font-size:18px}
-    .date-label{font-size:12px;color:#74b9ff;margin-top:5px;font-weight:normal}
+    .date-label{font-size:12px;color:#74b9ff;margin-top:5px}
     .paid-input{border:2px solid #ff7675!important;background:#fff5f5!important}
     .received-input{border:2px solid #00b894!important;background:#f0fff4!important}
-    .history-title{font-size:18px;font-weight:bold;color:#2d3436;margin:25px 0 15px;display:flex;justify-content:space-between;align-items:center}
-    .history-item{background:#f8f9fa;border-right:4px solid #00b894;padding:12px 15px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-    .history-paid{border-right-color:#ff7675!important}
-    .history-amount{font-weight:bold;font-size:16px}
-    .history-paid.history-amount{color:#ff7675}
-    .history-received.history-amount{color:#00b894}
-    .history-date{font-size:13px;color:#636e72}
-    .whatsapp-btn{background:#25D366;color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;}
-    .confirm-btn{background:#2563eb;color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;}
-    .city-quick-person{display:flex;gap:8px;margin-top:8px;}
-    .city-quick-btn-person{flex:1;padding:12px 10px;border-radius:14px;font-size:14px;font-weight:800;border:2px solid #dfe6e9;background:#f8f9fa;color:#636e72;cursor:pointer;transition:0.25s;font-family:'Cairo',sans-serif;}
-    .city-quick-btn-person:hover{border-color:#00b894;color:#00b894;transform:scale(1.02);}
-    .city-quick-btn-person.active-city{background:linear-gradient(135deg,#00b894 0%, #00cec9 100%);color:white;border-color:transparent;box-shadow:0 4px 15px rgba(0,184,148,0.3);}
-    .city-quick-btn-person:active{transform:scale(0.96);}
-    /* Smart Debt Styles NEW */
+    .city-quick-person{display:flex;gap:8px;margin-top:8px}
+    .city-quick-btn-person{flex:1;padding:12px 10px;border-radius:14px;font-size:14px;font-weight:800;border:2px solid #dfe6e9;background:#f8f9fa;color:#636e72;cursor:pointer}
+    .city-quick-btn-person.active-city{background:linear-gradient(135deg,#00b894 0%, #00cec9 100%);color:white;border-color:transparent}
+    /* Accordion Debt */
+    .debt-accordion{background:white;border-radius:20px;margin-bottom:10px;box-shadow:0 2px 10px rgba(0,0,0,0.06);overflow:hidden;border-right:5px solid #00b894;transition:all 0.3s}
+    .debt-accordion.paid{opacity:0.6;border-right-color:#22c55e}
+    .debt-accordion.overdue{border-right-color:#ef4444}
+    .debt-accordion.medium{border-right-color:#f59e0b}
+    .debt-header-main{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+    .debt-header-main:active{background:#f8f9fa}
+    .debt-left{display:flex;align-items:center;gap:12px}
+    .debt-num{width:36px;height:36px;border-radius:12px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#0f766e}
+    .debt-amount{font-size:20px;font-weight:900;color:#0f172a}
+    .debt-right{display:flex;align-items:center;gap:10px}
+    .debt-risk-mini{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:800;color:white;display:flex;align-items:center;gap:4px}
+    .debt-risk-mini.good{background:#22c55e}
+    .debt-risk-mini.medium{background:#f59e0b}
+    .debt-risk-mini.weak{background:#f97316}
+    .debt-risk-mini.veryWeak{background:#ef4444}
+    .debt-risk-mini.dangerous{background:#991b1b}
+    .debt-risk-mini.paid{background:#16a34a}
+    .debt-arrow{font-size:18px;color:#94a3b8;transition:transform 0.3s}
+    .debt-accordion.open .debt-arrow{transform:rotate(180deg)}
+    .debt-details-panel{max-height:0;overflow:hidden;transition:max-height 0.35s ease, padding 0.35s ease;background:#f8fafc}
+    .debt-accordion.open .debt-details-panel{max-height:500px;padding:16px 18px}
+    .debt-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .detail-box{background:white;padding:10px 12px;border-radius:12px;border:1px solid #e2e8f0}
+    .detail-box b{display:block;font-size:10px;color:#64748b;margin-bottom:2px;text-transform:uppercase}
+    .detail-box span{font-size:14px;font-weight:800;color:#0f172a}
+    .detail-full{grid-column:span 2}
     .smart-summary{background:white;border-radius:20px;padding:20px;margin-bottom:15px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
     .smart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
     .smart-stat{padding:12px;border-radius:14px;text-align:center;background:#f8f9fa;border:1px solid #dfe6e9}
-    .smart-stat.good{background:#dcfce7;border-color:#86efac}
     .smart-stat.danger{background:#fecaca;border-color:#fca5a5}
-    .smart-stat.num{font-size:20px;font-weight:900;color:#2d3436}
-    .smart-stat.label{font-size:11px;color:#636e72;font-weight:700;margin-top:4px}
-    .debt-card{background:white;border-radius:20px;padding:18px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,0.06);border-right:5px solid #00b894;animation:slideUp 0.3s ease}
-    .debt-card.paid{opacity:0.7;border-right-color:#22c55e;background:#f0fdf4}
-    .debt-card.overdue{border-right-color:#ef4444}
-    .debt-card.medium{border-right-color:#f59e0b}
-    .debt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-    .debt-title{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px}
-    .debt-badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800;color:white}
-    .debt-badge.good{background:#22c55e}
-    .debt-badge.medium{background:#f59e0b}
-    .debt-badge.weak{background:#f97316}
-    .debt-badge.veryWeak{background:#ef4444}
-    .debt-badge.dangerous{background:#991b1b;animation:pulse 1.5s infinite}
-    .debt-badge.paid{background:#16a34a}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.7}}
-    .debt-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px}
-    .debt-detail{padding:8px;background:#f8f9fa;border-radius:10px}
-    .debt-detail b{display:block;font-size:11px;color:#636e72;margin-bottom:2px}
-    .debt-progress{margin-top:10px;height:8px;background:#e5e7eb;border-radius:10px;overflow:hidden}
-    .debt-progress-bar{height:100%;border-radius:10px;transition:width 0.5s ease}
+    .history-title{font-size:18px;font-weight:bold;color:#2d3436;margin:25px 0 15px;display:flex;justify-content:space-between;align-items:center}
+    .history-item{background:#f8f9fa;border-right:4px solid #00b894;padding:12px 15px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+    .history-paid{border-right-color:#ff7675!important}
+    .whatsapp-btn{background:#25D366;color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer}
+    .confirm-btn{background:#2563eb;color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer}
     .add-debt-btn{width:100%;padding:14px;border:2px dashed #00b894;border-radius:15px;background:#f0fdfa;color:#00b894;font-weight:800;font-size:15px;cursor:pointer;margin:15px 0;display:flex;align-items:center;justify-content:center;gap:8px}
-    .add-debt-btn:active{transform:scale(0.97)}
     .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
     .modal.active{display:flex}
-    .modal-content{background:white;border-radius:20px;padding:25px;width:100%;max-width:400px;animation:slideUp 0.3s}
+    .modal-content{background:white;border-radius:20px;padding:25px;width:100%;max-width:400px}
     .form-group{margin-bottom:15px}
     .form-label{font-weight:700;font-size:14px;margin-bottom:6px;display:block}
     .form-input{width:100%;padding:12px;border:2px solid #dfe6e9;border-radius:12px;font-size:15px}
@@ -111,86 +105,74 @@
 </style>
 </head>
 <body>
-
 <div class="header">
     <button class="back-btn" id="backBtn">⬅️</button>
     <h1>📒 Karni Pro</h1>
 </div>
-
 <div class="container">
     <div id="loading" class="loading">جاري التحميل...</div>
-
     <div id="content" style="display:none">
         <div class="card">
             <div class="avatar" id="avatar">B</div>
             <div class="name" id="name">...</div>
             <div class="phone" id="phone">...</div>
-
             <div class="total-box">
-                <div class="total-label">المبلغ الإجمالي - مجموع الديون المتبقية</div>
+                <div class="total-label">المبلغ الإجمالي - مجموع المتبقي</div>
                 <div class="total-value" id="totalAmount">0 درهم</div>
                 <div class="total-sub" id="totalSub"></div>
             </div>
-
-            <label class="label">💰 المبلغ الأساسي (للمرجع)</label>
+            <label class="label">💰 المبلغ الأساسي (مرجع)</label>
             <input type="number" id="amount" class="input" placeholder="0" readonly>
-
-            <label class="label">📍 المدينة / City - اختر واحدة</label>
+            <label class="label">📍 المدينة</label>
             <div class="city-quick-person" id="cityQuickPerson">
                 <button class="city-quick-btn-person" data-city="TanTan" onclick="selectCityPerson('TanTan')">TanTan</button>
                 <button class="city-quick-btn-person" data-city="Ouatia" onclick="selectCityPerson('Ouatia')">Ouatia</button>
                 <button class="city-quick-btn-person" data-city="Gulmim" onclick="selectCityPerson('Gulmim')">Gulmim</button>
             </div>
             <input type="hidden" id="cityValue">
-
             <label class="label">📅 تاريخ الأداء الرئيسي</label>
             <input type="date" id="date" class="input">
-
             <div class="row">
                 <div>
-                    <label class="label">📥 دفع - تحصيل من الزبون (FIFO للأقدم)</label>
+                    <label class="label">📥 تحصيل - دفع الزبون (FIFO)</label>
                     <input type="number" id="received" class="input received-input" placeholder="مبلغ التحصيل">
-                    <div class="date-label" id="receivedDate">سيتم توزيعه على أقدم دين أولاً</div>
+                    <div class="date-label">يوزع على أقدم دين أولاً</div>
                 </div>
                 <div>
-                    <label class="label">📤 إضافة سلعة / دين جديد</label>
-                    <input type="number" id="paid" class="input paid-input" placeholder="قيمة السلعة الجديدة">
-                    <div class="date-label" id="paidDate">سينشئ دين مستقل بتاريخ اليوم</div>
+                    <label class="label">📤 دين جديد - سلعة جديدة</label>
+                    <input type="number" id="paid" class="input paid-input" placeholder="قيمة السلعة">
+                    <div class="date-label">ينشئ دين مستقل</div>
                 </div>
             </div>
-
-            <button class="save-btn" id="saveBtn">💾 حفظ التغييرات - Smart Allocation</button>
+            <button class="save-btn" id="saveBtn">💾 حفظ - توزيع ذكي</button>
         </div>
 
-        <!-- Smart Summary -->
         <div class="smart-summary" id="smartSummary"></div>
 
-        <!-- Debts List -->
         <div class="card">
             <div class="history-title">
-                <span>📦 قائمة الديون المستقلة - Debt Lifecycle</span>
+                <span>📦 الديون - اضغط للتفاصيل</span>
                 <span style="font-size:12px;background:#f1f2f6;padding:4px 10px;border-radius:20px" id="debtCount">0</span>
             </div>
-            <button class="add-debt-btn" onclick="openAddDebtModal()">➕ إضافة دين جديد - سلعة جديدة</button>
+            <button class="add-debt-btn" onclick="openAddDebtModal()">➕ إضافة دين جديد</button>
             <div id="debtsList"></div>
         </div>
 
         <div class="card">
-            <div class="history-title">📋 سجل العمليات الكامل</div>
-            <div id="historyList" style="max-height:350px;overflow-y:auto;padding-left:5px;"></div>
+            <div class="history-title">📋 سجل العمليات</div>
+            <div id="historyList" style="max-height:350px;overflow-y:auto"></div>
         </div>
     </div>
 </div>
 
-<!-- Add Debt Modal -->
 <div class="modal" id="addDebtModal">
     <div class="modal-content">
         <h3 style="margin-bottom:15px">➕ إضافة دين جديد</h3>
-        <div class="form-group"><label class="form-label">المبلغ الأصلي *</label><input type="number" id="newDebtAmount" class="form-input" placeholder="2000"></div>
-        <div class="form-group"><label class="form-label">تاريخ بداية الدين *</label><input type="date" id="newDebtDate" class="form-input"></div>
-        <div class="form-group"><label class="form-label">ملاحظة (اختياري)</label><input type="text" id="newDebtNote" class="form-input" placeholder="سلعة: هاتف، ثلاجة..."></div>
+        <div class="form-group"><label class="form-label">المبلغ *</label><input type="number" id="newDebtAmount" class="form-input" placeholder="2000"></div>
+        <div class="form-group"><label class="form-label">تاريخ البداية *</label><input type="date" id="newDebtDate" class="form-input"></div>
+        <div class="form-group"><label class="form-label">ملاحظة</label><input type="text" id="newDebtNote" class="form-input" placeholder="سلعة..."></div>
         <div class="form-buttons">
-            <button class="btn btn-save" onclick="confirmAddDebt()">حفظ الدين</button>
+            <button class="btn btn-save" onclick="confirmAddDebt()">حفظ</button>
             <button class="btn btn-cancel" onclick="closeAddDebtModal()">إلغاء</button>
         </div>
     </div>
@@ -199,7 +181,6 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyBCVOOouLET3GDGyHj2i7ncvUZBjUUVB7Y",
   authDomain: "karni-b9b34.firebaseapp.com",
@@ -209,23 +190,18 @@ const firebaseConfig = {
   messagingSenderId: "489835094040",
   appId: "1:489835094040:web:109e20fe7b65516903236d"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('id');
 const loading = document.getElementById('loading');
 const content = document.getElementById('content');
-
-if(!id){alert('خطأ: ما كاينش id');window.location.href = 'index.html';}
+if(!id){alert('خطأ: ما كاينش id');window.location.href='index.html';}
 const customerRef = ref(db, 'customers/' + id);
-
 let customerOperations = [];
 let customerDebts = [];
 let currentCity = "";
 let customerDataCache = null;
-
 const RISK = {
     good:{emoji:'🟢',label:'جيد',css:'good'},
     medium:{emoji:'🟡',label:'متوسط',css:'medium'},
@@ -234,7 +210,6 @@ const RISK = {
     dangerous:{emoji:'🚨',label:'خطر',css:'dangerous'},
     paid:{emoji:'✅',label:'مسدد',css:'paid'}
 };
-
 function toDateObj(str){ if(!str) return null; const d=new Date(str); if(isNaN(d)) return null; d.setHours(0,0,0,0); return d; }
 function addDays(dateStr, days){ const d=toDateObj(dateStr); if(!d) return null; d.setDate(d.getDate()+days); return d.toISOString().split('T')[0]; }
 function daysBetween(a,b){ const da=toDateObj(a), db=toDateObj(b); if(!da||!db) return null; return Math.floor((db-da)/86400000); }
@@ -250,9 +225,9 @@ function ensureDebts(customer){
         return customer.debts.map(d=>{ const sum=(d.payments||[]).reduce((s,p)=>s+Number(p.amount||0),0); return {...d, remainingAmount: Math.max(0, (Number(d.originalAmount)||0)-sum)}; });
     }
     let debts=[]; const base=parseFloat(customer.amount)||0;
-    if(base>0){ debts.push({id:'debt_'+(customer.id||'base')+'_base', originalAmount:base, startDate: customer.date||customer.paymentDate||(customer.createdAt?customer.createdAt.split('T')[0]:new Date().toISOString().split('T')[0]), payments:[], createdAt:customer.createdAt||new Date().toISOString(), expectedDate:null, note:'دين أساسي'}); }
+    if(base>0){ debts.push({id:'debt_'+(customer.id||'base')+'_base', originalAmount:base, startDate: customer.date||customer.paymentDate||(customer.createdAt?customer.createdAt.split('T')[0]:new Date().toISOString().split('T')[0]), payments:[], createdAt:customer.createdAt||new Date().toISOString(), expectedDate:null, note:'أساسي'}); }
     const ops=getOpsArray(customer.operations);
-    ops.forEach((op,idx)=>{ if(op.type==='paid' && Number(op.amount)>0){ debts.push({id:'debt_'+(customer.id||'c')+'_paid_'+idx+'_'+Date.now(), originalAmount:Number(op.amount), startDate:op.date||customer.date, payments:[], createdAt:op.date||new Date().toISOString(), expectedDate:null, note:op.note||'سلعة إضافية'}); } });
+    ops.forEach((op,idx)=>{ if(op.type==='paid' && Number(op.amount)>0){ debts.push({id:'debt_'+(customer.id||'c')+'_paid_'+idx+'_'+Date.now(), originalAmount:Number(op.amount), startDate:op.date||customer.date, payments:[], createdAt:op.date||new Date().toISOString(), expectedDate:null, note:op.note||'إضافية'}); } });
     if(debts.length===0){ debts.push({id:'debt_empty_'+Date.now(), originalAmount:0, startDate:new Date().toISOString().split('T')[0], payments:[], createdAt:new Date().toISOString()}); }
     debts.sort((a,b)=> new Date(a.startDate)-new Date(b.startDate));
     const received=ops.filter(o=>o.type==='received' && Number(o.amount)>0).sort((a,b)=> new Date(a.date)-new Date(b.date));
@@ -263,27 +238,22 @@ function ensureDebts(customer){
 function calcRisk(debt, avg){
     const rem=Number(debt.remainingAmount||0); const orig=Number(debt.originalAmount||0);
     if(rem<=0.5) return {level:'paid', ...RISK.paid, daysLate:0, remaining:rem, original:orig, pct:0, expectedDate:debt.expectedDate};
-    let expStr=debt.expectedDate; if(!expStr){ const lastPay=(debt.payments&&debt.payments.length>0)? debt.payments[debt.payments.length-1].date : null; const base=lastPay||debt.startDate; expStr=addDays(base, avg||14)||debt.startDate; }
+    let expStr=debt.expectedDate;
+    if(!expStr){ const lastPay=(debt.payments&&debt.payments.length>0)? debt.payments[debt.payments.length-1].date : null; const base=lastPay||debt.startDate; expStr=addDays(base, avg||14)||debt.startDate; }
     const today=new Date(); today.setHours(0,0,0,0); const exp=toDateObj(expStr); let daysLate=0; if(exp) daysLate=Math.floor((today-exp)/86400000);
-    const pct=orig>0? rem/orig : 1; let level='good'; if(daysLate<=0) level='good'; else if(daysLate<=7) level='medium'; else if(daysLate<=14) level='weak'; else if(daysLate<=30) level='veryWeak'; else level='dangerous';
-    if(pct>0.7 && daysLate>14 && level==='weak') level='veryWeak'; if(pct>0.5 && daysLate>21 && level!=='dangerous') level='dangerous'; if(pct<0.15 && daysLate>0 && daysLate<=14){ if(level==='veryWeak') level='weak'; else if(level==='weak') level='medium'; }
-    return {level, ...RISK[level], daysLate, remaining:rem, original:orig, pct, expectedDate:expStr};
+    let level;
+    if(daysLate<=0) level='good';
+    else if(daysLate>=1 && daysLate<=6) level='medium';
+    else if(daysLate>=7 && daysLate<=14) level='weak';
+    else if(daysLate>=15 && daysLate<=29) level='veryWeak';
+    else level='dangerous';
+    return {level, ...RISK[level], daysLate, remaining:rem, original:orig, pct: orig>0? rem/orig:1, expectedDate:expStr};
 }
-function calculateTotal(debts){
-    const total = debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0);
-    document.getElementById('totalAmount').textContent = Math.round(total) + ' درهم';
-    return total;
-}
-
+function calculateTotal(debts){ const total = debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0); document.getElementById('totalAmount').textContent = Math.round(total) + ' درهم'; return total; }
 window.selectCityPerson = function(city){
-    currentCity = city;
-    document.getElementById('cityValue').value = city;
-    document.querySelectorAll('.city-quick-btn-person').forEach(btn=>{
-        if(btn.dataset.city === city) btn.classList.add('active-city');
-        else btn.classList.remove('active-city');
-    });
+    currentCity = city; document.getElementById('cityValue').value = city;
+    document.querySelectorAll('.city-quick-btn-person').forEach(btn=>{ if(btn.dataset.city === city) btn.classList.add('active-city'); else btn.classList.remove('active-city'); });
 }
-
 function showSmartSummary(debts, avg){
     const unpaid = debts.filter(d=>d.remainingAmount>0.5);
     const paid = debts.filter(d=>d.remainingAmount<=0.5);
@@ -293,30 +263,32 @@ function showSmartSummary(debts, avg){
     const worst = unpaid.length>0 ? unpaid.map(d=>calcRisk(d,avg)).sort((a,b)=>b.daysLate-a.daysLate)[0] : null;
     const div = document.getElementById('smartSummary');
     div.innerHTML = `
-        <div style="font-weight:800;font-size:16px;margin-bottom:10px">📊 ملخص الديون الذكي</div>
+        <div style="font-weight:800;font-size:16px;margin-bottom:10px">📊 ملخص الديون</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
             <span style="background:#f1f5f9;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700">⏱️ متوسط السداد: ${avg} يوم</span>
             <span style="background:#f1f5f9;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700">📦 ${debts.length} ديون</span>
-            <span style="background:#dcfce7;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700">✅ ${paid.length} مسددة</span>
-            <span style="background:#fecaca;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700">💰 ${Math.round(total)} متبقي</span>
+            <span style="background:#dcfce7;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700">💰 ${Math.round(total)} متبقي</span>
         </div>
-        ${worst? `<div style="padding:10px;border-radius:12px;background:${worst.level==='dangerous'?'#fee2e2': worst.level==='veryWeak'?'#ffedd5':'#f0fdf4'};border:1px solid ${worst.level==='dangerous'?'#fca5a5':'#bbf7d0'}"><b>${worst.emoji} الحالة العامة:</b> ${worst.label} ${worst.daysLate>0? ` - متأخر ${worst.daysLate} يوم`: ' - داخل الموعد'} ${worst.level==='dangerous' || worst.level==='veryWeak'? ' - يحتاج متابعة فورية':''}</div>` : '<div style="padding:10px;border-radius:12px;background:#dcfce7">✅ جميع الديون مسددة</div>'}
+        ${worst? `<div style="padding:10px;border-radius:12px;background:${worst.level==='dangerous'?'#fee2e2': worst.level==='veryWeak'?'#ffedd5':'#f0fdf4'}"><b>${worst.emoji} الحالة:</b> ${worst.label} ${worst.daysLate>0? ` - متأخر ${worst.daysLate} يوم`: ''}</div>` : '<div style="padding:10px;border-radius:12px;background:#dcfce7">✅ جميع الديون مسددة</div>'}
         <div class="smart-grid">
-            <div class="smart-stat ${riskCounts.dangerous>0?'danger':''}"><div class="smart-stat num">🚨 ${riskCounts.dangerous||0}</div><div class="smart-stat label">خطر</div></div>
-            <div class="smart-stat ${riskCounts.veryWeak>0?'danger':''}"><div class="smart-stat num">🔴 ${riskCounts.veryWeak||0}</div><div class="smart-stat label">ضعيف جدا</div></div>
-            <div class="smart-stat"><div class="smart-stat num">🟠 ${riskCounts.weak||0}</div><div class="smart-stat label">ضعيف</div></div>
-            <div class="smart-stat"><div class="smart-stat num">🟡 ${riskCounts.medium||0}</div><div class="smart-stat label">متوسط</div></div>
-            <div class="smart-stat good"><div class="smart-stat num">🟢 ${riskCounts.good||0}</div><div class="smart-stat label">جيد</div></div>
-            <div class="smart-stat good"><div class="smart-stat num">✅ ${riskCounts.paid||0}</div><div class="smart-stat label">مسدد</div></div>
+            <div class="smart-stat ${riskCounts.dangerous>0?'danger':''}"><div style="font-size:18px;font-weight:900">🚨 ${riskCounts.dangerous||0}</div><div style="font-size:11px">خطر</div></div>
+            <div class="smart-stat ${riskCounts.veryWeak>0?'danger':''}"><div style="font-size:18px;font-weight:900">🔴 ${riskCounts.veryWeak||0}</div><div style="font-size:11px">ضعيف جدا</div></div>
+            <div class="smart-stat"><div style="font-size:18px;font-weight:900">🟠 ${riskCounts.weak||0}</div><div style="font-size:11px">ضعيف</div></div>
+            <div class="smart-stat"><div style="font-size:18px;font-weight:900">🟡 ${riskCounts.medium||0}</div><div style="font-size:11px">متوسط</div></div>
+            <div class="smart-stat"><div style="font-size:18px;font-weight:900">🟢 ${riskCounts.good||0}</div><div style="font-size:11px">جيد</div></div>
+            <div class="smart-stat"><div style="font-size:18px;font-weight:900">✅ ${riskCounts.paid||0}</div><div style="font-size:11px">مسدد</div></div>
         </div>
     `;
 }
-
+function toggleDebt(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.classList.toggle('open');
+}
 function showDebts(debts, avg){
     const list = document.getElementById('debtsList');
     document.getElementById('debtCount').textContent = debts.length + ' دين';
     if(debts.length===0){ list.innerHTML='<div style="text-align:center;color:#999;padding:20px">لا توجد ديون</div>'; return; }
-    // sort: unpaid overdue first, then good, then paid last
     const sorted = [...debts].sort((a,b)=>{
         const ra = calcRisk(a,avg), rb = calcRisk(b,avg);
         if(a.remainingAmount<=0.5 && b.remainingAmount>0.5) return 1;
@@ -325,57 +297,49 @@ function showDebts(debts, avg){
     });
     list.innerHTML = sorted.map((debt, idx)=>{
         const risk = calcRisk(debt, avg);
-        const progress = debt.originalAmount>0 ? Math.min(100, Math.max(0, ((debt.originalAmount - debt.remainingAmount)/debt.originalAmount)*100)) : 0;
-        const progressColor = risk.level==='paid'?'#22c55e': risk.level==='good'?'#22c55e': risk.level==='medium'?'#f59e0b': risk.level==='weak'?'#f97316':'#ef4444';
         const isPaid = debt.remainingAmount<=0.5;
+        const lastPay = debt.payments && debt.payments.length>0 ? debt.payments[debt.payments.length-1].date : '-';
+        const accId = 'debtAcc_'+idx;
+        // NO original amount displayed
         return `
-        <div class="debt-card ${isPaid?'paid': risk.level==='dangerous'||risk.level==='veryWeak'?'overdue': risk.level==='medium'||risk.level==='weak'?'medium':''}">
-            <div class="debt-header">
-                <div class="debt-title">Debt #${idx+1} ${risk.emoji} ${debt.note? '- '+debt.note:''}</div>
-                <div class="debt-badge ${risk.css}">${risk.label} ${risk.daysLate>0 && !isPaid? risk.daysLate+' يوم':''}</div>
+        <div class="debt-accordion ${isPaid?'paid': risk.level==='dangerous'||risk.level==='veryWeak'?'overdue': risk.level==='medium'||risk.level==='weak'?'medium':''}" id="${accId}">
+            <div class="debt-header-main" onclick="toggleDebt('${accId}')">
+                <div class="debt-left">
+                    <div class="debt-num">#${idx+1}</div>
+                    <div class="debt-amount">${Math.round(debt.remainingAmount)} DH</div>
+                </div>
+                <div class="debt-right">
+                    <div class="debt-risk-mini ${risk.css}">${risk.emoji} ${isPaid? 'مسدد' : risk.level==='good'?'جيد': risk.level==='medium'?'متأخر': risk.level}</div>
+                    <div class="debt-arrow">⌄</div>
+                </div>
             </div>
-            <div class="debt-details">
-                <div class="debt-detail"><b>المبلغ الأصلي</b>${debt.originalAmount} درهم</div>
-                <div class="debt-detail"><b>المتبقي</b>${Math.round(debt.remainingAmount)} درهم</div>
-                <div class="debt-detail"><b>تاريخ البداية</b>${debt.startDate||'-'}</div>
-                <div class="debt-detail"><b>الموعد المتوقع</b>${risk.expectedDate||debt.expectedDate||'-'}</div>
-                <div class="debt-detail"><b>المدفوع</b>${Math.round(debt.originalAmount - debt.remainingAmount)} درهم</div>
-                <div class="debt-detail"><b>النسبة المتبقية</b>${Math.round((debt.remainingAmount/(debt.originalAmount||1))*100)}%</div>
+            <div class="debt-details-panel">
+                <div class="debt-details-grid">
+                    <div class="detail-box"><b>Start Date</b><span>${debt.startDate||'-'}</span></div>
+                    <div class="detail-box"><b>Expected Date</b><span>${risk.expectedDate||'-'}</span></div>
+                    <div class="detail-box"><b>Last Payment</b><span>${lastPay}</span></div>
+                    <div class="detail-box"><b>Days Late</b><span>${risk.daysLate>0? risk.daysLate+' يوم' : '0 - داخل الموعد'}</span></div>
+                    <div class="detail-box detail-full"><b>Risk Level</b><span>${risk.emoji} ${risk.label} ${risk.daysLate>0? '('+risk.daysLate+' يوم تأخر)' : ''}</span></div>
+                    <div class="detail-box detail-full"><b>Remaining</b><span>${Math.round(debt.remainingAmount)} DH ${isPaid? '✅' : ''}</span></div>
+                </div>
             </div>
-            <div class="debt-progress"><div class="debt-progress-bar" style="width:${progress}%;background:${progressColor}"></div></div>
-            <div style="margin-top:8px;font-size:11px;color:#636e72">📅 ${debt.payments?.length||0} دفعات • ${isPaid? '✅ مكتمل': risk.daysLate>0? `⏰ متأخر ${risk.daysLate} يوم` : `🟢 داخل الموعد`}</div>
         </div>
         `;
     }).join('');
 }
-
-function showHistory(data, debts){
+function showHistory(data){
     const historyList = document.getElementById('historyList');
     historyList.innerHTML = '';
     customerOperations = data.operations || [];
-    if(customerOperations.length === 0){
-        historyList.innerHTML = '<div style="text-align:center;color:#999;padding:20px">لا توجد عمليات بعد</div>';
-        return;
-    }
+    if(customerOperations.length === 0){ historyList.innerHTML = '<div style="text-align:center;color:#999;padding:20px">لا توجد عمليات</div>'; return; }
     customerOperations.slice().reverse().forEach((op,index)=>{
         const div = document.createElement('div');
-        div.className = 'history-item ' + (op.type === 'paid' ? 'history-paid' : 'history-received');
+        div.className = 'history-item ' + (op.type === 'paid' ? 'history-paid' : '');
         const realIdx = customerOperations.length-1-index;
-        div.innerHTML = `
-<div>
-    <div class="history-amount">${op.amount} درهم - ${op.type === 'paid' ? 'دفع/سلعة' : 'استلام/تحصيل'}</div>
-    <div class="history-date">📅 ${op.date || '--'} ${op.time||''}</div>
-</div>
-<div style="display:flex;gap:6px">
-<button class="whatsapp-btn" onclick="sendReminderWhatsapp(${realIdx})">📱</button>
-<button class="confirm-btn" onclick="sendConfirmWhatsapp(${realIdx})">✅</button>
-<button onclick="editOperation(${realIdx})">✏️</button>
-<button onclick="deleteOperation(${realIdx})">🗑️</button>
-</div>`;
+        div.innerHTML = `<div><div style="font-weight:bold">${op.amount} درهم - ${op.type === 'paid' ? 'سلعة' : 'تحصيل'}</div><div style="font-size:13px;color:#636e72">📅 ${op.date || '--'} ${op.time||''}</div></div><div style="display:flex;gap:6px"><button class="whatsapp-btn" onclick="sendReminderWhatsapp(${realIdx})">📱</button><button class="confirm-btn" onclick="sendConfirmWhatsapp(${realIdx})">✅</button><button onclick="editOperation(${realIdx})">✏️</button><button onclick="deleteOperation(${realIdx})">🗑️</button></div>`;
         historyList.appendChild(div);
     });
 }
-
 get(customerRef).then((snapshot)=>{
     loading.style.display = 'none';
     content.style.display = 'block';
@@ -390,227 +354,83 @@ get(customerRef).then((snapshot)=>{
         document.getElementById('date').value = data.paymentDate || data.date || '';
         document.getElementById('paid').value = '';
         document.getElementById('received').value = '';
-
-        const city = data.city || '';
-        currentCity = city;
-        document.getElementById('cityValue').value = city;
-        if(city){ selectCityPerson(city); }
-
-        if(data.paidDate) document.getElementById('paidDate').textContent = 'تاريخ الدفع: ' + data.paidDate;
-        if(data.receivedDate) document.getElementById('receivedDate').textContent = 'تاريخ الاستلام: ' + data.receivedDate;
-
+        const city = data.city || ''; currentCity = city; document.getElementById('cityValue').value = city; if(city){ selectCityPerson(city); }
         const avg = getAvgInterval(data.operations||[]);
         let debts = ensureDebts(data);
-        // recalc expected dates if missing
         debts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base, avg)||d.startDate; } });
-        customerDebts = debts;
-        customerOperations = getOpsArray(data.operations);
+        customerDebts = debts; customerOperations = getOpsArray(data.operations);
         calculateTotal(debts);
-        document.getElementById('totalSub').textContent = `${debts.length} ديون • متوسط السداد ${avg} يوم • ${debts.filter(d=>d.remainingAmount>0.5).length} غير مسددة`;
-        showSmartSummary(debts, avg);
-        showDebts(debts, avg);
-        showHistory(data, debts);
-
-        // Auto-migrate to Firebase if debts field missing and we have computed debts
-        if(!data.debts || data.debts.length===0){
-            // save migrated debts without overwriting operations
-            update(customerRef, {debts: debts}).then(()=> console.log('Migrated to smart debts')).catch(e=>console.error(e));
-        }
-    }else{
-        alert('الزبون غير موجود');
-        window.location.href = 'index.html';
-    }
-}).catch((error)=>{
-    alert('خطأ: ' + error.message);
-    window.location.href = 'index.html';
-});
-
+        document.getElementById('totalSub').textContent = `${debts.length} ديون • متوسط ${avg} يوم • ${debts.filter(d=>d.remainingAmount>0.5).length} غير مسددة`;
+        showSmartSummary(debts, avg); showDebts(debts, avg); showHistory(data);
+        if(!data.debts || data.debts.length===0){ update(customerRef, {debts: debts}).catch(e=>console.error(e)); }
+    }else{ alert('الزبون غير موجود'); window.location.href = 'index.html'; }
+}).catch((error)=>{ alert('خطأ: ' + error.message); window.location.href = 'index.html'; });
 document.getElementById('saveBtn').addEventListener('click', ()=>{
-    const btn = document.getElementById('saveBtn');
-    btn.textContent = '⏳ جاري الحفظ الذكي...';
-    btn.disabled = true;
-
+    const btn = document.getElementById('saveBtn'); btn.textContent = '⏳ جاري الحفظ...'; btn.disabled = true;
     const date = document.getElementById('date').value;
     const paid = parseFloat(document.getElementById('paid').value) || 0;
     const received = parseFloat(document.getElementById('received').value) || 0;
     const city = document.getElementById('cityValue').value || currentCity || '';
-
-    const now = new Date();
-    const today = now.toISOString().split('T')[0];
-    const currentTime = now.toTimeString().slice(0,5);
-
-    let operations = [...customerOperations];
-    let debts = [...customerDebts];
-    // ensure debts sorted oldest first for FIFO
-    debts.sort((a,b)=> new Date(a.startDate)-new Date(b.startDate));
+    const now = new Date(); const today = now.toISOString().split('T')[0]; const currentTime = now.toTimeString().slice(0,5);
+    let operations = [...customerOperations]; let debts = [...customerDebts]; debts.sort((a,b)=> new Date(a.startDate)-new Date(b.startDate));
     const avgBefore = getAvgInterval(operations);
-
-    // Handle new debt creation (paid input = new product)
     if(paid > 0){
-        const newDebt = {
-            id: 'debt_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
-            originalAmount: paid,
-            startDate: today,
-            expectedDate: addDays(today, avgBefore)||today,
-            payments: [],
-            remainingAmount: paid,
-            createdAt: new Date().toISOString(),
-            note: 'سلعة جديدة '+today
-        };
-        debts.push(newDebt);
-        operations.push({type:'paid', amount: paid, date: today, time: currentTime, note: 'دين جديد'});
+        const newDebt = { id: 'debt_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), originalAmount: paid, startDate: today, expectedDate: addDays(today, avgBefore)||today, payments: [], remainingAmount: paid, createdAt: new Date().toISOString(), note: 'سلعة جديدة '+today };
+        debts.push(newDebt); operations.push({type:'paid', amount: paid, date: today, time: currentTime, note: 'دين جديد'});
     }
-
-    // Handle received payment - FIFO oldest first
     if(received > 0){
         let left = received;
-        for(let debt of debts){
-            if(left<=0) break;
-            const rem = Number(debt.remainingAmount||0);
-            if(rem<=0.5) continue;
-            const take = Math.min(rem, left);
-            debt.payments = debt.payments||[];
-            debt.payments.push({amount: take, date: today, time: currentTime});
-            debt.remainingAmount = Math.max(0, rem - take);
-            // update expected date to today+avg after payment
-            const newAvg = getAvgInterval([...operations, {type:'received', amount: received, date: today}]);
-            debt.expectedDate = addDays(today, newAvg) || debt.expectedDate;
-            left -= take;
-        }
-        // if still left after all debts paid (overpayment), create credit note? For now ignore leftover, but log operation
+        for(let debt of debts){ if(left<=0) break; const rem = Number(debt.remainingAmount||0); if(rem<=0.5) continue; const take = Math.min(rem, left); debt.payments = debt.payments||[]; debt.payments.push({amount: take, date: today, time: currentTime}); debt.remainingAmount = Math.max(0, rem - take); const newAvg = getAvgInterval([...operations, {type:'received', amount: received, date: today}]); debt.expectedDate = addDays(today, newAvg) || debt.expectedDate; left -= take; }
         operations.push({type:'received', amount: received, date: today, time: currentTime});
     }
-
-    // recalc total remaining for each debt
-    debts.forEach(d=>{
-        const sum = (d.payments||[]).reduce((s,p)=>s+Number(p.amount),0);
-        d.remainingAmount = Math.max(0, (Number(d.originalAmount)||0)-sum);
-    });
-
-    const updateData = {
-        date: date,
-        paymentDate: date,
-        city: city,
-        operations: operations,
-        debts: debts,
-        paid: 0,
-        received: 0,
-        updatedAt: new Date().toISOString()
-    };
-
-    customerDebts = debts;
-    customerOperations = operations;
-
-    update(customerRef, updateData).then(()=>{
-        btn.textContent = '✅ تم الحفظ الذكي';
-        document.getElementById('paid').value = '';
-        document.getElementById('received').value = '';
-        const avg = getAvgInterval(operations);
-        calculateTotal(debts);
-        showSmartSummary(debts, avg);
-        showDebts(debts, avg);
-        showHistory({operations: operations}, debts);
-        setTimeout(()=>{ location.reload(); },900);
-    }).catch((error)=>{
-        alert('خطأ: ' + error.message);
-        btn.textContent = '💾 حفظ التغييرات';
-        btn.disabled = false;
-    });
+    debts.forEach(d=>{ const sum = (d.payments||[]).reduce((s,p)=>s+Number(p.amount),0); d.remainingAmount = Math.max(0, (Number(d.originalAmount)||0)-sum); });
+    const updateData = { date: date, paymentDate: date, city: city, operations: operations, debts: debts, paid: 0, received: 0, updatedAt: new Date().toISOString() };
+    customerDebts = debts; customerOperations = operations;
+    update(customerRef, updateData).then(()=>{ btn.textContent = '✅ تم الحفظ'; document.getElementById('paid').value = ''; document.getElementById('received').value = ''; const avg = getAvgInterval(operations); calculateTotal(debts); showSmartSummary(debts, avg); showDebts(debts, avg); showHistory({operations: operations}); setTimeout(()=>{ location.reload(); },800); }).catch((error)=>{ alert('خطأ: ' + error.message); btn.textContent = '💾 حفظ'; btn.disabled = false; });
 });
-
 window.deleteOperation = function(index){
-    if(!confirm('حذف العملية؟ سيتم إعادة حساب الديون تلقائيا')) return;
-    // For safety, we will delete operation and rebuild debts from remaining operations + base amount
-    const ops = [...customerOperations];
-    ops.splice(index,1);
-    // rebuild debts from scratch using new ops
+    if(!confirm('حذف العملية؟ سيتم إعادة حساب الديون')) return;
+    const ops = [...customerOperations]; ops.splice(index,1);
     const tempCustomer = {...customerDataCache, operations: ops, debts: null, amount: customerDataCache.amount};
-    let newDebts = ensureDebts(tempCustomer);
-    const avg = getAvgInterval(ops);
-    newDebts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base, avg)||d.startDate; }});
-    update(customerRef,{operations: ops, debts: newDebts, updatedAt: new Date().toISOString()}).then(()=>{
-        customerOperations = ops; customerDebts = newDebts;
-        calculateTotal(newDebts); showSmartSummary(newDebts, avg); showDebts(newDebts, avg); showHistory({operations: ops});
-    });
+    let newDebts = ensureDebts(tempCustomer); const avg = getAvgInterval(ops); newDebts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base, avg)||d.startDate; }});
+    update(customerRef,{operations: ops, debts: newDebts, updatedAt: new Date().toISOString()}).then(()=>{ customerOperations = ops; customerDebts = newDebts; calculateTotal(newDebts); showSmartSummary(newDebts, avg); showDebts(newDebts, avg); showHistory({operations: ops}); });
 }
-
 window.editOperation = function(index){
-    let amount = prompt('المبلغ الجديد', customerOperations[index].amount);
-    if(amount === null) return;
-    let date = prompt('التاريخ الجديد', customerOperations[index].date);
-    if(date === null) return;
-    customerOperations[index].amount = Number(amount);
-    customerOperations[index].date = date;
-    // rebuild debts
+    let amount = prompt('المبلغ الجديد', customerOperations[index].amount); if(amount === null) return;
+    let date = prompt('التاريخ الجديد', customerOperations[index].date); if(date === null) return;
+    customerOperations[index].amount = Number(amount); customerOperations[index].date = date;
     const tempCustomer = {...customerDataCache, operations: customerOperations, debts: null, amount: customerDataCache.amount};
-    let newDebts = ensureDebts(tempCustomer);
-    const avg = getAvgInterval(customerOperations);
-    newDebts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base, avg)||d.startDate; }});
-    update(customerRef,{operations: customerOperations, debts: newDebts}).then(()=>{
-        customerDebts = newDebts;
-        calculateTotal(newDebts); showSmartSummary(newDebts, avg); showDebts(newDebts, avg); showHistory({operations: customerOperations});
-    });
+    let newDebts = ensureDebts(tempCustomer); const avg = getAvgInterval(customerOperations); newDebts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base, avg)||d.startDate; }});
+    update(customerRef,{operations: customerOperations, debts: newDebts}).then(()=>{ customerDebts = newDebts; calculateTotal(newDebts); showSmartSummary(newDebts, avg); showDebts(newDebts, avg); showHistory({operations: customerOperations}); });
 }
-
 window.sendReminderWhatsapp = function(index){
-    const phone = document.getElementById('phone').textContent.trim();
-    const customerName = document.getElementById('name').textContent;
-    const total = document.getElementById('totalAmount').textContent;
-    if(!phone || phone === 'لا يوجد هاتف'){ alert('أضف رقم هاتف ' + customerName + ' أولاً'); return; }
-    const cleanPhone = phone.replace(/\D/g,'');
-    const avg = getAvgInterval(customerOperations);
-    const worstDebt = customerDebts.filter(d=>d.remainingAmount>0.5).map(d=>calcRisk(d,avg)).sort((a,b)=>b.daysLate-a.daysLate)[0];
+    const phone = document.getElementById('phone').textContent.trim(); const customerName = document.getElementById('name').textContent; const total = document.getElementById('totalAmount').textContent;
+    if(!phone || phone === 'لا يوجد هاتف'){ alert('أضف رقم هاتف'); return; }
+    const cleanPhone = phone.replace(/\D/g,''); const avg = getAvgInterval(customerOperations); const worstDebt = customerDebts.filter(d=>d.remainingAmount>0.5).map(d=>calcRisk(d,avg)).sort((a,b)=>b.daysLate-a.daysLate)[0];
     const lateTxt = worstDebt && worstDebt.daysLate>0 ? `\n⏰ متأخر ${worstDebt.daysLate} يوم` : '';
-    const message = `📌 إشعار أداء\n\nالسلام عليكم ${customerName}\n\n🔔 هذا تذكير بموعد أداء .${lateTxt}\n\n💵 المبلغ المتبقي لكم:\n${total}\n\n🕕 موعد الأداء:\nبعد الساعة التاسعة مساءً.\n\n✅ المرجو توفير الدفعة في الوقت المحدد.\n\n🤝 شكراً لتعاونكم.\n\n👤 مصطفى`;
+    const message = `📌 إشعار أداء\n\nالسلام عليكم ${customerName}${lateTxt}\n\n💵 المبلغ المتبقي:\n${total}\n\n🕕 بعد الساعة التاسعة مساءً.\n\n👤 مصطفى`;
     window.open('https://wa.me/212' + cleanPhone.replace(/^0/,'') + '?text=' + encodeURIComponent(message), '_blank');
 }
-
 window.sendConfirmWhatsapp = function(index){
-    const phone = document.getElementById('phone').textContent.trim();
-    const customerName = document.getElementById('name').textContent;
-    if(!phone || phone === 'لا يوجد هاتف'){ alert('أضف رقم هاتف ' + customerName + ' أولاً'); return; }
-    const op = customerOperations[index];
-    const total = document.getElementById('totalAmount').textContent;
-    const cleanPhone = phone.replace(/\D/g,'');
-    const message = `✅ إشعار استلام دفعة\n\nالسلام عليكم ${customerName}\n\nتم تسجيل استلام مبلغ قدره:\n\n💵 ${op.amount} درهم\n\n📌 المبلغ المتبقي الواجب أداؤه:\n${total}\n\n🙏 شكراً لكم على حسن تعاونكم.\n\n👤 مصطفى`;
+    const phone = document.getElementById('phone').textContent.trim(); const customerName = document.getElementById('name').textContent;
+    if(!phone || phone === 'لا يوجد هاتف'){ alert('أضف رقم هاتف'); return; }
+    const op = customerOperations[index]; const total = document.getElementById('totalAmount').textContent; const cleanPhone = phone.replace(/\D/g,'');
+    const message = `✅ استلام دفعة\n\n${customerName}\n💵 ${op.amount} درهم\n📌 المتبقي: ${total}\n\n👤 مصطفى`;
     window.open('https://wa.me/212' + cleanPhone.replace(/^0/,'') + '?text=' + encodeURIComponent(message), '_blank');
 }
-
-document.getElementById('backBtn').addEventListener('click', ()=>{
-    window.location.href = 'index.html';
-});
-
-window.openAddDebtModal = function(){
-    document.getElementById('newDebtAmount').value='';
-    document.getElementById('newDebtDate').value=new Date().toISOString().split('T')[0];
-    document.getElementById('newDebtNote').value='';
-    document.getElementById('addDebtModal').classList.add('active');
-}
+document.getElementById('backBtn').addEventListener('click', ()=>{ window.location.href = 'index.html'; });
+window.openAddDebtModal = function(){ document.getElementById('newDebtAmount').value=''; document.getElementById('newDebtDate').value=new Date().toISOString().split('T')[0]; document.getElementById('newDebtNote').value=''; document.getElementById('addDebtModal').classList.add('active'); }
 window.closeAddDebtModal = function(){ document.getElementById('addDebtModal').classList.remove('active'); }
 window.confirmAddDebt = function(){
-    const amt = parseFloat(document.getElementById('newDebtAmount').value);
-    const dateStr = document.getElementById('newDebtDate').value;
-    const note = document.getElementById('newDebtNote').value;
-    if(!amt||amt<=0){ alert('أدخل مبلغ صحيح'); return; }
-    if(!dateStr){ alert('أدخل تاريخ'); return; }
+    const amt = parseFloat(document.getElementById('newDebtAmount').value); const dateStr = document.getElementById('newDebtDate').value; const note = document.getElementById('newDebtNote').value;
+    if(!amt||amt<=0){ alert('أدخل مبلغ صحيح'); return; } if(!dateStr){ alert('أدخل تاريخ'); return; }
     const avg = getAvgInterval(customerOperations);
-    const newDebt = {
-        id: 'debt_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
-        originalAmount: amt,
-        startDate: dateStr,
-        expectedDate: addDays(dateStr, avg)||dateStr,
-        payments: [],
-        remainingAmount: amt,
-        createdAt: new Date().toISOString(),
-        note: note||'سلعة جديدة'
-    };
-    let debts = [...customerDebts, newDebt];
-    let ops = [...customerOperations, {type:'paid', amount: amt, date: dateStr, time: new Date().toTimeString().slice(0,5), note: note}];
-    update(customerRef, {debts: debts, operations: ops, updatedAt: new Date().toISOString()}).then(()=>{
-        closeAddDebtModal();
-        location.reload();
-    });
+    const newDebt = { id: 'debt_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), originalAmount: amt, startDate: dateStr, expectedDate: addDays(dateStr, avg)||dateStr, payments: [], remainingAmount: amt, createdAt: new Date().toISOString(), note: note||'سلعة جديدة' };
+    let debts = [...customerDebts, newDebt]; let ops = [...customerOperations, {type:'paid', amount: amt, date: dateStr, time: new Date().toTimeString().slice(0,5), note: note}];
+    update(customerRef, {debts: debts, operations: ops, updatedAt: new Date().toISOString()}).then(()=>{ closeAddDebtModal(); location.reload(); });
 }
+window.toggleDebt = toggleDebt;
+window.selectCityPerson = function(city){ currentCity = city; document.getElementById('cityValue').value = city; document.querySelectorAll('.city-quick-btn-person').forEach(btn=>{ if(btn.dataset.city === city) btn.classList.add('active-city'); else btn.classList.remove('active-city'); }); }
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
