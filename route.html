@@ -1,27 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head><style>
-@font-face {
-  font-family: "Optimistic";
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Optimistic Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
-}
-:where(html) {
-  font-family: "Optimistic", system-ui, sans-serif;
-}
-:where(code, pre, kbd, samp) {
-  font-family: "Optimistic Mono", ui-monospace, monospace;
-}
-</style>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Karni Pro - المسار</title>
@@ -78,109 +57,26 @@ body{background:var(--bg);min-height:100vh;color:var(--text);overflow-x:hidden}
 .house{background:var(--primary);color:#fff;padding:8px 14px;border-radius:10px;font-weight:800;font-size:12px;box-shadow:0 4px 12px rgba(15,118,110,.4)}
 .tree{position:absolute;font-size:22px;z-index:2;filter:drop-shadow(0 0 6px rgba(34,197,94,.35))}
 
-/* ORDER VIEW - FIXED SCROLL + DRAG HANDLE ONLY */
+/* ORDER VIEW - HANDLE ONLY */
 .order-view{position:fixed;inset:0;z-index:130;background:#0b1220;display:none;flex-direction:column;color:#fff}
 .order-view.active{display:flex}
 .order-header{background:#0f172a;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e293b;min-height:54px;gap:10px}
 .order-header b{font-size:14px;font-weight:900;flex:1;text-align:center}
 .order-unsaved{font-size:10px;font-weight:800;color:#fbbf24;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);padding:4px 8px;border-radius:20px;display:none}
 .order-unsaved.show{display:inline-flex}
-.order-list{
-  flex:1;
-  overflow-y:auto;
-  padding:8px;
-  background:#0b1220;
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-  touch-action:pan-y;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior-y:contain;
-}
-.order-item{
-  background:#172235;
-  border:1px solid #233044;
-  border-radius:10px;
-  padding:6px 8px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  min-height:46px;
-  position:relative;
-  will-change:auto;
-  /* مهم: السماح بالسكرول الطبيعي من الكارد */
-  touch-action:pan-y;
-  user-select:none;
-  -webkit-user-select:none;
-}
-.order-item.pressed{transform:scale(.98);background:#1d2a3d}
-.order-item.dragging{
-  opacity:.96;
-  transform:scale(1.02);
-  box-shadow:0 12px 28px rgba(0,0,0,.55);
-  background:#1d2a3d;
-  border-color:rgba(20,184,166,.7);
-  z-index:100;
-  pointer-events:none;
-  position:fixed;
-  left:8px;
-  right:8px;
-  width:calc(100% - 16px);
-  touch-action:none;
-  will-change:transform;
-}
+.order-list{flex:1;overflow-y:auto;padding:8px;background:#0b1220;display:flex;flex-direction:column;gap:5px;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+.order-item{background:#172235;border:1px solid #233044;border-radius:10px;padding:6px 8px;display:flex;align-items:center;gap:6px;min-height:46px;position:relative;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.order-item.dragging{opacity:.96;transform:scale(1.02);box-shadow:0 12px 28px rgba(0,0,0,.55);background:#1d2a3d;border-color:rgba(20,184,166,.7);z-index:100;pointer-events:none;position:fixed;left:8px;right:8px;width:calc(100% - 16px)}
 .order-item.placeholder{border:1.5px dashed rgba(20,184,166,.6);background:rgba(20,184,166,.08);height:46px;opacity:.7;pointer-events:none}
-.order-num{
-  width:28px;
-  height:26px;
-  border-radius:8px;
-  background:#0f172a;
-  border:1px solid #2a3a52;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:900;
-  font-size:10px;
-  color:#e2e8f0;
-  flex-shrink:0;
-}
-.order-handle{
-  width:44px;
-  height:44px;
-  min-width:44px;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#0f172a;
-  border:1px solid #233044;
-  color:#94a3b8;
-  flex-shrink:0;
-  touch-action:none;
-  cursor:grab;
-  user-select:none;
-  -webkit-user-select:none;
-  position:relative;
-}
-.order-handle:active{cursor:grabbing;background:#1e293b}
-.order-handle i{font-size:13px;pointer-events:none}
+.order-num{width:28px;height:26px;border-radius:8px;background:#0f172a;border:1px solid #2a3a52;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;color:#e2e8f0;flex-shrink:0;touch-action:pan-y}
 .order-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;touch-action:pan-y}
-.order-name{
-  font-size:10px;
-  font-weight:700;
-  color:#e2e8f0;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  line-height:1.2;
-  touch-action:pan-y;
-}
-.order-sub{
-  font-size:8px;
-  font-weight:600;
-  color:#64748b;
-  display:flex;align-items:center;gap:4px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  touch-action:pan-y;
-}
+.order-name{font-size:10px;font-weight:700;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;touch-action:pan-y}
+.order-sub{font-size:8px;font-weight:600;color:#64748b;display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;touch-action:pan-y}
+.order-handle{width:44px;height:44px;min-width:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#0f172a;border:1px solid #233044;color:#94a3b8;flex-shrink:0;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.order-handle i{font-size:13px;pointer-events:none}
+.order-handle.pressed{background:#1e293b;color:#e2e8f0}
 .order-footer{padding:10px;background:#0f172a;border-top:1px solid #1e293b;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.save-btn{padding:12px;border-radius:12px;background:linear-gradient(135deg,#0F766E 0%,#14B8A6 100%);color:#fff;border:none;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 6px 18px rgba(15,118,110,.35);transition:.2s}
+.save-btn{padding:12px;border-radius:12px;background:linear-gradient(135deg,#0F766E 0%,#14B8A6 100%);color:#fff;border:none;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 6px 18px rgba(15,118,110,.35)}
 .save-btn:disabled{opacity:.45;pointer-events:none;filter:grayscale(.3)}
 .cancel-btn{padding:12px;border-radius:12px;background:#172235;color:#94a3b8;border:1px solid #233044;font-weight:800;font-size:12px;cursor:pointer}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
@@ -220,38 +116,25 @@ body{background:var(--bg);min-height:100vh;color:var(--text);overflow-x:hidden}
 </div>
 </div>
 </header>
-
 <div class="stats">
 <div class="s-item"><div class="s-num" id="totalCount">0</div><div class="s-label">الإجمالي</div></div>
 <div class="s-item"><div class="s-num" id="visitedCount">0</div><div class="s-label">تمت زيارته</div></div>
 <div class="s-item"><div class="s-num" id="currentCount">0</div><div class="s-label">الحالي</div></div>
 <div class="s-item"><div class="s-num" id="pendingCount">0</div><div class="s-label">في الانتظار</div></div>
 </div>
-
 <div class="view-toggle">
 <button class="v-btn active" id="btnList" onclick="showListView()"><i class="fas fa-list"></i> القائمة</button>
 <button class="v-btn" id="btnMap" onclick="showMapView()"><i class="fas fa-map"></i> الخريطة</button>
 <button class="v-btn" id="btnOrder" onclick="openOrderView()" style="background:#0f172a;color:#fff;border-color:#1e293b"><i class="fas fa-arrows-up-down"></i> ترتيب</button>
 </div>
-
-<div class="view active" id="listView">
-<div id="routeList"></div>
-</div>
-
+<div class="view active" id="listView"><div id="routeList"></div></div>
 <div class="view" id="mapView">
 <div class="map-wrap" id="mapContainer">
 <div class="map-content" id="mapContent">
 <div class="map-bg"></div>
 <div class="route-path" id="routePathDiv"><svg id="routeSvg"><path id="routePath" fill="none" stroke="#ffffff" stroke-width="10" stroke-dasharray="14 12" stroke-linecap="round" opacity="0.9"/></svg></div>
-<div id="pointsContainer"></div>
-<div id="startContainer"></div>
-<div id="treesContainer"></div>
-<div id="finishContainer"></div>
-</div>
-</div>
-</div>
-
-<!-- ORDER VIEW FULL SCREEN - POINTER EVENTS HANDLE ONLY -->
+<div id="pointsContainer"></div><div id="startContainer"></div><div id="treesContainer"></div><div id="finishContainer"></div>
+</div></div></div>
 <div class="order-view" id="orderView">
 <div class="order-header">
 <button class="h-btn" onclick="tryCloseOrder()" style="background:rgba(255,255,255,0.12)"><i class="fas fa-arrow-right"></i></button>
@@ -265,17 +148,12 @@ body{background:var(--bg);min-height:100vh;color:var(--text);overflow-x:hidden}
 <button class="save-btn" id="saveOrderBtn" onclick="saveOrder()" disabled>💾 حفظ الترتيب</button>
 </div>
 </div>
-
 <div class="modal" id="customModal"><div class="m-card"><div class="m-title"><i class="fas fa-circle-info" style="color:var(--primary)"></i> <span id="customTitle">تنبيه</span></div><div class="m-desc" id="customDesc"></div><input type="text" id="customInput" class="m-input" style="display:none" placeholder=""><div class="m-actions"><button class="m-btn cancel" onclick="closeModal()">إلغاء</button><button class="m-btn confirm" id="customConfirm">تأكيد</button></div></div></div>
-
-<div class="bottom-sheet" id="bottomSheet" onclick="if(event.target.id==='bottomSheet') closeSheet()"><div class="sheet-card"><div style="width:36px;height:4px;background:var(--border);border-radius:10px;margin:0 auto 12px"></div><div class="sheet-item" onclick="closeSheet(); openOrderView()"><i class="fas fa-arrows-up-down" style="color:var(--primary)"></i><div><div style="font-weight:800;font-size:12px">↕ ترتيب زبناء اليوم</div><div style="font-size:10px;color:var(--muted)">سحب من زر ☰ فقط - ضغط مطول 350ms</div></div></div><div class="sheet-item" onclick="closeSheet(); resetRoute()"><i class="fas fa-rotate" style="color:#2563eb"></i><div><div style="font-weight:800;font-size:12px">إعادة التعيين</div><div style="font-size:10px;color:var(--muted)">إرجاع الكل إلى في الانتظار</div></div></div><div class="sheet-item" onclick="closeSheet(); syncToday()"><i class="fas fa-arrows-rotate" style="color:var(--primary)"></i><div><div style="font-weight:800;font-size:12px">مزامنة زبناء اليوم</div><div style="font-size:10px;color:var(--muted)">إضافة زبناء اليوم تلقائياً</div></div></div><div class="sheet-item danger" onclick="closeSheet(); clearAll()"><i class="fas fa-trash" style="color:var(--danger);background:#fef2f2"></i><div><div style="font-weight:800;font-size:12px">مسح المسار</div><div style="font-size:10px;color:var(--muted)">حذف كل المسار</div></div></div><div style="margin-top:10px"><button class="m-btn cancel" style="width:100%" onclick="closeSheet()">إغلاق</button></div></div></div>
-
+<div class="bottom-sheet" id="bottomSheet" onclick="if(event.target.id==='bottomSheet') closeSheet()"><div class="sheet-card"><div style="width:36px;height:4px;background:var(--border);border-radius:10px;margin:0 auto 12px"></div><div class="sheet-item" onclick="closeSheet(); openOrderView()"><i class="fas fa-arrows-up-down" style="color:var(--primary)"></i><div><div style="font-weight:800;font-size:12px">↕ ترتيب زبناء اليوم</div><div style="font-size:10px;color:var(--muted)">سحب من ☰ فقط - ضغط مطول 350ms</div></div></div><div class="sheet-item" onclick="closeSheet(); resetRoute()"><i class="fas fa-rotate" style="color:#2563eb"></i><div><div style="font-weight:800;font-size:12px">إعادة التعيين</div><div style="font-size:10px;color:var(--muted)">إرجاع الكل إلى في الانتظار</div></div></div><div class="sheet-item" onclick="closeSheet(); syncToday()"><i class="fas fa-arrows-rotate" style="color:var(--primary)"></i><div><div style="font-weight:800;font-size:12px">مزامنة زبناء اليوم</div><div style="font-size:10px;color:var(--muted)">إضافة زبناء اليوم تلقائياً</div></div></div><div class="sheet-item danger" onclick="closeSheet(); clearAll()"><i class="fas fa-trash" style="color:var(--danger);background:#fef2f2"></i><div><div style="font-weight:800;font-size:12px">مسح المسار</div><div style="font-size:10px;color:var(--muted)">حذف كل المسار</div></div></div><div style="margin-top:10px"><button class="m-btn cancel" style="width:100%" onclick="closeSheet()">إغلاق</button></div></div></div>
 <div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">تم</span></div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, set, remove, onValue, get } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-// FIREBASE CONFIG - MUST NOT CHANGE - SAME AS ORIGINAL FILES - DO NOT MODIFY
 const firebaseConfig = {
   apiKey: "AIzaSyBCVOOouLET3GDGyHj2i7ncvUZBjUUVB7Y",
   authDomain: "karni-b9b34.firebaseapp.com",
@@ -287,7 +165,6 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-
 let routeList = [];
 let currentView = 'list';
 let customCb = null;
@@ -297,418 +174,139 @@ let hasUnsavedOrder = false;
 let orderData = [];
 let originalOrderSignature = '';
 const STATUS_AR = {pending:'في الانتظار', current:'الحالي', visited:'تمت زيارته', closed:'مغلق', 'closed-note':'ملاحظة', postponed:'مؤجل'};
+function getLocalToday(){const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;}
+function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+window.showCustomModal=function({title,desc,showInput=false,inputValue='',placeholder='',confirmText='تأكيد',cancelText='إلغاء',danger=false,onConfirm}){document.getElementById('customTitle').textContent=title||'تنبيه';document.getElementById('customDesc').textContent=desc||'';const inp=document.getElementById('customInput');inp.style.display=showInput?'block':'none';if(showInput){inp.value=inputValue;inp.placeholder=placeholder;setTimeout(()=>inp.focus(),100);}document.getElementById('customConfirm').textContent=confirmText;document.getElementById('customConfirm').className=danger?'m-btn danger':'m-btn confirm';document.querySelector('#customModal.m-btn.cancel').textContent=cancelText;customCb=onConfirm;document.getElementById('customModal').classList.add('active');};
+window.closeModal=function(){document.getElementById('customModal').classList.remove('active');customCb=null;};
+document.getElementById('customConfirm').addEventListener('click',()=>{const v=document.getElementById('customInput').style.display!=='none'?document.getElementById('customInput').value:null;if(customCb)customCb(v);closeModal();});
+document.getElementById('customModal').addEventListener('click',(e)=>{if(e.target.id==='customModal')closeModal();});
+window.openSheet=function(){document.getElementById('bottomSheet').classList.add('active');};
+window.closeSheet=function(){document.getElementById('bottomSheet').classList.remove('active');};
+function setConn(s,t){const d=document.getElementById('connDot');const x=document.getElementById('connText');d.className='dot '+(s==='online'?'':s==='off'?'off':'wait');x.textContent=t;}
+function saveToFirebase(){set(ref(db,'routeManual'),routeList).then(()=>showToast('✅ تم الحفظ')).catch(()=>showToast('⚠️ خطأ في الحفظ'));}
+function getOrderSignature(l){return l.map(x=>x.id).join('|');}
+async function loadCustomerAmounts(){try{const snap=await get(ref(db,'customers'));if(!snap.exists())return;const customers=snap.val();Object.keys(customers).forEach(k=>{const c=customers[k];const id=c.id||k;let total=0;if(c.debts&&Array.isArray(c.debts))total=c.debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0);else total=Number(c.amount||0);customerAmounts[id]=Math.round(total);});}catch(e){}}
+async function checkAndLoadTodayCustomers(){if(isDragging||hasUnsavedOrder)return;try{const today=getLocalToday();const cs=await get(ref(db,'customers'));const rs=await get(ref(db,'routeManual'));let rld=rs.exists()?rs.val():[];if(!Array.isArray(rld))rld=Object.values(rld);if(!cs.exists())return;const customers=cs.val();let added=0;Object.keys(customers).forEach(key=>{const customer=customers[key];if(customer.date===today){const exists=rld.some(item=>item.id===(customer.id||key));if(!exists){rld.push({id:customer.id||key,name:customer.name,status:'pending',note:''});added++;}}});if(added>0){await set(ref(db,'routeManual'),rld);showToast(`➕ تمت إضافة ${added} زبون اليوم`);}Object.keys(customers).forEach(k=>{const c=customers[k];const id=c.id||k;let total=0;if(c.debts&&Array.isArray(c.debts))total=c.debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0);else total=Number(c.amount||0);customerAmounts[id]=Math.round(total);});}catch(e){console.warn(e);}}
+window.syncToday=function(){checkAndLoadTodayCustomers();};
+setConn('wait','جاري الاتصال...');loadCustomerAmounts();checkAndLoadTodayCustomers();setInterval(checkAndLoadTodayCustomers,45000);
+onValue(ref(db,'routeManual'),(snapshot)=>{if(isDragging||hasUnsavedOrder){setConn('online','متصل - غير محفوظ');return;}routeList=snapshot.exists()?snapshot.val():[];if(!Array.isArray(routeList))routeList=Object.values(routeList);renderAll();setConn('online','متصل');},()=>{setConn('off','غير متصل');});
+function normalizeStatuses(){const hasCurrent=routeList.some(x=>x.status==='current');if(!hasCurrent){const idx=routeList.findIndex(x=>x.status==='pending');if(idx!==-1)routeList[idx].status='current';}}
+function renderAll(){normalizeStatuses();renderStats();renderList();renderMap();if(document.getElementById('orderView').classList.contains('active')&&!isDragging){if(!hasUnsavedOrder){orderData=[...routeList];originalOrderSignature=getOrderSignature(orderData);renderOrderList();}}}
+function renderStats(){let pending=0,current=0,visited=0;routeList.forEach(item=>{if(item.status==='pending')pending++;if(item.status==='current')current++;if(item.status==='visited')visited++;});document.getElementById('totalCount').innerText=routeList.length;document.getElementById('visitedCount').innerText=visited;document.getElementById('currentCount').innerText=current;document.getElementById('pendingCount').innerText=pending;}
+function renderList(){const container=document.getElementById('routeList');if(routeList.length===0){container.innerHTML='<div class="empty"><div style="font-size:36px">🗺️</div><div style="font-weight:800;margin-top:8px">المسار فارغ</div><div style="font-size:11px;margin-top:4px">سيتم إضافة زبناء اليوم تلقائياً</div></div>';return;}let html='';routeList.forEach((item,index)=>{const statusAr=STATUS_AR[item.status]||item.status;html+=`<div class="route-card ${item.status}" data-id="${item.id}" onclick="window.location.href='person.html?id=${item.id}'"><div class="r-num ${item.status}">${index+1}</div><div class="r-info"><div class="r-name">${item.name}</div><div class="r-status ${item.status}">${statusAr}</div>${item.note?`<div class="r-note"><i class="fas fa-sticky-note"></i> ${item.note}</div>`:''}<div class="r-actions">${item.status!=='visited'?`<button class="btn-done" onclick="event.stopPropagation();markDone('${item.id}')"><i class="fas fa-check"></i> تم</button>`:''}<button class="btn-closed" onclick="event.stopPropagation();markClosed('${item.id}')">مغلق</button><button class="btn-note" onclick="event.stopPropagation();addNote('${item.id}')">✏️ رسالة</button><button class="btn-postpone" onclick="event.stopPropagation();postpone('${item.id}')">تأجيل</button><button class="btn-del" onclick="event.stopPropagation();deleteCustomer('${item.id}')"><i class="fas fa-trash"></i></button></div></div></div>`;});container.innerHTML=html;}
+function renderMap(){const container=document.getElementById('pointsContainer');const startContainer=document.getElementById('startContainer');const treesContainer=document.getElementById('treesContainer');const finishContainer=document.getElementById('finishContainer');const mapContent=document.getElementById('mapContent');const routePathDiv=document.getElementById('routePathDiv');const routeSvg=document.getElementById('routeSvg');const path=document.getElementById('routePath');container.innerHTML='';startContainer.innerHTML='';treesContainer.innerHTML='';finishContainer.innerHTML='';if(routeList.length===0){path.setAttribute('d','');mapContent.style.height='400px';routePathDiv.style.height='400px';routeSvg.setAttribute('height','400');return;}let points=[];let itemHeight=130;let totalHeight=(routeList.length*itemHeight)+350;mapContent.style.height=totalHeight+'px';routePathDiv.style.height=totalHeight+'px';routeSvg.setAttribute('height',totalHeight);let width=document.getElementById('mapContainer').offsetWidth||360;routeList.forEach((item,index)=>{let y=100+(index*itemHeight);let x=width/2+Math.sin(index*0.9)*(width*0.28);points.push({x,y});});for(let i=0;i<points.length;i++){const p=points[i];treesContainer.innerHTML+=`<div class="tree" style="top:${p.y-40}px;left:${p.x-170}px">🌳</div><div class="tree" style="top:${p.y+40}px;left:${p.x+160}px">🌲</div>`;}if(points.length>1){let firstPoint=points[0];startContainer.innerHTML=`<div class="house" style="position:absolute;top:${firstPoint.y-40}px;left:${firstPoint.x}px;transform:translate(-50%,-50%)">🏠 البداية</div>`;let d=`M ${points[0].x} ${points[0].y}`;for(let i=1;i<points.length;i++){let cpX=(points[i-1].x+points[i].x)/2;d+=` Q ${cpX} ${points[i-1].y+55}, ${points[i].x} ${points[i].y}`;}let lastPoint=points[points.length-1];d+=` L ${lastPoint.x} ${lastPoint.y+150}`;path.setAttribute('d',d);}routeList.forEach((item,index)=>{let point=points[index];let statusAr=STATUS_AR[item.status]||item.status;let isLeft=index%2===0;container.innerHTML+=`<div class="point" style="top:${point.y}px;left:${point.x}px;flex-direction:${isLeft?'row-reverse':'row'}"><div class="point-dot ${item.status}">${index+1}</div><div class="point-label"><div class="point-name">${item.name}</div><div class="point-status ${item.status}">${statusAr}</div></div></div>`;});if(points.length>0){let lastPoint=points[points.length-1];finishContainer.innerHTML=`<div class="finish-flag" style="top:${lastPoint.y+170}px;left:${lastPoint.x}px"><div class="flag">🏁 النهاية</div><div class="flag-pole"></div></div>`;}setTimeout(()=>{const cur=document.querySelector('.point-dot.current');if(cur&&currentView==='map'){cur.scrollIntoView({behavior:'smooth',block:'center'});}},400);}
+window.showListView=function(){currentView='list';document.getElementById('listView').classList.add('active');document.getElementById('mapView').classList.remove('active');document.getElementById('btnList').classList.add('active');document.getElementById('btnMap').classList.remove('active');};
+window.showMapView=function(){currentView='map';document.getElementById('mapView').classList.add('active');document.getElementById('listView').classList.remove('active');document.getElementById('btnMap').classList.add('active');document.getElementById('btnList').classList.remove('active');setTimeout(()=>{renderMap();},100);};
 
-function getLocalToday(){
-  const now = new Date();
-  const yyyy = now.getFullYear();
-  const mm = String(now.getMonth()+1).padStart(2,'0');
-  const dd = String(now.getDate()).padStart(2,'0');
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-function showToast(msg){
-  const toast=document.getElementById('toast');
-  document.getElementById('toastMsg').textContent=msg;
-  toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 2200);
-}
-window.showCustomModal = function({title, desc, showInput=false, inputValue='', placeholder='', confirmText='تأكيد', cancelText='إلغاء', danger=false, onConfirm}){
-  document.getElementById('customTitle').textContent=title||'تنبيه';
-  document.getElementById('customDesc').textContent=desc||'';
-  const inp=document.getElementById('customInput');
-  inp.style.display= showInput? 'block':'none';
-  if(showInput){ inp.value=inputValue; inp.placeholder=placeholder; setTimeout(()=>inp.focus(),100); }
-  document.getElementById('customConfirm').textContent=confirmText;
-  document.getElementById('customConfirm').className = danger? 'm-btn danger' : 'm-btn confirm';
-  document.querySelector('#customModal.m-btn.cancel').textContent=cancelText;
-  customCb=onConfirm;
-  document.getElementById('customModal').classList.add('active');
-};
-window.closeModal=function(){ document.getElementById('customModal').classList.remove('active'); customCb=null; };
-document.getElementById('customConfirm').addEventListener('click',()=>{
-  const val=document.getElementById('customInput').style.display!=='none'? document.getElementById('customInput').value : null;
-  if(customCb) customCb(val);
-  closeModal();
-});
-document.getElementById('customModal').addEventListener('click',(e)=>{ if(e.target.id==='customModal') closeModal(); });
-window.openSheet=function(){ document.getElementById('bottomSheet').classList.add('active'); };
-window.closeSheet=function(){ document.getElementById('bottomSheet').classList.remove('active'); };
-function setConn(state,text){ const dot=document.getElementById('connDot'); const txt=document.getElementById('connText'); dot.className='dot '+(state==='online'?'':state==='off'?'off':'wait'); txt.textContent=text; }
-
-function saveToFirebase(){
-  set(ref(db, 'routeManual'), routeList).then(()=>{ showToast('✅ تم الحفظ'); }).catch(()=>{ showToast('⚠️ خطأ في الحفظ'); });
-}
-
-function getOrderSignature(list){
-  return list.map(x=>x.id).join('|');
-}
-
-async function loadCustomerAmounts(){
-  try{
-    const snap=await get(ref(db,'customers'));
-    if(!snap.exists()) return;
-    const customers=snap.val();
-    Object.keys(customers).forEach(k=>{
-      const c=customers[k];
-      const id=c.id||k;
-      let total=0;
-      if(c.debts && Array.isArray(c.debts)) total=c.debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0);
-      else total=Number(c.amount||0);
-      customerAmounts[id]=Math.round(total);
-    });
-  }catch(e){}
-}
-
-async function checkAndLoadTodayCustomers(){
-  if(isDragging || hasUnsavedOrder) return;
-  try{
-    const today = getLocalToday();
-    const customersSnapshot = await get(ref(db,'customers'));
-    const routeSnapshot = await get(ref(db,'routeManual'));
-    let routeListData = routeSnapshot.exists()? routeSnapshot.val() : [];
-    if(!Array.isArray(routeListData)) routeListData=Object.values(routeListData);
-    if(!customersSnapshot.exists()) return;
-    const customers = customersSnapshot.val();
-    let added=0;
-    Object.keys(customers).forEach(key=>{
-      const customer = customers[key];
-      if(customer.date === today){
-        const exists = routeListData.some(item => item.id === (customer.id || key));
-        if(!exists){
-          routeListData.push({id: customer.id || key, name: customer.name, status: 'pending', note: ''});
-          added++;
-        }
-      }
-    });
-    if(added>0){
-      await set(ref(db,'routeManual'), routeListData);
-      showToast(`➕ تمت إضافة ${added} زبون اليوم`);
-    }
-    Object.keys(customers).forEach(k=>{
-      const c=customers[k];
-      const id=c.id||k;
-      let total=0;
-      if(c.debts && Array.isArray(c.debts)) total=c.debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0);
-      else total=Number(c.amount||0);
-      customerAmounts[id]=Math.round(total);
-    });
-  }catch(e){ console.warn(e); }
-}
-window.syncToday = function(){ checkAndLoadTodayCustomers(); };
-
-setConn('wait','جاري الاتصال...');
-loadCustomerAmounts();
-checkAndLoadTodayCustomers();
-setInterval(checkAndLoadTodayCustomers, 45000);
-onValue(ref(db, 'routeManual'), (snapshot)=>{
-  if(isDragging || hasUnsavedOrder){
-    setConn('online','متصل - غير محفوظ');
-    return;
-  }
-  routeList = snapshot.exists()? snapshot.val() : [];
-  if(!Array.isArray(routeList)) routeList = Object.values(routeList);
-  renderAll();
-  setConn('online','متصل');
-}, ()=>{ setConn('off','غير متصل'); });
-
-function normalizeStatuses(){
-  const hasCurrent = routeList.some(x=>x.status==='current');
-  if(!hasCurrent){
-    const idx = routeList.findIndex(x=>x.status==='pending');
-    if(idx!==-1){
-      routeList[idx].status='current';
-    }
-  }
-}
-
-function renderAll(){
-  normalizeStatuses();
-  renderStats();
-  renderList();
-  renderMap();
-  if(document.getElementById('orderView').classList.contains('active') &&!isDragging){
-    if(!hasUnsavedOrder){
-      orderData = [...routeList];
-      originalOrderSignature = getOrderSignature(orderData);
-      renderOrderList();
-    }
-  }
-}
-
-function renderStats(){
-  let pending=0, current=0, visited=0;
-  routeList.forEach(item=>{
-    if(item.status==='pending') pending++;
-    if(item.status==='current') current++;
-    if(item.status==='visited') visited++;
-  });
-  document.getElementById('totalCount').innerText = routeList.length;
-  document.getElementById('visitedCount').innerText = visited;
-  document.getElementById('currentCount').innerText = current;
-  document.getElementById('pendingCount').innerText = pending;
-}
-
-function renderList(){
-  const container=document.getElementById('routeList');
-  if(routeList.length===0){
-    container.innerHTML='<div class="empty"><div style="font-size:36px">🗺️</div><div style="font-weight:800;margin-top:8px">المسار فارغ</div><div style="font-size:11px;margin-top:4px">سيتم إضافة زبناء اليوم تلقائياً</div></div>';
-    return;
-  }
-  let html='';
-  routeList.forEach((item, index)=>{
-    const statusAr = STATUS_AR[item.status] || item.status;
-    html+=`
-    <div class="route-card ${item.status}" data-id="${item.id}" onclick="window.location.href='person.html?id=${item.id}'">
-      <div class="r-num ${item.status}">${index+1}</div>
-      <div class="r-info">
-        <div class="r-name">${item.name}</div>
-        <div class="r-status ${item.status}">${statusAr}</div>
-        ${item.note? `<div class="r-note"><i class="fas fa-sticky-note"></i> ${item.note}</div>` : ''}
-        <div class="r-actions">
-          ${item.status!=='visited'? `<button class="btn-done" onclick="event.stopPropagation();markDone('${item.id}')"><i class="fas fa-check"></i> تم</button>` : ''}
-          <button class="btn-closed" onclick="event.stopPropagation();markClosed('${item.id}')">مغلق</button>
-          <button class="btn-note" onclick="event.stopPropagation();addNote('${item.id}')">✏️ رسالة</button>
-          <button class="btn-postpone" onclick="event.stopPropagation();postpone('${item.id}')">تأجيل</button>
-          <button class="btn-del" onclick="event.stopPropagation();deleteCustomer('${item.id}')"><i class="fas fa-trash"></i></button>
-        </div>
-      </div>
-    </div>`;
-  });
-  container.innerHTML=html;
-}
-
-function renderMap(){
-  const container=document.getElementById('pointsContainer');
-  const startContainer=document.getElementById('startContainer');
-  const treesContainer=document.getElementById('treesContainer');
-  const finishContainer=document.getElementById('finishContainer');
-  const mapContent=document.getElementById('mapContent');
-  const routePathDiv=document.getElementById('routePathDiv');
-  const routeSvg=document.getElementById('routeSvg');
-  const path=document.getElementById('routePath');
-  container.innerHTML=''; startContainer.innerHTML=''; treesContainer.innerHTML=''; finishContainer.innerHTML='';
-  if(routeList.length===0){
-    path.setAttribute('d','');
-    mapContent.style.height='400px';
-    routePathDiv.style.height='400px';
-    routeSvg.setAttribute('height','400');
-    return;
-  }
-  let points=[]; let itemHeight=130; let totalHeight=(routeList.length*itemHeight)+350;
-  mapContent.style.height=totalHeight+'px';
-  routePathDiv.style.height=totalHeight+'px';
-  routeSvg.setAttribute('height',totalHeight);
-  let width=document.getElementById('mapContainer').offsetWidth || 360;
-  routeList.forEach((item,index)=>{
-    let y=100+(index*itemHeight);
-    let x=width/2 + Math.sin(index*0.9)*(width*0.28);
-    points.push({x,y});
-  });
-  for(let i=0;i<points.length;i++){
-    const p=points[i];
-    treesContainer.innerHTML+=`<div class="tree" style="top:${p.y-40}px;left:${p.x-170}px">🌳</div><div class="tree" style="top:${p.y+40}px;left:${p.x+160}px">🌲</div>`;
-  }
-  if(points.length>1){
-    let firstPoint=points[0];
-    startContainer.innerHTML=`<div class="house" style="position:absolute;top:${firstPoint.y-40}px;left:${firstPoint.x}px;transform:translate(-50%,-50%)">🏠 البداية</div>`;
-    let d=`M ${points[0].x} ${points[0].y}`;
-    for(let i=1;i<points.length;i++){
-      let cpX=(points[i-1].x+points[i].x)/2;
-      d+=` Q ${cpX} ${points[i-1].y+55}, ${points[i].x} ${points[i].y}`;
-    }
-    let lastPoint=points[points.length-1];
-    d+=` L ${lastPoint.x} ${lastPoint.y+150}`;
-    path.setAttribute('d',d);
-  }
-  routeList.forEach((item,index)=>{
-    let point=points[index];
-    let statusAr=STATUS_AR[item.status]||item.status;
-    let isLeft=index%2===0;
-    container.innerHTML+=`
-    <div class="point" style="top:${point.y}px;left:${point.x}px;flex-direction:${isLeft?'row-reverse':'row'}">
-      <div class="point-dot ${item.status}">${index+1}</div>
-      <div class="point-label">
-        <div class="point-name">${item.name}</div>
-        <div class="point-status ${item.status}">${statusAr}</div>
-      </div>
-    </div>`;
-  });
-  if(points.length>0){
-    let lastPoint=points[points.length-1];
-    finishContainer.innerHTML=`<div class="finish-flag" style="top:${lastPoint.y+170}px;left:${lastPoint.x}px"><div class="flag">🏁 النهاية</div><div class="flag-pole"></div></div>`;
-  }
-  setTimeout(()=>{
-    const cur=document.querySelector('.point-dot.current');
-    if(cur && currentView==='map'){ cur.scrollIntoView({behavior:'smooth', block:'center'}); }
-  },400);
-}
-
-window.showListView=function(){
-  currentView='list';
-  document.getElementById('listView').classList.add('active');
-  document.getElementById('mapView').classList.remove('active');
-  document.getElementById('btnList').classList.add('active');
-  document.getElementById('btnMap').classList.remove('active');
-};
-window.showMapView=function(){
-  currentView='map';
-  document.getElementById('mapView').classList.add('active');
-  document.getElementById('listView').classList.remove('active');
-  document.getElementById('btnMap').classList.add('active');
-  document.getElementById('btnList').classList.remove('active');
-  setTimeout(()=>{ renderMap(); },100);
-};
-
-// ===== POINTER EVENTS ORDER VIEW - HANDLE ONLY WITH LONG PRESS =====
-let dragState = {el:null, placeholder:null, startY:0, startX:0, pointerId:null, longPressTimer:null, isLongPress:false, initialIndex:-1, hasMovedBeforeLongPress:false};
-
-function updateSaveBtn(){
-  const btn=document.getElementById('saveOrderBtn');
-  const badge=document.getElementById('unsavedBadge');
-  const sig=getOrderSignature(orderData);
-  hasUnsavedOrder = sig!== originalOrderSignature;
-  btn.disabled =!hasUnsavedOrder;
-  badge.classList.toggle('show', hasUnsavedOrder);
-}
-
-window.openOrderView = function(){
-  if(routeList.length===0){ showToast('⚠️ لا يوجد زبناء للترتيب'); return; }
-  orderData = [...routeList];
-  originalOrderSignature = getOrderSignature(orderData);
-  hasUnsavedOrder = false;
-  renderOrderList();
-  document.getElementById('orderView').classList.add('active');
-  document.body.style.overflow='hidden';
-  updateSaveBtn();
-};
-
-window.tryCloseOrder = function(){
-  if(hasUnsavedOrder){
-    showCustomModal({title:'تغييرات غير محفوظة',desc:'لديك ترتيب غير محفوظ. هل تريد الخروج بدون حفظ؟',confirmText:'خروج بدون حفظ',cancelText:'البقاء',danger:true,onConfirm:()=>{ closeOrderView(); }});
-  } else {
-    closeOrderView();
-  }
-};
-
-window.closeOrderView = function(){
-  document.getElementById('orderView').classList.remove('active');
-  document.body.style.overflow='';
-  isDragging=false;
-  hasUnsavedOrder=false;
-  clearTimeout(dragState.longPressTimer);
-  if(dragState.el){
-    dragState.el.removeEventListener('pointermove', onHandlePointerMoveBefore);
-    dragState.el.removeEventListener('pointerup', onHandlePointerUpBefore);
-    dragState.el.removeEventListener('pointercancel', onHandlePointerCancelBefore);
-    dragState.el.classList.remove('pressed');
-  }
-  dragState={el:null,placeholder:null,startY:0,startX:0,pointerId:null,longPressTimer:null,isLongPress:false,initialIndex:-1,hasMovedBeforeLongPress:false};
-  updateSaveBtn();
-};
+// ==== HANDLE ONLY DRAG SYSTEM ====
+let dragState={el:null,placeholder:null,startY:0,startX:0,pointerId:null,longPressTimer:null,isLongPress:false,movedBefore:false};
+function updateSaveBtn(){const btn=document.getElementById('saveOrderBtn');const badge=document.getElementById('unsavedBadge');const sig=getOrderSignature(orderData);hasUnsavedOrder=sig!==originalOrderSignature;btn.disabled=!hasUnsavedOrder;badge.classList.toggle('show',hasUnsavedOrder);}
+window.openOrderView=function(){if(routeList.length===0){showToast('⚠️ لا يوجد زبناء للترتيب');return;}orderData=[...routeList];originalOrderSignature=getOrderSignature(orderData);hasUnsavedOrder=false;renderOrderList();document.getElementById('orderView').classList.add('active');document.body.style.overflow='hidden';updateSaveBtn();};
+window.tryCloseOrder=function(){if(hasUnsavedOrder){showCustomModal({title:'تغييرات غير محفوظة',desc:'لديك ترتيب غير محفوظ. هل تريد الخروج بدون حفظ؟',confirmText:'خروج بدون حفظ',cancelText:'البقاء',danger:true,onConfirm:()=>{closeOrderView();}});}else{closeOrderView();}};
+window.closeOrderView=function(){document.getElementById('orderView').classList.remove('active');document.body.style.overflow='';isDragging=false;hasUnsavedOrder=false;clearTimeout(dragState.longPressTimer);if(dragState.el){dragState.el.classList.remove('pressed');}dragState={el:null,placeholder:null,startY:0,startX:0,pointerId:null,longPressTimer:null,isLongPress:false,movedBefore:false};updateSaveBtn();};
 
 function renderOrderList(){
   const container=document.getElementById('orderList');
   container.innerHTML='';
   orderData.forEach((item,index)=>{
-    const amount = customerAmounts[item.id]!== undefined? customerAmounts[item.id] + ' درهم' : '';
+    const amount=customerAmounts[item.id]!==undefined?customerAmounts[item.id]+' درهم':'';
     const div=document.createElement('div');
     div.className='order-item';
     div.dataset.id=item.id;
-    div.dataset.index=index;
-    div.innerHTML=`
-      <div class="order-num">${String(index+1).padStart(2,'0')}</div>
-      <div class="order-info">
-        <div class="order-name">${item.name}</div>
-        <div class="order-sub"><span>${STATUS_AR[item.status]||item.status}</span>${amount? `<span>• ${amount}</span>`:''}</div>
-      </div>
-      <div class="order-handle"><i class="fas fa-bars"></i></div>
-    `;
-    const handle = div.querySelector('.order-handle');
-    handle.addEventListener('pointerdown', onHandlePointerDown);
+    div.innerHTML=`<div class="order-num">${String(index+1).padStart(2,'0')}</div><div class="order-info"><div class="order-name">${item.name}</div><div class="order-sub"><span>${STATUS_AR[item.status]||item.status}</span>${amount?`<span>• ${amount}</span>`:''}</div></div><div class="order-handle"><i class="fas fa-bars"></i></div>`;
+    const handle=div.querySelector('.order-handle');
+    handle.addEventListener('pointerdown', onHandleDown);
     container.appendChild(div);
   });
 }
 
-function onHandlePointerDown(e){
+function onHandleDown(e){
   if(e.button!==0) return;
-  const handle = e.currentTarget;
-  const item = handle.closest('.order-item');
+  const handle=e.currentTarget;
+  const item=handle.closest('.order-item');
   if(!item) return;
-  e.preventDefault();
+  e.stopPropagation();
   dragState.el=item;
-  dragState.startY=e.clientY;
   dragState.startX=e.clientX;
+  dragState.startY=e.clientY;
   dragState.pointerId=e.pointerId;
   dragState.isLongPress=false;
-  dragState.hasMovedBeforeLongPress=false;
-  dragState.initialIndex=parseInt(item.dataset.index)||0;
+  dragState.movedBefore=false;
   item.classList.add('pressed');
+  handle.classList.add('pressed');
   handle.setPointerCapture(e.pointerId);
   clearTimeout(dragState.longPressTimer);
-
-  handle.addEventListener('pointermove', onHandlePointerMoveBefore);
-  handle.addEventListener('pointerup', onHandlePointerUpBefore);
-  handle.addEventListener('pointercancel', onHandlePointerCancelBefore);
-
+  handle.addEventListener('pointermove', onHandleMoveCheck);
+  handle.addEventListener('pointerup', onHandleUpCheck);
+  handle.addEventListener('pointercancel', onHandleCancelCheck);
   dragState.longPressTimer=setTimeout(()=>{
-    if(dragState.hasMovedBeforeLongPress) return;
+    if(dragState.movedBefore) return;
     if(!dragState.el) return;
     dragState.isLongPress=true;
-    beginPointerDrag(e);
-  }, 350);
+    startDrag(e);
+  },350);
 }
 
-function onHandlePointerMoveBefore(e){
+function onHandleMoveCheck(e){
   if(!dragState.el) return;
   const dx=Math.abs(e.clientX-dragState.startX);
   const dy=Math.abs(e.clientY-dragState.startY);
-  if(dx>10 || dy>10){
-    dragState.hasMovedBeforeLongPress=true;
+  if(dx>8 || dy>8){
+    dragState.movedBefore=true;
     clearTimeout(dragState.longPressTimer);
-    if(dragState.el) dragState.el.classList.remove('pressed');
+    dragState.el.classList.remove('pressed');
+    const h=dragState.el.querySelector('.order-handle');
+    if(h) h.classList.remove('pressed');
   }
 }
 
-function onHandlePointerUpBefore(e){
+function onHandleUpCheck(e){
+  const handle=e.currentTarget;
   clearTimeout(dragState.longPressTimer);
   if(dragState.el){
     dragState.el.classList.remove('pressed');
-    try{ e.currentTarget.releasePointerCapture(dragState.pointerId); }catch(err){}
-    e.currentTarget.removeEventListener('pointermove', onHandlePointerMoveBefore);
-    e.currentTarget.removeEventListener('pointerup', onHandlePointerUpBefore);
-    e.currentTarget.removeEventListener('pointercancel', onHandlePointerCancelBefore);
+    handle.classList.remove('pressed');
+    try{handle.releasePointerCapture(dragState.pointerId);}catch(err){}
+    handle.removeEventListener('pointermove', onHandleMoveCheck);
+    handle.removeEventListener('pointerup', onHandleUpCheck);
+    handle.removeEventListener('pointercancel', onHandleCancelCheck);
   }
   if(!dragState.isLongPress){
     dragState.el=null;
     dragState.pointerId=null;
-    dragState.hasMovedBeforeLongPress=false;
+    dragState.movedBefore=false;
   }
 }
 
-function onHandlePointerCancelBefore(e){
+function onHandleCancelCheck(e){
+  const handle=e.currentTarget;
   clearTimeout(dragState.longPressTimer);
-  if(dragState.el) dragState.el.classList.remove('pressed');
-  try{ e.currentTarget.releasePointerCapture(dragState.pointerId); }catch(err){}
-  e.currentTarget.removeEventListener('pointermove', onHandlePointerMoveBefore);
-  e.currentTarget.removeEventListener('pointerup', onHandlePointerUpBefore);
-  e.currentTarget.removeEventListener('pointercancel', onHandlePointerCancelBefore);
+  if(dragState.el){
+    dragState.el.classList.remove('pressed');
+    handle.classList.remove('pressed');
+  }
+  try{handle.releasePointerCapture(dragState.pointerId);}catch(err){}
+  handle.removeEventListener('pointermove', onHandleMoveCheck);
+  handle.removeEventListener('pointerup', onHandleUpCheck);
+  handle.removeEventListener('pointercancel', onHandleCancelCheck);
   dragState.el=null;
-  dragState.pointerId=null;
   dragState.isLongPress=false;
-  dragState.hasMovedBeforeLongPress=false;
+  dragState.movedBefore=false;
 }
 
-function beginPointerDrag(e){
+function startDrag(e){
   if(isDragging) return;
   if(!dragState.el) return;
   const el=dragState.el;
-  const handle = el.querySelector('.order-handle');
+  const handle=el.querySelector('.order-handle');
   if(handle){
-    handle.removeEventListener('pointermove', onHandlePointerMoveBefore);
-    handle.removeEventListener('pointerup', onHandlePointerUpBefore);
-    handle.removeEventListener('pointercancel', onHandlePointerCancelBefore);
+    handle.removeEventListener('pointermove', onHandleMoveCheck);
+    handle.removeEventListener('pointerup', onHandleUpCheck);
+    handle.removeEventListener('pointercancel', onHandleCancelCheck);
   }
   isDragging=true;
   el.classList.remove('pressed');
+  if(handle) handle.classList.remove('pressed');
   const ph=document.createElement('div');
   ph.className='order-item placeholder';
   ph.style.height=el.offsetHeight+'px';
@@ -716,12 +314,12 @@ function beginPointerDrag(e){
   dragState.placeholder=ph;
   el.classList.add('dragging');
   el.style.top=(e.clientY - el.offsetHeight/2)+'px';
-  el.addEventListener('pointermove', onPointerMove);
-  el.addEventListener('pointerup', onPointerUp);
-  el.addEventListener('pointercancel', onPointerCancel);
+  el.addEventListener('pointermove', onDragMove);
+  el.addEventListener('pointerup', onDragEnd);
+  el.addEventListener('pointercancel', onDragEnd);
 }
 
-function onPointerMove(e){
+function onDragMove(e){
   if(!isDragging ||!dragState.el) return;
   e.preventDefault();
   dragState.el.style.top=(e.clientY - dragState.el.offsetHeight/2)+'px';
@@ -732,84 +330,62 @@ function onPointerMove(e){
   items.forEach(item=>{
     const box=item.getBoundingClientRect();
     const offset=e.clientY - box.top - box.height/2;
-    if(offset<0 && offset>closestOffset){
-      closestOffset=offset;
-      closest=item;
-    }
+    if(offset<0 && offset>closestOffset){closestOffset=offset;closest=item;}
   });
   if(closest && dragState.placeholder){
     if(closest!==dragState.placeholder.nextSibling){
       container.insertBefore(dragState.placeholder, closest);
-      updateNumbersLight();
+      updateNumbers();
     }
-  } else if(dragState.placeholder && dragState.placeholder.parentNode){
+  }else if(dragState.placeholder){
     const last=container.lastElementChild;
     if(last!==dragState.placeholder){
       container.appendChild(dragState.placeholder);
-      updateNumbersLight();
+      updateNumbers();
     }
   }
 }
 
-function updateNumbersLight(){
+function updateNumbers(){
   const container=document.getElementById('orderList');
   const all=[...container.children];
-  const draggingEl = all.find(c=>c.classList.contains('dragging'));
-  const phIndex = all.indexOf(dragState.placeholder);
-  let draggingNum = 0;
-  if(phIndex!==-1){
-    let num=1;
+  const draggingEl=all.find(c=>c.classList.contains('dragging'));
+  let phIndex=all.indexOf(dragState.placeholder);
+  let dragNum=phIndex+1;
+  if(draggingEl){
+    let n=1;
     for(let i=0;i<all.length;i++){
       if(all[i]===dragState.placeholder) break;
-      if(all[i]!==draggingEl) num++;
-      else num++;
+      if(all[i]!==draggingEl) n++;
+      else n++;
     }
-    draggingNum = num;
-    if(draggingEl) draggingEl.querySelector('.order-num').textContent=String(draggingNum).padStart(2,'0');
+    dragNum=n-1;
+    if(dragNum<1) dragNum=1;
+    draggingEl.querySelector('.order-num').textContent=String(dragNum).padStart(2,'0');
   }
   let c=1;
   for(let i=0;i<all.length;i++){
     const child=all[i];
     if(child.classList.contains('placeholder')) continue;
     if(child.classList.contains('dragging')) continue;
-    if(c===draggingNum) c++;
-    const numEl = child.querySelector('.order-num');
-    if(numEl) numEl.textContent=String(c).padStart(2,'0');
+    if(c===dragNum) c++;
+    child.querySelector('.order-num').textContent=String(c).padStart(2,'0');
     c++;
   }
 }
 
-function onPointerUp(e){
-  if(!dragState.el) return;
-  if(!dragState.isLongPress) return;
-  finishPointerDrag(e);
-}
-
-function onPointerCancel(e){
-  clearTimeout(dragState.longPressTimer);
-  if(isDragging) finishPointerDrag(e);
-  else {
-    if(dragState.el) dragState.el.classList.remove('pressed');
-    dragState.el=null;
-  }
-}
-
-function finishPointerDrag(e){
-  clearTimeout(dragState.longPressTimer);
+function onDragEnd(e){
   if(!dragState.el) return;
   const container=document.getElementById('orderList');
   const ph=dragState.placeholder;
   const el=dragState.el;
-  try{ el.releasePointerCapture(dragState.pointerId); }catch(err){}
-  el.removeEventListener('pointermove', onPointerMove);
-  el.removeEventListener('pointerup', onPointerUp);
-  el.removeEventListener('pointercancel', onPointerCancel);
-  if(ph && ph.parentNode){
-    container.insertBefore(el, ph);
-    ph.remove();
-  }
+  try{el.releasePointerCapture(dragState.pointerId);}catch(err){}
+  el.removeEventListener('pointermove', onDragMove);
+  el.removeEventListener('pointerup', onDragEnd);
+  el.removeEventListener('pointercancel', onDragEnd);
+  if(ph && ph.parentNode){container.insertBefore(el, ph);ph.remove();}
   el.classList.remove('dragging');
-  el.style.position=''; el.style.left=''; el.style.right=''; el.style.width=''; el.style.top=''; el.style.zIndex=''; el.style.pointerEvents='';
+  el.style.top='';
   const newOrder=[];
   [...container.querySelectorAll('.order-item')].forEach(item=>{
     const id=item.dataset.id;
@@ -819,39 +395,19 @@ function finishPointerDrag(e){
   orderData=newOrder;
   renderOrderList();
   isDragging=false;
-  dragState={el:null,placeholder:null,startY:0,startX:0,pointerId:null,longPressTimer:null,isLongPress:false,initialIndex:-1,hasMovedBeforeLongPress:false};
+  dragState={el:null,placeholder:null,startY:0,startX:0,pointerId:null,longPressTimer:null,isLongPress:false,movedBefore:false};
   updateSaveBtn();
 }
 
-window.saveOrder = function(){
-  if(orderData.length===0){ showToast('⚠️ لا يوجد ترتيب'); return; }
-  if(!hasUnsavedOrder){ showToast('ℹ️ لا يوجد تغييرات'); return; }
-  const btn=document.getElementById('saveOrderBtn');
-  btn.disabled=true;
-  btn.textContent='⏳ جاري الحفظ...';
-  set(ref(db, 'routeManual'), orderData).then(()=>{
-    routeList=[...orderData];
-    originalOrderSignature=getOrderSignature(routeList);
-    hasUnsavedOrder=false;
-    renderAll();
-    closeOrderView();
-    showToast('✅ تم حفظ الترتيب');
-    btn.textContent='💾 حفظ الترتيب';
-  }).catch(()=>{
-    showToast('⚠️ خطأ في الحفظ');
-    btn.disabled=false;
-    btn.textContent='💾 حفظ الترتيب';
-  });
-};
-
-window.markDone=function(id){ let i=routeList.findIndex(c=>c.id===id); if(i!==-1){ routeList[i].status='visited'; saveToFirebase(); } };
-window.markClosed=function(id){ let i=routeList.findIndex(c=>c.id===id); if(i!==-1){ routeList[i].status='closed'; routeList[i].note=''; saveToFirebase(); } };
-window.addNote=function(id){ showCustomModal({title:'إضافة ملاحظة',desc:'اكتب رسالة',showInput:true,placeholder:'مثال: مغلق، تأجيل...',confirmText:'حفظ',onConfirm:(note)=>{ if(note&&note.trim()){ let i=routeList.findIndex(c=>c.id===id); if(i!==-1){ routeList[i].status='closed-note'; routeList[i].note=note.trim(); saveToFirebase(); } } }}); };
-window.postpone=function(id){ let i=routeList.findIndex(c=>c.id===id); if(i!==-1){ let c=routeList.splice(i,1)[0]; c.status='postponed'; routeList.push(c); saveToFirebase(); showToast('⏩ تم التأجيل'); } };
-window.deleteCustomer=function(id){ showCustomModal({title:'حذف الزبون',desc:'هل تريد حذف هذا الزبون من المسار؟',confirmText:'حذف',danger:true,onConfirm:()=>{ routeList=routeList.filter(c=>c.id!==id); saveToFirebase(); showToast('🗑️ تم الحذف'); }}); };
-window.resetRoute=function(){ showCustomModal({title:'إعادة التعيين',desc:'إرجاع الكل إلى في الانتظار؟',confirmText:'إعادة تعيين',onConfirm:()=>{ routeList.forEach(c=>{ c.status='pending'; c.note=''; }); saveToFirebase(); showToast('🔄 تمت إعادة التعيين'); }}); };
-window.clearAll=function(){ showCustomModal({title:'مسح المسار',desc:'⚠️ مسح كل المسار نهائيا؟',confirmText:'مسح',danger:true,onConfirm:()=>{ remove(ref(db,'routeManual')).then(()=>showToast('🗑️ تم المسح')); }}); };
-window.addEventListener('resize',()=>{ if(currentView==='map') renderMap(); });
+window.saveOrder=function(){if(orderData.length===0){showToast('⚠️ لا يوجد ترتيب');return;}if(!hasUnsavedOrder){showToast('ℹ️ لا يوجد تغييرات');return;}const btn=document.getElementById('saveOrderBtn');btn.disabled=true;btn.textContent='⏳ جاري الحفظ...';set(ref(db,'routeManual'),orderData).then(()=>{routeList=[...orderData];originalOrderSignature=getOrderSignature(routeList);hasUnsavedOrder=false;renderAll();closeOrderView();showToast('✅ تم حفظ الترتيب');btn.textContent='💾 حفظ الترتيب';}).catch(()=>{showToast('⚠️ خطأ في الحفظ');btn.disabled=false;btn.textContent='💾 حفظ الترتيب';});};
+window.markDone=function(id){let i=routeList.findIndex(c=>c.id===id);if(i!==-1){routeList[i].status='visited';saveToFirebase();}};
+window.markClosed=function(id){let i=routeList.findIndex(c=>c.id===id);if(i!==-1){routeList[i].status='closed';routeList[i].note='';saveToFirebase();}};
+window.addNote=function(id){showCustomModal({title:'إضافة ملاحظة',desc:'اكتب رسالة',showInput:true,placeholder:'مثال: مغلق، تأجيل...',confirmText:'حفظ',onConfirm:(note)=>{if(note&&note.trim()){let i=routeList.findIndex(c=>c.id===id);if(i!==-1){routeList[i].status='closed-note';routeList[i].note=note.trim();saveToFirebase();}}}});};
+window.postpone=function(id){let i=routeList.findIndex(c=>c.id===id);if(i!==-1){let c=routeList.splice(i,1)[0];c.status='postponed';routeList.push(c);saveToFirebase();showToast('⏩ تم التأجيل');}};
+window.deleteCustomer=function(id){showCustomModal({title:'حذف الزبون',desc:'هل تريد حذف هذا الزبون من المسار؟',confirmText:'حذف',danger:true,onConfirm:()=>{routeList=routeList.filter(c=>c.id!==id);saveToFirebase();showToast('🗑️ تم الحذف');}});};
+window.resetRoute=function(){showCustomModal({title:'إعادة التعيين',desc:'إرجاع الكل إلى في الانتظار؟',confirmText:'إعادة تعيين',onConfirm:()=>{routeList.forEach(c=>{c.status='pending';c.note='';});saveToFirebase();showToast('🔄 تمت إعادة التعيين');}});};
+window.clearAll=function(){showCustomModal({title:'مسح المسار',desc:'⚠️ مسح كل المسار نهائيا؟',confirmText:'مسح',danger:true,onConfirm:()=>{remove(ref(db,'routeManual')).then(()=>showToast('🗑️ تم المسح'));}});};
+window.addEventListener('resize',()=>{if(currentView==='map')renderMap();});
 </script>
 </body>
 </html>
