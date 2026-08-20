@@ -23,414 +23,307 @@
 }
 </style>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تفاصيل الزبون - Karni Pro Smart</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Karni Pro - التفاصيل</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo','Tahoma',sans-serif}
-    body{background:#f5f7fa;min-height:100vh}
-    .header{background:linear-gradient(135deg, #00b894 0%, #00cec9 100%);padding:30px 20px 60px;border-radius:0 0 30px 30px;box-shadow:0 4px 20px rgba(0,184,148,0.3);position:relative}
-    .header h1{color:white;font-size:28px;text-align:center;margin-bottom:10px}
-    .back-btn{position:absolute;top:20px;right:20px;width:45px;height:45px;border-radius:15px;background:rgba(255,255,255,0.2);border:none;color:white;font-size:22px;cursor:pointer;backdrop-filter:blur(10px)}
-    .container{padding:20px;margin-top:-40px;position:relative;z-index:2}
-    .card{background:white;border-radius:25px;padding:25px;margin-bottom:15px;box-shadow:0 4px 15px rgba(0,0,0,0.08);animation:slideUp 0.4s ease}
-    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    .avatar{width:80px;height:80px;border-radius:25px;background:linear-gradient(135deg, #00b894, #00cec9);color:white;font-size:36px;font-weight:bold;display:flex;align-items:center;justify-content:center;margin:0 auto 15px}
-    .name{text-align:center;font-size:24px;font-weight:bold;color:#2d3436;margin-bottom:5px}
-    .phone{text-align:center;color:#636e72;font-size:16px;margin-bottom:20px}
-    .total-box{background:linear-gradient(135deg, #00b894 0%, #00cec9 100%);color:white;padding:20px;border-radius:20px;text-align:center;margin-bottom:20px}
-    .total-label{font-size:14px;opacity:0.9;margin-bottom:5px}
-    .total-value{font-size:32px;font-weight:bold}
-    .total-sub{font-size:12px;opacity:0.8;margin-top:5px}
-    .label{display:block;font-weight:bold;color:#2d3436;margin:15px 0 8px;font-size:15px}
-    .input{width:100%;padding:16px;border:2px solid #dfe6e9;border-radius:15px;font-size:16px;background:#f8f9fa;transition:0.3s}
-    .input:focus{border-color:#00b894;background:white;outline:none}
-    .input[readonly]{background:#e9ecef;color:#6c757d}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .save-btn{width:100%;padding:18px;border:none;border-radius:15px;background:linear-gradient(135deg, #00b894 0%, #00cec9 100%);color:white;font-size:18px;font-weight:bold;cursor:pointer;margin-top:25px;box-shadow:0 4px 15px rgba(0,184,148,0.3)}
-    .loading{text-align:center;padding:50px;color:#636e72;font-size:18px}
-    .date-label{font-size:12px;color:#74b9ff;margin-top:5px}
-    .paid-input{border:2px solid #ff7675!important;background:#fff5f5!important}
-    .received-input{border:2px solid #00b894!important;background:#f0fff4!important}
-    .city-quick-person{display:flex;gap:8px;margin-top:8px}
-    .city-quick-btn-person{flex:1;padding:12px 10px;border-radius:14px;font-size:14px;font-weight:800;border:2px solid #dfe6e9;background:#f8f9fa;color:#636e72;cursor:pointer}
-    .city-quick-btn-person.active-city{background:linear-gradient(135deg,#00b894 0%, #00cec9 100%);color:white;border-color:transparent}
-    /* Accordion Debt */
-    .debt-accordion{background:white;border-radius:20px;margin-bottom:10px;box-shadow:0 2px 10px rgba(0,0,0,0.06);overflow:hidden;border-right:5px solid #00b894;transition:all 0.3s}
-    .debt-accordion.paid{opacity:0.6;border-right-color:#22c55e}
-    .debt-accordion.overdue{border-right-color:#ef4444}
-    .debt-accordion.medium{border-right-color:#f59e0b}
-    .debt-header-main{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
-    .debt-header-main:active{background:#f8f9fa}
-    .debt-left{display:flex;align-items:center;gap:12px}
-    .debt-num{width:36px;height:36px;border-radius:12px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#0f766e}
-    .debt-amount{font-size:20px;font-weight:900;color:#0f172a}
-    .debt-right{display:flex;align-items:center;gap:10px}
-    .debt-risk-mini{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:800;color:white;display:flex;align-items:center;gap:4px}
-    .debt-risk-mini.good{background:#22c55e}
-    .debt-risk-mini.medium{background:#f59e0b}
-    .debt-risk-mini.weak{background:#f97316}
-    .debt-risk-mini.veryWeak{background:#ef4444}
-    .debt-risk-mini.dangerous{background:#991b1b}
-    .debt-risk-mini.paid{background:#16a34a}
-    .debt-arrow{font-size:18px;color:#94a3b8;transition:transform 0.3s}
-    .debt-accordion.open .debt-arrow{transform:rotate(180deg)}
-    .debt-details-panel{max-height:0;overflow:hidden;transition:max-height 0.35s ease, padding 0.35s ease;background:#f8fafc}
-    .debt-accordion.open .debt-details-panel{max-height:500px;padding:16px 18px}
-    .debt-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .detail-box{background:white;padding:10px 12px;border-radius:12px;border:1px solid #e2e8f0}
-    .detail-box b{display:block;font-size:10px;color:#64748b;margin-bottom:2px;text-transform:uppercase}
-    .detail-box span{font-size:14px;font-weight:800;color:#0f172a}
-    .detail-full{grid-column:span 2}
-    .smart-summary{background:white;border-radius:20px;padding:20px;margin-bottom:15px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
-    .smart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
-    .smart-stat{padding:12px;border-radius:14px;text-align:center;background:#f8f9fa;border:1px solid #dfe6e9}
-    .smart-stat.danger{background:#fecaca;border-color:#fca5a5}
-    .history-title{font-size:18px;font-weight:bold;color:#2d3436;margin:25px 0 15px;display:flex;justify-content:space-between;align-items:center}
-    .history-item{background:#f8f9fa;border-right:4px solid #00b894;padding:12px 15px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-    .history-paid{border-right-color:#ff7675!important}
-    .whatsapp-btn{background:#25D366;color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer}
-    .confirm-btn{background:#2563eb;color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer}
-    .add-debt-btn{width:100%;padding:14px;border:2px dashed #00b894;border-radius:15px;background:#f0fdfa;color:#00b894;font-weight:800;font-size:15px;cursor:pointer;margin:15px 0;display:flex;align-items:center;justify-content:center;gap:8px}
-    .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
-    .modal.active{display:flex}
-    .modal-content{background:white;border-radius:20px;padding:25px;width:100%;max-width:400px}
-    .form-group{margin-bottom:15px}
-    .form-label{font-weight:700;font-size:14px;margin-bottom:6px;display:block}
-    .form-input{width:100%;padding:12px;border:2px solid #dfe6e9;border-radius:12px;font-size:15px}
-    .form-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
-    .btn{padding:12px;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif}
-    .btn-save{background:linear-gradient(135deg,#00b894 0%, #00cec9 100%);color:white}
-    .btn-cancel{background:#f1f2f6;color:#636e72}
+:root{--primary:#0f766e;--primary-light:#14b8a6;--gradient:linear-gradient(135deg,#0f766e 0%,#14b8a6 100%);--bg:#f6fbfb;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e6f4f2;--danger:#ef4444;--radius:22px;--shadow:0 6px 24px rgba(15,118,110,0.07);--shadow-lg:0 12px 36px rgba(15,118,110,0.14)}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif}
+body{background:var(--bg);min-height:100vh;color:var(--text)}
+.header{background:var(--gradient);padding:22px 16px 52px;border-radius:0 0 28px 28px;position:relative;color:#fff}
+.back{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.25);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.header h1{font-size:18px;text-align:center;font-weight:800}
+.container{padding:14px;margin-top:-36px;position:relative;z-index:2}
+.card{background:var(--card);border-radius:22px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.avatar{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#ccfbf1,#99f6e0);color:var(--primary);font-size:26px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.name{text-align:center;font-size:18px;font-weight:900;margin-bottom:3px}
+.phone{text-align:center;color:var(--muted);font-size:12px;font-weight:700;margin-bottom:14px}
+.total-box{background:var(--gradient);color:#fff;padding:16px;border-radius:18px;text-align:center}
+.total-label{font-size:10px;opacity:.9;font-weight:700}
+.total-value{font-size:28px;font-weight:900;margin-top:4px}
+.total-sub{font-size:10px;opacity:.85;margin-top:5px}
+.label{font-size:11px;font-weight:800;color:var(--text);margin:12px 0 5px;display:block}
+.input{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:12px;background:#f8fafc;font-size:12px;font-weight:700;outline:none}
+.input:focus{border-color:var(--primary-light);background:#fff}
+.input[readonly]{background:#f1f5f9;color:var(--muted)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.save{width:100%;padding:12px;border:none;border-radius:14px;background:var(--gradient);color:#fff;font-weight:800;font-size:13px;cursor:pointer;margin-top:16px;box-shadow:var(--shadow)}
+.city-row{display:flex;gap:6px;margin-top:6px}
+.city-btn{flex:1;padding:9px;border-radius:12px;border:1px solid var(--border);background:#f8fafc;font-weight:800;font-size:11px;cursor:pointer;color:var(--muted)}
+.city-btn.active{background:var(--gradient);color:#fff;border-color:transparent}
+.paid-input{border-color:#fecaca!important;background:#fff1f2!important}
+.received-input{border-color:#bbf7d0!important;background:#f0fdf4!important}
+.summary{background:var(--card);border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.summary-title{font-size:12px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.chip{font-size:9px;font-weight:800;padding:4px 9px;border-radius:20px;background:#f1f5f9;border:1px solid var(--border)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stat{padding:9px;border-radius:12px;text-align:center;background:#f8fafc;border:1px solid var(--border)}
+.stat b{font-size:13px;display:block} .stat span{font-size:9px;color:var(--muted);font-weight:700}
+.stat.danger{background:#fef2f2;border-color:#fecaca}
+.debt{background:var(--card);border-radius:18px;box-shadow:var(--shadow);border:1px solid var(--border);border-right:4px solid var(--primary);margin-bottom:8px;overflow:hidden}
+.debt.paid{opacity:.65;border-right-color:#22c55e}
+.debt.overdue{border-right-color:var(--danger)}
+.debt-head{padding:12px 12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.debt-left{display:flex;align-items:center;gap:8px}
+.debt-num{width:32px;height:32px;border-radius:10px;background:#e0f2f1;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:var(--primary)}
+.debt-amount{font-size:16px;font-weight:900}
+.debt-right{display:flex;align-items:center;gap:6px}
+.r-mini{font-size:9px;font-weight:800;padding:4px 8px;border-radius:20px;color:#fff}
+.r-mini.good{background:#22c55e}.r-mini.medium{background:#f59e0b}.r-mini.weak{background:#f97316}.r-mini.veryWeak{background:#ef4444}.r-mini.dangerous{background:#991b1b}.r-mini.paid{background:#16a34a}
+.arrow{color:var(--muted);transition:.3s;font-size:12px}
+.debt.open .arrow{transform:rotate(180deg)}
+.debt-body{max-height:0;overflow:hidden;transition:.35s;background:#f8fafc}
+.debt.open .debt-body{max-height:400px;padding:10px 12px}
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.d-box{background:#fff;padding:8px;border-radius:10px;border:1px solid var(--border)}
+.d-box b{font-size:8px;color:var(--muted);display:block;margin-bottom:2px}
+.d-box span{font-size:12px;font-weight:800}
+.full{grid-column:span 2}
+.h-title{font-size:13px;font-weight:800;margin:16px 0 8px;display:flex;justify-content:space-between}
+.h-item{background:#f8fafc;border:1px solid var(--border);border-right:3px solid var(--primary);padding:10px;border-radius:12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.h-item.paid{border-right-color:#f87171}
+.h-amount{font-weight:800;font-size:12px}
+.h-date{font-size:10px;color:var(--muted)}
+.h-actions{display:flex;gap:5px}
+.h-btn{width:30px;height:30px;border-radius:9px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px}
+.h-btn.wa{background:#dcfce7;color:#16a34a;border-color:#bbf7d0}
+.h-btn.ok{background:#dbeafe;color:#2563eb;border-color:#bfdbfe}
+.add-debt{width:100%;padding:10px;border:2px dashed var(--primary-light);border-radius:12px;background:#f0fdfa;color:var(--primary);font-weight:800;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
+.modal.active{display:flex}
+.m-card{background:var(--card);border-radius:22px;padding:16px;width:100%;max-width:360px;box-shadow:var(--shadow-lg)}
+.m-title{font-size:14px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.m-desc{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6}
+.m-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#f8fafc;font-size:12px;font-weight:700;outline:none;margin-bottom:6px}
+.m-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.m-btn{padding:10px;border-radius:12px;border:none;font-weight:800;font-size:11px;cursor:pointer;font-family:'Cairo'}
+.m-btn.cancel{background:#f1f5f9;color:var(--muted);border:1px solid var(--border)}
+.m-btn.confirm{background:var(--gradient);color:#fff}
+.m-btn.danger{background:var(--danger);color:#fff}
+.toast{position:fixed;top:68px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--card);border:1px solid var(--border);padding:9px 12px;border-radius:12px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:6px;font-weight:700;font-size:11px;z-index:120;transition:.35s}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.loading{text-align:center;padding:30px;color:var(--muted);font-size:12px}
 </style>
 </head>
 <body>
 <div class="header">
-    <button class="back-btn" id="backBtn">⬅️</button>
-    <h1>📒 Karni Pro</h1>
+<button class="back" id="backBtn"><i class="fas fa-arrow-right"></i></button>
+<h1>Karni Pro</h1>
 </div>
 <div class="container">
-    <div id="loading" class="loading">جاري التحميل...</div>
-    <div id="content" style="display:none">
-        <div class="card">
-            <div class="avatar" id="avatar">B</div>
-            <div class="name" id="name">...</div>
-            <div class="phone" id="phone">...</div>
-            <div class="total-box">
-                <div class="total-label">المبلغ الإجمالي - مجموع المتبقي</div>
-                <div class="total-value" id="totalAmount">0 درهم</div>
-                <div class="total-sub" id="totalSub"></div>
-            </div>
-            <label class="label">💰 المبلغ الأساسي (مرجع)</label>
-            <input type="number" id="amount" class="input" placeholder="0" readonly>
-            <label class="label">📍 المدينة</label>
-            <div class="city-quick-person" id="cityQuickPerson">
-                <button class="city-quick-btn-person" data-city="TanTan" onclick="selectCityPerson('TanTan')">TanTan</button>
-                <button class="city-quick-btn-person" data-city="Ouatia" onclick="selectCityPerson('Ouatia')">Ouatia</button>
-                <button class="city-quick-btn-person" data-city="Gulmim" onclick="selectCityPerson('Gulmim')">Gulmim</button>
-            </div>
-            <input type="hidden" id="cityValue">
-            <label class="label">📅 تاريخ الأداء الرئيسي</label>
-            <input type="date" id="date" class="input">
-            <div class="row">
-                <div>
-                    <label class="label">📥 تحصيل - دفع الزبون (FIFO)</label>
-                    <input type="number" id="received" class="input received-input" placeholder="مبلغ التحصيل">
-                    <div class="date-label">يوزع على أقدم دين أولاً</div>
-                </div>
-                <div>
-                    <label class="label">📤 دين جديد - سلعة جديدة</label>
-                    <input type="number" id="paid" class="input paid-input" placeholder="قيمة السلعة">
-                    <div class="date-label">ينشئ دين مستقل</div>
-                </div>
-            </div>
-            <button class="save-btn" id="saveBtn">💾 حفظ - توزيع ذكي</button>
-        </div>
-
-        <div class="smart-summary" id="smartSummary"></div>
-
-        <div class="card">
-            <div class="history-title">
-                <span>📦 الديون - اضغط للتفاصيل</span>
-                <span style="font-size:12px;background:#f1f2f6;padding:4px 10px;border-radius:20px" id="debtCount">0</span>
-            </div>
-            <button class="add-debt-btn" onclick="openAddDebtModal()">➕ إضافة دين جديد</button>
-            <div id="debtsList"></div>
-        </div>
-
-        <div class="card">
-            <div class="history-title">📋 سجل العمليات</div>
-            <div id="historyList" style="max-height:350px;overflow-y:auto"></div>
-        </div>
-    </div>
+<div id="loading" class="loading">جاري التحميل...</div>
+<div id="content" style="display:none">
+<div class="card">
+<div class="avatar" id="avatar">?</div>
+<div class="name" id="name">...</div>
+<div class="phone" id="phone">...</div>
+<div class="total-box">
+<div class="total-label">الإجمالي المتبقي</div>
+<div class="total-value" id="totalAmount">0 DH</div>
+<div class="total-sub" id="totalSub"></div>
+</div>
+<label class="label">المدينة</label>
+<div class="city-row" id="cityQuickPerson">
+<button class="city-btn" data-city="TanTan" onclick="selectCityPerson('TanTan')">TanTan</button>
+<button class="city-btn" data-city="Ouatia" onclick="selectCityPerson('Ouatia')">Ouatia</button>
+<button class="city-btn" data-city="Gulmim" onclick="selectCityPerson('Gulmim')">Gulmim</button>
+</div>
+<input type="hidden" id="cityValue"><input type="hidden" id="amount">
+<label class="label">تاريخ الاستحقاق</label>
+<input type="date" id="date" class="input">
+<div class="row">
+<div><label class="label">📥 تحصيل</label><input type="number" id="received" class="input received-input" placeholder="0"><div style="font-size:9px;color:var(--muted);margin-top:3px">يوزع على الأقدم أولاً</div></div>
+<div><label class="label">📤 دين جديد</label><input type="number" id="paid" class="input paid-input" placeholder="0"><div style="font-size:9px;color:var(--muted);margin-top:3px">دين مستقل</div></div>
+</div>
+<button class="save" id="saveBtn">💾 حفظ</button>
 </div>
 
-<div class="modal" id="addDebtModal">
-    <div class="modal-content">
-        <h3 style="margin-bottom:15px">➕ إضافة دين جديد</h3>
-        <div class="form-group"><label class="form-label">المبلغ *</label><input type="number" id="newDebtAmount" class="form-input" placeholder="2000"></div>
-        <div class="form-group"><label class="form-label">تاريخ البداية *</label><input type="date" id="newDebtDate" class="form-input"></div>
-        <div class="form-group"><label class="form-label">ملاحظة</label><input type="text" id="newDebtNote" class="form-input" placeholder="سلعة..."></div>
-        <div class="form-buttons">
-            <button class="btn btn-save" onclick="confirmAddDebt()">حفظ</button>
-            <button class="btn btn-cancel" onclick="closeAddDebtModal()">إلغاء</button>
-        </div>
-    </div>
+<div class="summary" id="smartSummary"></div>
+
+<div class="card">
+<div class="h-title"><span>📦 الديون - اضغط للتفاصيل</span><span id="debtCount" style="font-size:10px;background:#f1f5f9;padding:3px 8px;border-radius:20px">0</span></div>
+<button class="add-debt" onclick="openAddDebtModal()"><i class="fas fa-plus"></i> إضافة دين جديد</button>
+<div id="debtsList"></div>
 </div>
+
+<div class="card">
+<div class="h-title"><span>📋 السجل</span></div>
+<div id="historyList" style="max-height:360px;overflow:auto"></div>
+</div>
+</div>
+</div>
+
+<div class="modal" id="addDebtModal"><div class="m-card"><div class="m-title"><i class="fas fa-plus" style="color:var(--primary)"></i> دين جديد</div><div style="margin-top:8px"><label style="font-size:10px;font-weight:800">المبلغ *</label><input type="number" id="newDebtAmount" class="m-input" placeholder="2000"></div><div><label style="font-size:10px;font-weight:800">التاريخ *</label><input type="date" id="newDebtDate" class="m-input"></div><div><label style="font-size:10px;font-weight:800">ملاحظة</label><input type="text" id="newDebtNote" class="m-input" placeholder="سلعة..."></div><div class="m-actions"><button class="m-btn cancel" onclick="closeAddDebtModal()">إلغاء</button><button class="m-btn confirm" onclick="confirmAddDebt()">حفظ</button></div></div></div>
+
+<div class="modal" id="customModal"><div class="m-card"><div class="m-title"><i class="fas fa-circle-info" style="color:var(--primary)"></i> <span id="customTitleText">تنبيه</span></div><div class="m-desc" id="customDesc"></div><input type="text" id="customInput" class="m-input" style="display:none"><input type="text" id="customInput2" class="m-input" style="display:none"><div class="m-actions"><button class="m-btn cancel" id="customCancel" onclick="closeCustomModal()">إلغاء</button><button class="m-btn confirm" id="customConfirm">تأكيد</button></div></div></div>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle" style="color:#10b981"></i><span id="toastMessage">تم</span></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyBCVOOouLET3GDGyHj2i7ncvUZBjUUVB7Y",
-  authDomain: "karni-b9b34.firebaseapp.com",
-  databaseURL: "https://karni-b9b34-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "karni-b9b34",
-  storageBucket: "karni-b9b34.firebasestorage.app",
-  messagingSenderId: "489835094040",
-  appId: "1:489835094040:web:109e20fe7b65516903236d"
+const firebaseConfig = { apiKey: "AIzaSyBCVOOouLET3GDGyHj2i7ncvUZBjUUVB7Y", authDomain: "karni-b9b34.firebaseapp.com", databaseURL: "https://karni-b9b34-default-rtdb.europe-west1.firebasedatabase.app", projectId: "karni-b9b34", storageBucket: "karni-b9b34.firebasestorage.app", messagingSenderId: "489835094040", appId: "1:489835094040:web:109e20fe7b65516903236d" };
+const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+const urlParams = new URLSearchParams(window.location.search); const id = urlParams.get('id');
+const loading=document.getElementById('loading'); const content=document.getElementById('content');
+if(!id){ window.location.href='index.html'; }
+const customerRef=ref(db,'customers/'+id);
+let customerOperations=[], customerDebts=[], currentCity="", customerDataCache=null;
+const RISK={good:{emoji:'🟢',label:'جيد',css:'good'},medium:{emoji:'🟡',label:'متوسط',css:'medium'},weak:{emoji:'🟠',label:'ضعيف',css:'weak'},veryWeak:{emoji:'🔴',label:'ضعيف جدا',css:'veryWeak'},dangerous:{emoji:'🚨',label:'خطر',css:'dangerous'},paid:{emoji:'✅',label:'مسدد',css:'paid'}};
+
+let customCb=null;
+window.showCustomModal=function({title,desc,showInput=false,inputValue='',placeholder='',showInput2=false,input2Value='',input2Placeholder='',confirmText='تأكيد',cancelText='إلغاء',danger=false,onConfirm}){
+  document.getElementById('customTitleText').textContent=title||'تنبيه';
+  document.getElementById('customDesc').textContent=desc||'';
+  const i1=document.getElementById('customInput'); const i2=document.getElementById('customInput2');
+  i1.style.display= showInput? 'block':'none'; i2.style.display= showInput2? 'block':'none';
+  if(showInput){ i1.value=inputValue; i1.placeholder=placeholder; setTimeout(()=>i1.focus(),100); }
+  if(showInput2){ i2.value=input2Value; i2.placeholder=input2Placeholder; i2.type='date'; }
+  document.getElementById('customConfirm').textContent=confirmText;
+  document.getElementById('customCancel').textContent=cancelText;
+  document.getElementById('customConfirm').className= danger? 'm-btn danger':'m-btn confirm';
+  customCb=onConfirm;
+  document.getElementById('customModal').classList.add('active');
 };
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const urlParams = new URLSearchParams(window.location.search);
-const id = urlParams.get('id');
-const loading = document.getElementById('loading');
-const content = document.getElementById('content');
-if(!id){alert('خطأ: ما كاينش id');window.location.href='index.html';}
-const customerRef = ref(db, 'customers/' + id);
-let customerOperations = [];
-let customerDebts = [];
-let currentCity = "";
-let customerDataCache = null;
-const RISK = {
-    good:{emoji:'🟢',label:'جيد',css:'good'},
-    medium:{emoji:'🟡',label:'متوسط',css:'medium'},
-    weak:{emoji:'🟠',label:'ضعيف',css:'weak'},
-    veryWeak:{emoji:'🔴',label:'ضعيف جدا',css:'veryWeak'},
-    dangerous:{emoji:'🚨',label:'خطر',css:'dangerous'},
-    paid:{emoji:'✅',label:'مسدد',css:'paid'}
-};
-function toDateObj(str){ if(!str) return null; const d=new Date(str); if(isNaN(d)) return null; d.setHours(0,0,0,0); return d; }
-function addDays(dateStr, days){ const d=toDateObj(dateStr); if(!d) return null; d.setDate(d.getDate()+days); return d.toISOString().split('T')[0]; }
+window.closeCustomModal=function(){ document.getElementById('customModal').classList.remove('active'); customCb=null; };
+document.getElementById('customConfirm').addEventListener('click',()=>{
+  const v1=document.getElementById('customInput').value; const v2=document.getElementById('customInput2').value;
+  const s1=document.getElementById('customInput').style.display!=='none'; const s2=document.getElementById('customInput2').style.display!=='none';
+  if(customCb) customCb(s1&&s2? {v1,v2} : s1? v1 : v2);
+  closeCustomModal();
+});
+document.getElementById('customModal').addEventListener('click',(e)=>{ if(e.target.id==='customModal') closeCustomModal(); });
+
+function toDateObj(s){ if(!s) return null; const d=new Date(s); if(isNaN(d)) return null; d.setHours(0,0,0,0); return d; }
+function addDays(s,days){ const d=toDateObj(s); if(!d) return null; d.setDate(d.getDate()+days); return d.toISOString().split('T')[0]; }
 function daysBetween(a,b){ const da=toDateObj(a), db=toDateObj(b); if(!da||!db) return null; return Math.floor((db-da)/86400000); }
-function getOpsArray(ops){ let arr = Array.isArray(ops)? ops : Object.values(ops||{}); return arr.filter(o=>o).sort((a,b)=> new Date(a.date||0)-new Date(b.date||0)); }
-function getAvgInterval(ops){
-    const rec = getOpsArray(ops).filter(o=>o.type==='received');
-    if(rec.length<2) return 14;
-    let intervals=[]; for(let i=1;i<rec.length;i++){ const diff=daysBetween(rec[i-1].date, rec[i].date); if(diff && diff>0 && diff<90) intervals.push(diff); }
-    if(intervals.length===0) return 14; intervals.sort((a,b)=>a-b); if(intervals.length>4) intervals=intervals.slice(1,-1); const avg=intervals.reduce((s,v)=>s+v,0)/intervals.length; return Math.max(3, Math.round(avg));
-}
+function getOpsArray(ops){ let arr=Array.isArray(ops)?ops:Object.values(ops||{}); return arr.filter(o=>o).sort((a,b)=> new Date(a.date||0)-new Date(b.date||0)); }
+function getAvgInterval(ops){ const rec=getOpsArray(ops).filter(o=>o.type==='received'); if(rec.length<2) return 14; let intervals=[]; for(let i=1;i<rec.length;i++){ const diff=daysBetween(rec[i-1].date, rec[i].date); if(diff && diff>0 && diff<90) intervals.push(diff); } if(intervals.length===0) return 14; intervals.sort((a,b)=>a-b); if(intervals.length>4) intervals=intervals.slice(1,-1); const avg=intervals.reduce((s,v)=>s+v,0)/intervals.length; return Math.max(3,Math.round(avg)); }
 function ensureDebts(customer){
-    if(customer.debts && Array.isArray(customer.debts) && customer.debts.length>0){
-        return customer.debts.map(d=>{ const sum=(d.payments||[]).reduce((s,p)=>s+Number(p.amount||0),0); return {...d, remainingAmount: Math.max(0, (Number(d.originalAmount)||0)-sum)}; });
-    }
-    let debts=[]; const base=parseFloat(customer.amount)||0;
-    if(base>0){ debts.push({id:'debt_'+(customer.id||'base')+'_base', originalAmount:base, startDate: customer.date||customer.paymentDate||(customer.createdAt?customer.createdAt.split('T')[0]:new Date().toISOString().split('T')[0]), payments:[], createdAt:customer.createdAt||new Date().toISOString(), expectedDate:null, note:'أساسي'}); }
-    const ops=getOpsArray(customer.operations);
-    ops.forEach((op,idx)=>{ if(op.type==='paid' && Number(op.amount)>0){ debts.push({id:'debt_'+(customer.id||'c')+'_paid_'+idx+'_'+Date.now(), originalAmount:Number(op.amount), startDate:op.date||customer.date, payments:[], createdAt:op.date||new Date().toISOString(), expectedDate:null, note:op.note||'إضافية'}); } });
-    if(debts.length===0){ debts.push({id:'debt_empty_'+Date.now(), originalAmount:0, startDate:new Date().toISOString().split('T')[0], payments:[], createdAt:new Date().toISOString()}); }
-    debts.sort((a,b)=> new Date(a.startDate)-new Date(b.startDate));
-    const received=ops.filter(o=>o.type==='received' && Number(o.amount)>0).sort((a,b)=> new Date(a.date)-new Date(b.date));
-    received.forEach(rec=>{ let left=Number(rec.amount); for(let debt of debts){ if(left<=0) break; const paidSum=(debt.payments||[]).reduce((s,p)=>s+Number(p.amount),0); const rem=debt.originalAmount-paidSum; if(rem<=0) continue; const take=Math.min(rem,left); debt.payments.push({amount:take, date:rec.date, time:rec.time||''}); left-=take; } });
-    debts.forEach(d=>{ const sum=(d.payments||[]).reduce((s,p)=>s+Number(p.amount),0); d.remainingAmount=Math.max(0,d.originalAmount-sum); });
-    return debts;
+  if(customer.debts && Array.isArray(customer.debts) && customer.debts.length>0){ return customer.debts.map(d=>{ const sum=(d.payments||[]).reduce((s,p)=>s+Number(p.amount||0),0); return {...d, remainingAmount:Math.max(0,(Number(d.originalAmount)||0)-sum)}; }); }
+  let debts=[]; const base=parseFloat(customer.amount)||0;
+  if(base>0){ debts.push({id:'debt_'+(customer.id||'base')+'_base', originalAmount:base, startDate:customer.date||customer.paymentDate||(customer.createdAt?customer.createdAt.split('T')[0]:new Date().toISOString().split('T')[0]), payments:[], createdAt:customer.createdAt||new Date().toISOString(), expectedDate:null}); }
+  const ops=getOpsArray(customer.operations);
+  ops.forEach((op,idx)=>{ if(op.type==='paid' && Number(op.amount)>0){ debts.push({id:'debt_'+(customer.id||'c')+'_paid_'+idx+'_'+Date.now(), originalAmount:Number(op.amount), startDate:op.date||customer.date, payments:[], createdAt:op.date||new Date().toISOString(), expectedDate:null}); } });
+  if(debts.length===0){ debts.push({id:'debt_empty_'+Date.now(), originalAmount:0, startDate:new Date().toISOString().split('T')[0], payments:[], createdAt:new Date().toISOString()}); }
+  debts.sort((a,b)=> new Date(a.startDate)-new Date(b.startDate));
+  const received=ops.filter(o=>o.type==='received' && Number(o.amount)>0).sort((a,b)=> new Date(a.date)-new Date(b.date));
+  received.forEach(rec=>{ let left=Number(rec.amount); for(let debt of debts){ if(left<=0) break; const paidSum=(debt.payments||[]).reduce((s,p)=>s+Number(p.amount),0); const rem=debt.originalAmount-paidSum; if(rem<=0) continue; const take=Math.min(rem,left); debt.payments.push({amount:take, date:rec.date, time:rec.time||''}); left-=take; } });
+  debts.forEach(d=>{ const sum=(d.payments||[]).reduce((s,p)=>s+Number(p.amount),0); d.remainingAmount=Math.max(0,d.originalAmount-sum); });
+  return debts;
 }
 function calcRisk(debt, avg){
-    const rem=Number(debt.remainingAmount||0); const orig=Number(debt.originalAmount||0);
-    if(rem<=0.5) return {level:'paid', ...RISK.paid, daysLate:0, remaining:rem, original:orig, pct:0, expectedDate:debt.expectedDate};
-    let expStr=debt.expectedDate;
-    if(!expStr){ const lastPay=(debt.payments&&debt.payments.length>0)? debt.payments[debt.payments.length-1].date : null; const base=lastPay||debt.startDate; expStr=addDays(base, avg||14)||debt.startDate; }
-    const today=new Date(); today.setHours(0,0,0,0); const exp=toDateObj(expStr); let daysLate=0; if(exp) daysLate=Math.floor((today-exp)/86400000);
-    let level;
-    if(daysLate<=0) level='good';
-    else if(daysLate>=1 && daysLate<=6) level='medium';
-    else if(daysLate>=7 && daysLate<=14) level='weak';
-    else if(daysLate>=15 && daysLate<=29) level='veryWeak';
-    else level='dangerous';
-    return {level, ...RISK[level], daysLate, remaining:rem, original:orig, pct: orig>0? rem/orig:1, expectedDate:expStr};
+  const rem=Number(debt.remainingAmount||0); if(rem<=0.5) return {level:'paid',...RISK.paid,daysLate:0,remaining:rem,expectedDate:debt.expectedDate};
+  let expStr=debt.expectedDate; if(!expStr){ const lastPay=(debt.payments&&debt.payments.length>0)? debt.payments[debt.payments.length-1].date : null; const base=lastPay||debt.startDate; expStr=addDays(base, avg||14)||debt.startDate; }
+  const today=new Date(); today.setHours(0,0,0,0); const exp=toDateObj(expStr); let daysLate=0; if(exp) daysLate=Math.floor((today-exp)/86400000);
+  let level; if(daysLate<=0) level='good'; else if(daysLate>=1 && daysLate<=6) level='medium'; else if(daysLate>=7 && daysLate<=14) level='weak'; else if(daysLate>=15 && daysLate<=29) level='veryWeak'; else level='dangerous';
+  return {level,...RISK[level],daysLate,remaining:rem,expectedDate:expStr};
 }
-function calculateTotal(debts){ const total = debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0); document.getElementById('totalAmount').textContent = Math.round(total) + ' درهم'; return total; }
-window.selectCityPerson = function(city){
-    currentCity = city; document.getElementById('cityValue').value = city;
-    document.querySelectorAll('.city-quick-btn-person').forEach(btn=>{ if(btn.dataset.city === city) btn.classList.add('active-city'); else btn.classList.remove('active-city'); });
-}
+function calculateTotal(debts){ const total=debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0); document.getElementById('totalAmount').textContent=Math.round(total)+' DH'; return total; }
+window.selectCityPerson=function(city){ currentCity=city; document.getElementById('cityValue').value=city; document.querySelectorAll('.city-btn').forEach(btn=>{ if(btn.dataset.city===city) btn.classList.add('active'); else btn.classList.remove('active'); }); }
 function showSmartSummary(debts, avg){
-    const unpaid = debts.filter(d=>d.remainingAmount>0.5);
-    const paid = debts.filter(d=>d.remainingAmount<=0.5);
-    const total = debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0);
-    const riskCounts = {good:0,medium:0,weak:0,veryWeak:0,dangerous:0,paid:0};
-    debts.forEach(d=>{ const r = calcRisk(d, avg); d.risk=r; riskCounts[r.level]=(riskCounts[r.level]||0)+1; });
-    const worst = unpaid.length>0 ? unpaid.map(d=>calcRisk(d,avg)).sort((a,b)=>b.daysLate-a.daysLate)[0] : null;
-    const div = document.getElementById('smartSummary');
-    div.innerHTML = `
-        <div style="font-weight:800;font-size:16px;margin-bottom:10px">📊 ملخص الديون</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-            <span style="background:#f1f5f9;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700">⏱️ متوسط السداد: ${avg} يوم</span>
-            <span style="background:#f1f5f9;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700">📦 ${debts.length} ديون</span>
-            <span style="background:#dcfce7;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700">💰 ${Math.round(total)} متبقي</span>
-        </div>
-        ${worst? `<div style="padding:10px;border-radius:12px;background:${worst.level==='dangerous'?'#fee2e2': worst.level==='veryWeak'?'#ffedd5':'#f0fdf4'}"><b>${worst.emoji} الحالة:</b> ${worst.label} ${worst.daysLate>0? ` - متأخر ${worst.daysLate} يوم`: ''}</div>` : '<div style="padding:10px;border-radius:12px;background:#dcfce7">✅ جميع الديون مسددة</div>'}
-        <div class="smart-grid">
-            <div class="smart-stat ${riskCounts.dangerous>0?'danger':''}"><div style="font-size:18px;font-weight:900">🚨 ${riskCounts.dangerous||0}</div><div style="font-size:11px">خطر</div></div>
-            <div class="smart-stat ${riskCounts.veryWeak>0?'danger':''}"><div style="font-size:18px;font-weight:900">🔴 ${riskCounts.veryWeak||0}</div><div style="font-size:11px">ضعيف جدا</div></div>
-            <div class="smart-stat"><div style="font-size:18px;font-weight:900">🟠 ${riskCounts.weak||0}</div><div style="font-size:11px">ضعيف</div></div>
-            <div class="smart-stat"><div style="font-size:18px;font-weight:900">🟡 ${riskCounts.medium||0}</div><div style="font-size:11px">متوسط</div></div>
-            <div class="smart-stat"><div style="font-size:18px;font-weight:900">🟢 ${riskCounts.good||0}</div><div style="font-size:11px">جيد</div></div>
-            <div class="smart-stat"><div style="font-size:18px;font-weight:900">✅ ${riskCounts.paid||0}</div><div style="font-size:11px">مسدد</div></div>
-        </div>
-    `;
+  const unpaid=debts.filter(d=>d.remainingAmount>0.5); const total=debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0);
+  const riskCounts={good:0,medium:0,weak:0,veryWeak:0,dangerous:0,paid:0}; debts.forEach(d=>{ const r=calcRisk(d,avg); d.risk=r; riskCounts[r.level]=(riskCounts[r.level]||0)+1; });
+  const worst=unpaid.length>0? unpaid.map(d=>calcRisk(d,avg)).sort((a,b)=>b.daysLate-a.daysLate)[0]:null;
+  const div=document.getElementById('smartSummary');
+  div.innerHTML=`<div style="font-size:12px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fas fa-chart-simple" style="color:var(--primary)"></i> الملخص</div><div class="chips"><span class="chip">⏱️ متوسط ${avg} يوم</span><span class="chip">📦 ${debts.length} ديون</span><span class="chip">💰 ${Math.round(total)} متبقي</span></div>${worst? `<div style="padding:8px;border-radius:10px;background:${worst.level==='dangerous'?'#fee2e2':'#f0fdf4'};font-size:11px;font-weight:800"><b>${worst.emoji} ${worst.label}</b> ${worst.daysLate>0? `• متأخر ${worst.daysLate} يوم`:''}</div>`:'<div style="padding:8px;border-radius:10px;background:#dcfce7;font-size:11px;font-weight:800">✅ لا ديون متبقية</div>'}<div class="grid3" style="margin-top:8px"><div class="stat ${riskCounts.dangerous>0?'danger':''}"><b>🚨 ${riskCounts.dangerous||0}</b><span>خطر</span></div><div class="stat ${riskCounts.veryWeak>0?'danger':''}"><b>🔴 ${riskCounts.veryWeak||0}</b><span>ضعيف جدا</span></div><div class="stat"><b>🟠 ${riskCounts.weak||0}</b><span>ضعيف</span></div><div class="stat"><b>🟡 ${riskCounts.medium||0}</b><span>متوسط</span></div><div class="stat"><b>🟢 ${riskCounts.good||0}</b><span>جيد</span></div><div class="stat"><b>✅ ${riskCounts.paid||0}</b><span>مسدد</span></div></div>`;
 }
-function toggleDebt(id){
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.classList.toggle('open');
-}
+function toggleDebt(id){ const el=document.getElementById(id); if(el) el.classList.toggle('open'); }
 function showDebts(debts, avg){
-    const list = document.getElementById('debtsList');
-    document.getElementById('debtCount').textContent = debts.length + ' دين';
-    if(debts.length===0){ list.innerHTML='<div style="text-align:center;color:#999;padding:20px">لا توجد ديون</div>'; return; }
-    const sorted = [...debts].sort((a,b)=>{
-        const ra = calcRisk(a,avg), rb = calcRisk(b,avg);
-        if(a.remainingAmount<=0.5 && b.remainingAmount>0.5) return 1;
-        if(b.remainingAmount<=0.5 && a.remainingAmount>0.5) return -1;
-        return rb.daysLate - ra.daysLate;
-    });
-    list.innerHTML = sorted.map((debt, idx)=>{
-        const risk = calcRisk(debt, avg);
-        const isPaid = debt.remainingAmount<=0.5;
-        const lastPay = debt.payments && debt.payments.length>0 ? debt.payments[debt.payments.length-1].date : '-';
-        const accId = 'debtAcc_'+idx;
-        // NO original amount displayed
-        return `
-        <div class="debt-accordion ${isPaid?'paid': risk.level==='dangerous'||risk.level==='veryWeak'?'overdue': risk.level==='medium'||risk.level==='weak'?'medium':''}" id="${accId}">
-            <div class="debt-header-main" onclick="toggleDebt('${accId}')">
-                <div class="debt-left">
-                    <div class="debt-num">#${idx+1}</div>
-                    <div class="debt-amount">${Math.round(debt.remainingAmount)} DH</div>
-                </div>
-                <div class="debt-right">
-                    <div class="debt-risk-mini ${risk.css}">${risk.emoji} ${isPaid? 'مسدد' : risk.level==='good'?'جيد': risk.level==='medium'?'متأخر': risk.level}</div>
-                    <div class="debt-arrow">⌄</div>
-                </div>
-            </div>
-            <div class="debt-details-panel">
-                <div class="debt-details-grid">
-                    <div class="detail-box"><b>Start Date</b><span>${debt.startDate||'-'}</span></div>
-                    <div class="detail-box"><b>Expected Date</b><span>${risk.expectedDate||'-'}</span></div>
-                    <div class="detail-box"><b>Last Payment</b><span>${lastPay}</span></div>
-                    <div class="detail-box"><b>Days Late</b><span>${risk.daysLate>0? risk.daysLate+' يوم' : '0 - داخل الموعد'}</span></div>
-                    <div class="detail-box detail-full"><b>Risk Level</b><span>${risk.emoji} ${risk.label} ${risk.daysLate>0? '('+risk.daysLate+' يوم تأخر)' : ''}</span></div>
-                    <div class="detail-box detail-full"><b>Remaining</b><span>${Math.round(debt.remainingAmount)} DH ${isPaid? '✅' : ''}</span></div>
-                </div>
-            </div>
-        </div>
-        `;
-    }).join('');
+  const list=document.getElementById('debtsList'); document.getElementById('debtCount').textContent=debts.length+' دين';
+  if(debts.length===0){ list.innerHTML='<div style="text-align:center;color:#999;padding:14px;font-size:11px">لا ديون</div>'; return; }
+  const sorted=[...debts].sort((a,b)=>{ const ra=calcRisk(a,avg), rb=calcRisk(b,avg); if(a.remainingAmount<=0.5 && b.remainingAmount>0.5) return 1; if(b.remainingAmount<=0.5 && a.remainingAmount>0.5) return -1; return rb.daysLate-ra.daysLate; });
+  list.innerHTML=sorted.map((debt, idx)=>{
+    const risk=calcRisk(debt,avg); const isPaid=debt.remainingAmount<=0.5; const lastPay=debt.payments&&debt.payments.length>0? debt.payments[debt.payments.length-1].date:'-'; const accId='debtAcc_'+idx;
+    return `<div class="debt ${isPaid?'paid': risk.level==='dangerous'||risk.level==='veryWeak'?'overdue':''}" id="${accId}"><div class="debt-head" onclick="toggleDebt('${accId}')"><div class="debt-left"><div class="debt-num">#${idx+1}</div><div class="debt-amount">${Math.round(debt.remainingAmount)} DH</div></div><div class="debt-right"><div class="r-mini ${risk.css}">${risk.emoji} ${isPaid?'مسدد':risk.label}</div><div class="arrow"><i class="fas fa-chevron-down"></i></div></div></div><div class="debt-body"><div class="d-grid"><div class="d-box"><b>تاريخ البداية</b><span>${debt.startDate||'-'}</span></div><div class="d-box"><b>الموعد المتوقع</b><span>${risk.expectedDate||'-'}</span></div><div class="d-box"><b>آخر دفعة</b><span>${lastPay}</span></div><div class="d-box"><b>التأخر</b><span>${risk.daysLate>0? risk.daysLate+' يوم':'داخل الموعد'}</span></div><div class="d-box full"><b>الحالة</b><span>${risk.emoji} ${risk.label}</span></div></div></div></div>`;
+  }).join('');
 }
 function showHistory(data){
-    const historyList = document.getElementById('historyList');
-    historyList.innerHTML = '';
-    customerOperations = data.operations || [];
-    if(customerOperations.length === 0){ historyList.innerHTML = '<div style="text-align:center;color:#999;padding:20px">لا توجد عمليات</div>'; return; }
-    customerOperations.slice().reverse().forEach((op,index)=>{
-        const div = document.createElement('div');
-        div.className = 'history-item ' + (op.type === 'paid' ? 'history-paid' : '');
-        const realIdx = customerOperations.length-1-index;
-        div.innerHTML = `<div><div style="font-weight:bold">${op.amount} درهم - ${op.type === 'paid' ? 'سلعة' : 'تحصيل'}</div><div style="font-size:13px;color:#636e72">📅 ${op.date || '--'} ${op.time||''}</div></div><div style="display:flex;gap:6px"><button class="whatsapp-btn" onclick="sendReminderWhatsapp(${realIdx})">📱</button><button class="confirm-btn" onclick="sendConfirmWhatsapp(${realIdx})">✅</button><button onclick="editOperation(${realIdx})">✏️</button><button onclick="deleteOperation(${realIdx})">🗑️</button></div>`;
-        historyList.appendChild(div);
-    });
+  const historyList=document.getElementById('historyList'); historyList.innerHTML='';
+  customerOperations=data.operations||[];
+  if(customerOperations.length===0){ historyList.innerHTML='<div style="text-align:center;color:#999;padding:14px;font-size:11px">لا عمليات</div>'; return; }
+  customerOperations.slice().reverse().forEach((op,index)=>{
+    const div=document.createElement('div'); div.className='h-item '+(op.type==='paid'?'paid':'');
+    const realIdx=customerOperations.length-1-index;
+    div.innerHTML=`<div><div class="h-amount">${op.amount} DH • ${op.type==='paid'?'دين':'تحصيل'}</div><div class="h-date">📅 ${op.date||'--'} ${op.time||''}</div></div><div class="h-actions"><button class="h-btn wa" onclick="sendReminderWhatsapp(${realIdx})"><i class="fab fa-whatsapp"></i></button><button class="h-btn ok" onclick="sendConfirmWhatsapp(${realIdx})"><i class="fas fa-check"></i></button><button class="h-btn" onclick="editOperation(${realIdx})"><i class="fas fa-pen"></i></button><button class="h-btn" onclick="deleteOperation(${realIdx})"><i class="fas fa-trash"></i></button></div>`;
+    historyList.appendChild(div);
+  });
 }
+function showToast(msg){ const t=document.getElementById('toast'); document.getElementById('toastMessage').textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+
 get(customerRef).then((snapshot)=>{
-    loading.style.display = 'none';
-    content.style.display = 'block';
-    if(snapshot.exists()){
-        const data = snapshot.val();
-        customerDataCache = data;
-        const name = data.name || 'بدون اسم';
-        document.getElementById('name').textContent = name;
-        document.getElementById('phone').textContent = data.phone || 'لا يوجد هاتف';
-        document.getElementById('avatar').textContent = name.charAt(0).toUpperCase();
-        document.getElementById('amount').value = data.amount || 0;
-        document.getElementById('date').value = data.paymentDate || data.date || '';
-        document.getElementById('paid').value = '';
-        document.getElementById('received').value = '';
-        const city = data.city || ''; currentCity = city; document.getElementById('cityValue').value = city; if(city){ selectCityPerson(city); }
-        const avg = getAvgInterval(data.operations||[]);
-        let debts = ensureDebts(data);
-        debts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base, avg)||d.startDate; } });
-        customerDebts = debts; customerOperations = getOpsArray(data.operations);
-        calculateTotal(debts);
-        document.getElementById('totalSub').textContent = `${debts.length} ديون • متوسط ${avg} يوم • ${debts.filter(d=>d.remainingAmount>0.5).length} غير مسددة`;
-        showSmartSummary(debts, avg); showDebts(debts, avg); showHistory(data);
-        if(!data.debts || data.debts.length===0){ update(customerRef, {debts: debts}).catch(e=>console.error(e)); }
-    }else{ alert('الزبون غير موجود'); window.location.href = 'index.html'; }
-}).catch((error)=>{ alert('خطأ: ' + error.message); window.location.href = 'index.html'; });
+  loading.style.display='none'; content.style.display='block';
+  if(snapshot.exists()){
+    const data=snapshot.val(); customerDataCache=data;
+    const name=data.name||'بدون اسم'; document.getElementById('name').textContent=name; document.getElementById('phone').textContent=data.phone||'بدون هاتف'; document.getElementById('avatar').textContent=name.charAt(0).toUpperCase(); document.getElementById('amount').value=data.amount||0; document.getElementById('date').value=data.paymentDate||data.date||''; document.getElementById('paid').value=''; document.getElementById('received').value='';
+    const city=data.city||''; currentCity=city; document.getElementById('cityValue').value=city; if(city) selectCityPerson(city);
+    const avg=getAvgInterval(data.operations||[]); let debts=ensureDebts(data); debts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base, avg)||d.startDate; }});
+    customerDebts=debts; customerOperations=getOpsArray(data.operations); calculateTotal(debts); document.getElementById('totalSub').textContent=`${debts.length} ديون • متوسط ${avg} يوم`; showSmartSummary(debts,avg); showDebts(debts,avg); showHistory(data);
+    if(!data.debts || data.debts.length===0){ update(customerRef,{debts:debts}).catch(()=>{}); }
+  } else { window.location.href='index.html'; }
+}).catch(()=>{ window.location.href='index.html'; });
+
 document.getElementById('saveBtn').addEventListener('click', ()=>{
-    const btn = document.getElementById('saveBtn'); btn.textContent = '⏳ جاري الحفظ...'; btn.disabled = true;
-    const date = document.getElementById('date').value;
-    const paid = parseFloat(document.getElementById('paid').value) || 0;
-    const received = parseFloat(document.getElementById('received').value) || 0;
-    const city = document.getElementById('cityValue').value || currentCity || '';
-    const now = new Date(); const today = now.toISOString().split('T')[0]; const currentTime = now.toTimeString().slice(0,5);
-    let operations = [...customerOperations]; let debts = [...customerDebts]; debts.sort((a,b)=> new Date(a.startDate)-new Date(b.startDate));
-    const avgBefore = getAvgInterval(operations);
-    if(paid > 0){
-        const newDebt = { id: 'debt_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), originalAmount: paid, startDate: today, expectedDate: addDays(today, avgBefore)||today, payments: [], remainingAmount: paid, createdAt: new Date().toISOString(), note: 'سلعة جديدة '+today };
-        debts.push(newDebt); operations.push({type:'paid', amount: paid, date: today, time: currentTime, note: 'دين جديد'});
-    }
-    if(received > 0){
-        let left = received;
-        for(let debt of debts){ if(left<=0) break; const rem = Number(debt.remainingAmount||0); if(rem<=0.5) continue; const take = Math.min(rem, left); debt.payments = debt.payments||[]; debt.payments.push({amount: take, date: today, time: currentTime}); debt.remainingAmount = Math.max(0, rem - take); const newAvg = getAvgInterval([...operations, {type:'received', amount: received, date: today}]); debt.expectedDate = addDays(today, newAvg) || debt.expectedDate; left -= take; }
-        operations.push({type:'received', amount: received, date: today, time: currentTime});
-    }
-    debts.forEach(d=>{ const sum = (d.payments||[]).reduce((s,p)=>s+Number(p.amount),0); d.remainingAmount = Math.max(0, (Number(d.originalAmount)||0)-sum); });
-    const updateData = { date: date, paymentDate: date, city: city, operations: operations, debts: debts, paid: 0, received: 0, updatedAt: new Date().toISOString() };
-    customerDebts = debts; customerOperations = operations;
-    update(customerRef, updateData).then(()=>{ btn.textContent = '✅ تم الحفظ'; document.getElementById('paid').value = ''; document.getElementById('received').value = ''; const avg = getAvgInterval(operations); calculateTotal(debts); showSmartSummary(debts, avg); showDebts(debts, avg); showHistory({operations: operations}); setTimeout(()=>{ location.reload(); },800); }).catch((error)=>{ alert('خطأ: ' + error.message); btn.textContent = '💾 حفظ'; btn.disabled = false; });
+  const btn=document.getElementById('saveBtn'); btn.textContent='⏳ جاري الحفظ...'; btn.disabled=true;
+  const date=document.getElementById('date').value; const paid=parseFloat(document.getElementById('paid').value)||0; const received=parseFloat(document.getElementById('received').value)||0; const city=document.getElementById('cityValue').value||currentCity||'';
+  const now=new Date(); const today=now.toISOString().split('T')[0]; const currentTime=now.toTimeString().slice(0,5);
+  let operations=[...customerOperations]; let debts=[...customerDebts]; debts.sort((a,b)=> new Date(a.startDate)-new Date(b.startDate)); const avgBefore=getAvgInterval(operations);
+  if(paid>0){ const newDebt={id:'debt_'+Date.now(), originalAmount:paid, startDate:today, expectedDate:addDays(today,avgBefore)||today, payments:[], remainingAmount:paid, createdAt:new Date().toISOString()}; debts.push(newDebt); operations.push({type:'paid', amount:paid, date:today, time:currentTime}); }
+  if(received>0){ let left=received; for(let debt of debts){ if(left<=0) break; const rem=Number(debt.remainingAmount||0); if(rem<=0.5) continue; const take=Math.min(rem,left); debt.payments=debt.payments||[]; debt.payments.push({amount:take, date:today, time:currentTime}); debt.remainingAmount=Math.max(0,rem-take); const newAvg=getAvgInterval([...operations,{type:'received', amount:received, date:today}]); debt.expectedDate=addDays(today,newAvg)||debt.expectedDate; left-=take; } operations.push({type:'received', amount:received, date:today, time:currentTime}); }
+  debts.forEach(d=>{ const sum=(d.payments||[]).reduce((s,p)=>s+Number(p.amount),0); d.remainingAmount=Math.max(0,(Number(d.originalAmount)||0)-sum); });
+  const updateData={date:date, paymentDate:date, city:city, operations:operations, debts:debts, paid:0, received:0, updatedAt:new Date().toISOString()};
+  customerDebts=debts; customerOperations=operations;
+  update(customerRef, updateData).then(()=>{ btn.textContent='✅ تم الحفظ'; document.getElementById('paid').value=''; document.getElementById('received').value=''; const avg=getAvgInterval(operations); calculateTotal(debts); showSmartSummary(debts,avg); showDebts(debts,avg); showHistory({operations:operations}); setTimeout(()=>location.reload(),700); }).catch(()=>{ btn.textContent='💾 حفظ'; btn.disabled=false; showToast('⚠️ خطأ في الحفظ'); });
 });
-window.deleteOperation = function(index){
-    if(!confirm('حذف العملية؟ سيتم إعادة حساب الديون')) return;
-    const ops = [...customerOperations]; ops.splice(index,1);
-    const tempCustomer = {...customerDataCache, operations: ops, debts: null, amount: customerDataCache.amount};
-    let newDebts = ensureDebts(tempCustomer); const avg = getAvgInterval(ops); newDebts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base, avg)||d.startDate; }});
-    update(customerRef,{operations: ops, debts: newDebts, updatedAt: new Date().toISOString()}).then(()=>{ customerOperations = ops; customerDebts = newDebts; calculateTotal(newDebts); showSmartSummary(newDebts, avg); showDebts(newDebts, avg); showHistory({operations: ops}); });
+
+window.deleteOperation=function(index){
+  showCustomModal({title:'حذف العملية',desc:'هل تريد حذف هذه العملية؟ سيتم إعادة حساب الديون تلقائيا.',confirmText:'حذف',cancelText:'إلغاء',danger:true,onConfirm:()=>{
+    const ops=[...customerOperations]; ops.splice(index,1);
+    const temp={...customerDataCache, operations:ops, debts:null, amount:customerDataCache.amount};
+    let newDebts=ensureDebts(temp); const avg=getAvgInterval(ops); newDebts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base,avg)||d.startDate; }});
+    update(customerRef,{operations:ops, debts:newDebts, updatedAt:new Date().toISOString()}).then(()=>{ customerOperations=ops; customerDebts=newDebts; calculateTotal(newDebts); showSmartSummary(newDebts,avg); showDebts(newDebts,avg); showHistory({operations:ops}); showToast('🗑️ تم الحذف'); });
+  }});
 }
-window.editOperation = function(index){
-    let amount = prompt('المبلغ الجديد', customerOperations[index].amount); if(amount === null) return;
-    let date = prompt('التاريخ الجديد', customerOperations[index].date); if(date === null) return;
-    customerOperations[index].amount = Number(amount); customerOperations[index].date = date;
-    const tempCustomer = {...customerDataCache, operations: customerOperations, debts: null, amount: customerDataCache.amount};
-    let newDebts = ensureDebts(tempCustomer); const avg = getAvgInterval(customerOperations); newDebts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base, avg)||d.startDate; }});
-    update(customerRef,{operations: customerOperations, debts: newDebts}).then(()=>{ customerDebts = newDebts; calculateTotal(newDebts); showSmartSummary(newDebts, avg); showDebts(newDebts, avg); showHistory({operations: customerOperations}); });
+window.editOperation=function(index){
+  const op=customerOperations[index];
+  showCustomModal({title:'تعديل العملية',desc:'عدّل المبلغ والتاريخ',showInput:true,inputValue:op.amount,placeholder:'المبلغ',showInput2:true,input2Value:op.date,input2Placeholder:'التاريخ',confirmText:'حفظ',onConfirm:({v1,v2})=>{
+    if(!v1) return; customerOperations[index].amount=Number(v1); customerOperations[index].date=v2||op.date;
+    const temp={...customerDataCache, operations:customerOperations, debts:null, amount:customerDataCache.amount};
+    let newDebts=ensureDebts(temp); const avg=getAvgInterval(customerOperations); newDebts.forEach(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date : null; const base=lastPay||d.startDate; d.expectedDate=addDays(base,avg)||d.startDate; }});
+    update(customerRef,{operations:customerOperations, debts:newDebts}).then(()=>{ customerDebts=newDebts; calculateTotal(newDebts); showSmartSummary(newDebts,avg); showDebts(newDebts,avg); showHistory({operations:customerOperations}); showToast('✅ تم التعديل'); });
+  }});
 }
-window.sendReminderWhatsapp = function(index){
-    const phone = document.getElementById('phone').textContent.trim(); const customerName = document.getElementById('name').textContent; const total = document.getElementById('totalAmount').textContent;
-    if(!phone || phone === 'لا يوجد هاتف'){ alert('أضف رقم هاتف'); return; }
-    const cleanPhone = phone.replace(/\D/g,''); const avg = getAvgInterval(customerOperations); const worstDebt = customerDebts.filter(d=>d.remainingAmount>0.5).map(d=>calcRisk(d,avg)).sort((a,b)=>b.daysLate-a.daysLate)[0];
-    const lateTxt = worstDebt && worstDebt.daysLate>0 ? `\n⏰ متأخر ${worstDebt.daysLate} يوم` : '';
-    const message = `📌 إشعار أداء\n\nالسلام عليكم ${customerName}${lateTxt}\n\n💵 المبلغ المتبقي:\n${total}\n\n🕕 بعد الساعة التاسعة مساءً.\n\n👤 مصطفى`;
-    window.open('https://wa.me/212' + cleanPhone.replace(/^0/,'') + '?text=' + encodeURIComponent(message), '_blank');
+window.sendReminderWhatsapp=function(index){
+  const phone=document.getElementById('phone').textContent.trim(); const customerName=document.getElementById('name').textContent; const total=document.getElementById('totalAmount').textContent;
+  if(!phone || phone==='بدون هاتف'){ showToast('⚠️ أضف رقم الهاتف أولاً'); return; }
+  const cleanPhone=phone.replace(/\D/g,''); const avg=getAvgInterval(customerOperations); const worst=customerDebts.filter(d=>d.remainingAmount>0.5).map(d=>calcRisk(d,avg)).sort((a,b)=>b.daysLate-a.daysLate)[0];
+  const lateTxt=worst && worst.daysLate>0 ? `\n⏰ متأخر ${worst.daysLate} يوم` : '';
+  const message=`📌 إشعار أداء\n\nالسلام عليكم ${customerName}${lateTxt}\n\n💵 المتبقي:\n${total}\n\n🕕 بعد التاسعة مساءً\n\n👤 مصطفى`;
+  window.open('https://wa.me/212'+cleanPhone.replace(/^0/,'')+'?text='+encodeURIComponent(message),'_blank');
 }
-window.sendConfirmWhatsapp = function(index){
-    const phone = document.getElementById('phone').textContent.trim(); const customerName = document.getElementById('name').textContent;
-    if(!phone || phone === 'لا يوجد هاتف'){ alert('أضف رقم هاتف'); return; }
-    const op = customerOperations[index]; const total = document.getElementById('totalAmount').textContent; const cleanPhone = phone.replace(/\D/g,'');
-    const message = `✅ استلام دفعة\n\n${customerName}\n💵 ${op.amount} درهم\n📌 المتبقي: ${total}\n\n👤 مصطفى`;
-    window.open('https://wa.me/212' + cleanPhone.replace(/^0/,'') + '?text=' + encodeURIComponent(message), '_blank');
+window.sendConfirmWhatsapp=function(index){
+  const phone=document.getElementById('phone').textContent.trim(); const customerName=document.getElementById('name').textContent;
+  if(!phone || phone==='بدون هاتف'){ showToast('⚠️ أضف رقم الهاتف أولاً'); return; }
+  const op=customerOperations[index]; const total=document.getElementById('totalAmount').textContent; const cleanPhone=phone.replace(/\D/g,'');
+  const message=`✅ استلام دفعة\n\n${customerName}\n💵 ${op.amount} DH\n📌 المتبقي: ${total}\n\n👤 مصطفى`;
+  window.open('https://wa.me/212'+cleanPhone.replace(/^0/,'')+'?text='+encodeURIComponent(message),'_blank');
 }
-document.getElementById('backBtn').addEventListener('click', ()=>{ window.location.href = 'index.html'; });
-window.openAddDebtModal = function(){ document.getElementById('newDebtAmount').value=''; document.getElementById('newDebtDate').value=new Date().toISOString().split('T')[0]; document.getElementById('newDebtNote').value=''; document.getElementById('addDebtModal').classList.add('active'); }
-window.closeAddDebtModal = function(){ document.getElementById('addDebtModal').classList.remove('active'); }
-window.confirmAddDebt = function(){
-    const amt = parseFloat(document.getElementById('newDebtAmount').value); const dateStr = document.getElementById('newDebtDate').value; const note = document.getElementById('newDebtNote').value;
-    if(!amt||amt<=0){ alert('أدخل مبلغ صحيح'); return; } if(!dateStr){ alert('أدخل تاريخ'); return; }
-    const avg = getAvgInterval(customerOperations);
-    const newDebt = { id: 'debt_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), originalAmount: amt, startDate: dateStr, expectedDate: addDays(dateStr, avg)||dateStr, payments: [], remainingAmount: amt, createdAt: new Date().toISOString(), note: note||'سلعة جديدة' };
-    let debts = [...customerDebts, newDebt]; let ops = [...customerOperations, {type:'paid', amount: amt, date: dateStr, time: new Date().toTimeString().slice(0,5), note: note}];
-    update(customerRef, {debts: debts, operations: ops, updatedAt: new Date().toISOString()}).then(()=>{ closeAddDebtModal(); location.reload(); });
+document.getElementById('backBtn').addEventListener('click',()=>{ window.location.href='index.html'; });
+window.openAddDebtModal=function(){ document.getElementById('newDebtAmount').value=''; document.getElementById('newDebtDate').value=new Date().toISOString().split('T')[0]; document.getElementById('newDebtNote').value=''; document.getElementById('addDebtModal').classList.add('active'); }
+window.closeAddDebtModal=function(){ document.getElementById('addDebtModal').classList.remove('active'); }
+window.confirmAddDebt=function(){
+  const amt=parseFloat(document.getElementById('newDebtAmount').value); const dateStr=document.getElementById('newDebtDate').value; const note=document.getElementById('newDebtNote').value;
+  if(!amt||amt<=0){ showToast('⚠️ أدخل مبلغ صحيح'); return; } if(!dateStr){ showToast('⚠️ أدخل تاريخ'); return; }
+  const avg=getAvgInterval(customerOperations);
+  const newDebt={id:'debt_'+Date.now(), originalAmount:amt, startDate:dateStr, expectedDate:addDays(dateStr,avg)||dateStr, payments:[], remainingAmount:amt, createdAt:new Date().toISOString(), note:note||'سلعة جديدة'};
+  let debts=[...customerDebts,newDebt]; let ops=[...customerOperations,{type:'paid', amount:amt, date:dateStr, time:new Date().toTimeString().slice(0,5), note:note}];
+  update(customerRef,{debts:debts, operations:ops, updatedAt:new Date().toISOString()}).then(()=>{ closeAddDebtModal(); location.reload(); });
 }
-window.toggleDebt = toggleDebt;
-window.selectCityPerson = function(city){ currentCity = city; document.getElementById('cityValue').value = city; document.querySelectorAll('.city-quick-btn-person').forEach(btn=>{ if(btn.dataset.city === city) btn.classList.add('active-city'); else btn.classList.remove('active-city'); }); }
+window.toggleDebt=function(id){ const el=document.getElementById(id); if(el) el.classList.toggle('open'); }
+window.selectCityPerson=function(city){ currentCity=city; document.getElementById('cityValue').value=city; document.querySelectorAll('.city-btn').forEach(btn=>{ if(btn.dataset.city===city) btn.classList.add('active'); else btn.classList.remove('active'); }); }
+document.getElementById('addDebtModal').addEventListener('click',(e)=>{ if(e.target.id==='addDebtModal') closeAddDebtModal(); });
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
