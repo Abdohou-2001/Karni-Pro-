@@ -37,7 +37,8 @@ body{background:var(--bg);min-height:100vh;color:var(--text);overflow-x:hidden}
 .header-title{flex:1;text-align:center}
 .header-title b{font-size:18px;font-weight:900;display:block}
 .conn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.22);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;margin-top:4px}
-.dot{width:7px;height:7px;border-radius:50%;background:#4ade80}
+.dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.25)}
+.dot.off{background:#f87171}.dot.wait{background:#fbbf24}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 14px;background:var(--card);margin:12px;border-radius:18px;box-shadow:var(--shadow);border:1px solid var(--border);position:sticky;top:82px;z-index:80}
 .s-item{text-align:center;padding:6px 2px}
 .s-num{font-size:22px;font-weight:900;color:var(--primary);line-height:1}
@@ -47,106 +48,150 @@ body{background:var(--bg);min-height:100vh;color:var(--text);overflow-x:hidden}
 .v-btn.active{background:var(--gradient);color:#fff;border-color:transparent}
 .view{display:none;padding:0 12px 110px}
 .view.active{display:block}
-.route-card{background:var(--card);padding:12px;border-radius:18px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;border-right:4px solid transparent;cursor:pointer}
+.route-card{background:var(--card);padding:12px;border-radius:18px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;border-right:4px solid transparent;cursor:pointer;transition:background .15s}
+.route-card:active{background:#f8fafc}
 .route-card.current{border-right-color:#2563eb}.route-card.visited{border-right-color:#9ca3af;opacity:.75}.route-card.closed{border-right-color:#1f2937;opacity:.65}.route-card.closed-note{border-right-color:#ef4444}.route-card.postponed{border-right-color:#f97316}
-.r-num{width:44px;height:44px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;flex-shrink:0;border:3px solid #fff}
+.r-num{width:44px;height:44px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;flex-shrink:0;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.12)}
 .r-num.current{background:#2563eb}.r-num.visited{background:#9ca3af}.r-num.closed{background:#1f2937}.r-num.closed-note{background:#ef4444}.r-num.postponed{background:#f97316}.r-num.pending{background:#94a3b8}
-.r-info{flex:1;min-width:0}
-.r-name{font-size:13px;font-weight:800}
-.r-status{font-size:11px;font-weight:700}
-.r-note{font-size:11px;color:#ef4444;margin-top:4px;background:#fef2f2;padding:4px 8px;border-radius:8px;border:1px solid #fecdd3}
+.r-info{flex:1;min-width:0;text-align:right}
+.r-name{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r-status{font-size:11px;font-weight:700;margin-top:2px}
+.r-status.current{color:#2563eb}.r-status.visited{color:#9ca3af}.r-status.closed{color:#1f2937}.r-status.closed-note{color:#ef4444}.r-status.postponed{color:#f97316}.r-status.pending{color:#94a3b8}
+.r-note{font-size:11px;color:#ef4444;margin-top:4px;display:flex;align-items:center;gap:4px;font-weight:700;background:#fef2f2;padding:4px 8px;border-radius:8px;border:1px solid #fecdd3}
 .r-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
-.r-actions button{padding:6px 10px;border-radius:10px;border:none;cursor:pointer;font-size:11px;font-weight:800}
-.btn-done{background:#dcfce7;color:#166534}.btn-closed{background:#e5e7eb;color:#374151}.btn-note{background:#fee2e2;color:#991b1b}.btn-postpone{background:#ffedd5;color:#9a3412}.btn-del{background:#fff1f2;color:#ef4444;border:1px solid #fecdd3}
+.r-actions button{padding:6px 10px;border-radius:10px;border:none;cursor:pointer;font-size:11px;font-weight:800;white-space:nowrap;display:flex;align-items:center;gap:3px}
+.btn-done{background:#dcfce7;color:#166534}.btn-closed{background:#e5e7eb;color:#374151}.btn-note{background:#fee2e2;color:#991b1b}.btn-postpone{background:#ffedd5;color:#9a3412}.btn-del{background:#fff1f2;color:#ef4444;border:1px solid #fecdd3!important}
 .empty{text-align:center;padding:50px 20px;color:var(--muted);background:var(--card);border-radius:18px;box-shadow:var(--shadow);border:1px solid var(--border)}
-.map-wrap{position:relative;width:100%;height:calc(100vh - 230px);overflow:auto;background:linear-gradient(180deg,#0b1727 0%,#10253b 100%);border-radius:18px;margin-top:4px}
+.map-wrap{position:relative;width:100%;height:calc(100vh - 230px);overflow:auto;background:linear-gradient(180deg,#0b1727 0%,#10253b 100%);border-radius:18px;margin-top:4px;box-shadow:var(--shadow)}
 .map-content{position:relative;padding-bottom:180px}
-.map-bg{position:absolute;width:100%;height:100%;background-image:radial-gradient(#ffffff 1px, transparent 1px),radial-gradient(#60a5fa 1px, transparent 1px);background-size:120px 120px,180px 180px;opacity:.25}
+.map-bg{position:absolute;width:100%;height:100%;background-image:radial-gradient(#ffffff 1px, transparent 1px),radial-gradient(#60a5fa 1px, transparent 1px);background-size:120px 120px,180px 180px;background-position:0 0,60px 60px;opacity:.25;z-index:0}
 .route-path{position:absolute;top:0;left:0;width:100%;z-index:1;pointer-events:none}
 .route-path svg{width:100%;display:block}
 .point{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;z-index:10}
-.point-label{background:#fff;padding:8px 10px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:12px;min-width:90px;text-align:center}
-.point-dot{width:38px;height:38px;border-radius:50%;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:15px;border:3px solid #fff}
+.point-label{background:var(--card);padding:8px 10px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:12px;white-space:nowrap;min-width:90px;text-align:center;border:1px solid var(--border)}
+.point-name{font-weight:800;color:var(--text);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.point-dot{width:38px;height:38px;border-radius:50%;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:15px;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.18);flex-shrink:0}
 .point-dot.visited{background:#22c55e}.point-dot.current{background:#2563eb}.point-dot.pending{background:#94a3b8}.point-dot.closed{background:#374151}.point-dot.closed-note{background:#ef4444}.point-dot.postponed{background:#f97316}
-.flag{background:#ef4444;color:#fff;padding:8px 16px;border-radius:10px;font-weight:800;font-size:13px}
-.house{background:var(--primary);color:#fff;padding:8px 14px;border-radius:10px;font-weight:800;font-size:12px}
-.tree{position:absolute;font-size:22px;z-index:2}
-.order-view{position:fixed;inset:0;z-index:130;background:#0f172a;display:none;flex-direction:column;color:#fff}
+.finish-flag{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;z-index:20}
+.flag-pole{width:4px;height:70px;background:linear-gradient(to bottom,#ef4444,#991b1b);border-radius:2px}
+.flag{background:#ef4444;color:#fff;padding:8px 16px;border-radius:10px;font-weight:800;font-size:13px;box-shadow:0 4px 12px rgba(239,68,68,.4)}
+.house{background:var(--primary);color:#fff;padding:8px 14px;border-radius:10px;font-weight:800;font-size:12px;box-shadow:0 4px 12px rgba(15,118,110,.4)}
+.tree{position:absolute;font-size:22px;z-index:2;filter:drop-shadow(0 0 6px rgba(34,197,94,.35))}
+
+/* ORDER VIEW - PROFESSIONAL DARK - POINTER EVENTS */
+.order-view{position:fixed;inset:0;z-index:130;background:#0b1220;display:none;flex-direction:column;color:#fff}
 .order-view.active{display:flex}
-.order-header{background:#0f172a;padding:14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e293b}
-.order-list{flex:1;overflow:auto;padding:12px;background:#0b1220;display:flex;flex-direction:column;gap:10px}
-.order-item{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:14px 12px;display:flex;align-items:center;gap:12px;touch-action:none;user-select:none}
-.order-item.dragging{transform:scale(1.02);box-shadow:0 16px 32px rgba(0,0,0,0.5);background:#263449;border-color:#14B8A6;opacity:0.95}
-.order-item.placeholder{border:2px dashed #14B8A6;background:rgba(20,184,166,0.12);height:66px;opacity:0.7}
-.order-num{width:40px;height:40px;border-radius:12px;background:#0f172a;border:1px solid #334155;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;flex-shrink:0}
-.order-info{flex:1;min-width:0}
-.order-name{font-size:14px;font-weight:800;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.order-sub{font-size:11px;color:#94a3b8;font-weight:700;margin-top:3px;display:flex;align-items:center;gap:6px}
-.order-handle{width:36px;height:36px;border-radius:10px;background:#0f172a;border:1px solid #334155;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:15px;flex-shrink:0}
-.order-footer{padding:14px;background:#1e293b;border-top:1px solid #334155;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.save-btn{padding:14px;border-radius:14px;background:linear-gradient(135deg,#0F766E 0%,#14B8A6 100%);color:#fff;border:none;font-weight:900;font-size:14px;cursor:pointer}
-.cancel-btn{padding:14px;border-radius:14px;background:#0f172a;color:#94a3b8;border:1px solid #334155;font-weight:800;font-size:13px;cursor:pointer}
+.order-header{background:#0f172a;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e293b;min-height:54px;gap:10px}
+.order-header b{font-size:14px;font-weight:900;flex:1;text-align:center}
+.order-unsaved{font-size:10px;font-weight:800;color:#fbbf24;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);padding:4px 8px;border-radius:20px;display:none}
+.order-unsaved.show{display:inline-flex}
+.order-list{flex:1;overflow:auto;padding:8px;background:#0b1220;display:flex;flex-direction:column;gap:6px;overscroll-behavior:contain}
+.order-item{background:#172235;border:1px solid #233044;border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:8px;min-height:50px;touch-action:none;user-select:none;-webkit-user-select:none;position:relative;will-change:transform}
+.order-item.pressed{transform:scale(.98);background:#1d2a3d}
+.order-item.dragging{opacity:.96;transform:scale(1.02);box-shadow:0 12px 28px rgba(0,0,0,.55);background:#1d2a3d;border-color:rgba(20,184,166,.7);z-index:100;pointer-events:none;position:fixed;left:8px;right:8px;width:calc(100% - 16px)}
+.order-item.placeholder{border:1.5px dashed rgba(20,184,166,.6);background:rgba(20,184,166,.08);height:50px;opacity:.7;pointer-events:none}
+.order-num{width:30px;height:28px;border-radius:8px;background:#0f172a;border:1px solid #2a3a52;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#e2e8f0;flex-shrink:0}
+.order-handle{width:28px;height:28px;border-radius:8px;background:#0f172a;border:1px solid #233044;display:flex;align-items:center;justify-content:center;color:#475569;font-size:11px;flex-shrink:0}
+.order-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.order-name{font-size:12px;font-weight:700;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.order-sub{font-size:10px;color:#64748b;font-weight:600;display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-footer{padding:10px;background:#0f172a;border-top:1px solid #1e293b;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.save-btn{padding:12px;border-radius:12px;background:linear-gradient(135deg,#0F766E 0%,#14B8A6 100%);color:#fff;border:none;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 6px 18px rgba(15,118,110,.35);transition:.2s}
+.save-btn:disabled{opacity:.45;pointer-events:none;filter:grayscale(.3)}
+.cancel-btn{padding:12px;border-radius:12px;background:#172235;color:#94a3b8;border:1px solid #233044;font-weight:800;font-size:12px;cursor:pointer}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
 .modal.active{display:flex}
-.m-card{background:var(--card);border-radius:20px;padding:16px;width:100%;max-width:340px;box-shadow:var(--shadow-lg)}
-.m-title{font-size:14px;font-weight:800;margin-bottom:6px}
-.m-desc{font-size:12px;color:var(--muted);margin-bottom:10px}
-.m-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#f8fafc;font-size:12px;outline:none;margin-bottom:8px}
+.m-card{background:var(--card);border-radius:20px;padding:16px;width:100%;max-width:340px;box-shadow:var(--shadow-lg);animation:pop .22s ease}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.m-title{font-size:14px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.m-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.m-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#f8fafc;font-family:'Cairo';font-size:12px;outline:none;margin-bottom:8px}
 .m-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.m-btn{padding:10px;border-radius:12px;border:none;font-weight:800;font-size:11px;cursor:pointer;font-family:'Cairo'}
+.m-btn{padding:10px;border-radius:12px;border:none;font-family:'Cairo';font-weight:800;font-size:11px;cursor:pointer}
 .m-btn.cancel{background:#f1f5f9;color:var(--muted);border:1px solid var(--border)}
 .m-btn.confirm{background:var(--gradient);color:#fff}
 .m-btn.danger{background:var(--danger);color:#fff}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#0f172a;color:#fff;padding:10px 16px;border-radius:12px;font-size:12px;font-weight:700;z-index:300;transition:.35s}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#0f172a;color:#fff;padding:10px 16px;border-radius:12px;font-size:12px;font-weight:700;z-index:300;transition:.35s;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;align-items:center;gap:8px}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .bottom-sheet{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(6px);z-index:190;display:none;align-items:flex-end;justify-content:center}
 .bottom-sheet.active{display:flex}
-.sheet-card{background:var(--card);border-radius:22px 22px 0 0;padding:14px;width:100%;max-width:520px}
+.sheet-card{background:var(--card);border-radius:22px 22px 0 0;padding:14px;width:100%;max-width:520px;box-shadow:var(--shadow-lg)}
 .sheet-item{padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;border-radius:12px}
+.sheet-item:active{background:var(--bg)}
+.sheet-item i{width:36px;height:36px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px}
+.sheet-item.danger{color:var(--danger)}
 </style>
 </head>
 <body>
 <header class="header">
 <div class="header-row">
-<button class="h-btn" onclick="window.location.href='index.html'"><i class="fas fa-arrow-right"></i></button>
-<div class="header-title"><b>🗺️ المسار</b><div class="conn" id="connStatus"><span class="dot wait" id="connDot"></span><span id="connText">جاري الاتصال...</span></div></div>
+<button class="h-btn" onclick="window.location.href='index.html'" title="رجوع"><i class="fas fa-arrow-right"></i></button>
+<div class="header-title">
+<b>🗺️ المسار</b>
+<div class="conn" id="connStatus"><span class="dot wait" id="connDot"></span><span id="connText">جاري الاتصال...</span></div>
+</div>
 <div style="display:flex;gap:8px">
-<button class="h-btn" onclick="window.location.href='Raport.html'"><i class="fas fa-chart-bar"></i></button>
-<button class="h-btn" onclick="openSheet()"><i class="fas fa-ellipsis-v"></i></button>
+<button class="h-btn" onclick="window.location.href='Raport.html'" title="التقارير"><i class="fas fa-chart-bar"></i></button>
+<button class="h-btn" onclick="openSheet()" title="المزيد"><i class="fas fa-ellipsis-v"></i></button>
 </div>
 </div>
 </header>
+
 <div class="stats">
 <div class="s-item"><div class="s-num" id="totalCount">0</div><div class="s-label">الإجمالي</div></div>
 <div class="s-item"><div class="s-num" id="visitedCount">0</div><div class="s-label">تمت زيارته</div></div>
 <div class="s-item"><div class="s-num" id="currentCount">0</div><div class="s-label">الحالي</div></div>
 <div class="s-item"><div class="s-num" id="pendingCount">0</div><div class="s-label">في الانتظار</div></div>
 </div>
+
 <div class="view-toggle">
 <button class="v-btn active" id="btnList" onclick="showListView()"><i class="fas fa-list"></i> القائمة</button>
 <button class="v-btn" id="btnMap" onclick="showMapView()"><i class="fas fa-map"></i> الخريطة</button>
-<button class="v-btn" id="btnOrder" onclick="openOrderView()" style="background:#0f172a;color:#fff"><i class="fas fa-up-down"></i> ترتيب</button>
+<button class="v-btn" id="btnOrder" onclick="openOrderView()" style="background:#0f172a;color:#fff;border-color:#1e293b"><i class="fas fa-arrows-up-down"></i> ترتيب</button>
 </div>
-<div class="view active" id="listView"><div id="routeList"></div></div>
-<div class="view" id="mapView"><div class="map-wrap" id="mapContainer"><div class="map-content" id="mapContent"><div class="map-bg"></div><div class="route-path" id="routePathDiv"><svg id="routeSvg"><path id="routePath" fill="none" stroke="#ffffff" stroke-width="10" stroke-dasharray="14 12" stroke-linecap="round" opacity="0.9"/></svg></div><div id="pointsContainer"></div><div id="startContainer"></div><div id="treesContainer"></div><div id="finishContainer"></div></div></div></div>
+
+<div class="view active" id="listView">
+<div id="routeList"></div>
+</div>
+
+<div class="view" id="mapView">
+<div class="map-wrap" id="mapContainer">
+<div class="map-content" id="mapContent">
+<div class="map-bg"></div>
+<div class="route-path" id="routePathDiv"><svg id="routeSvg"><path id="routePath" fill="none" stroke="#ffffff" stroke-width="10" stroke-dasharray="14 12" stroke-linecap="round" opacity="0.9"/></svg></div>
+<div id="pointsContainer"></div>
+<div id="startContainer"></div>
+<div id="treesContainer"></div>
+<div id="finishContainer"></div>
+</div>
+</div>
+</div>
+
+<!-- ORDER VIEW FULL SCREEN - POINTER EVENTS -->
 <div class="order-view" id="orderView">
 <div class="order-header">
-<button class="h-btn" onclick="closeOrderView()" style="background:rgba(255,255,255,0.12)"><i class="fas fa-arrow-right"></i></button>
+<button class="h-btn" onclick="tryCloseOrder()" style="background:rgba(255,255,255,0.12)"><i class="fas fa-arrow-right"></i></button>
 <b>ترتيب زبناء اليوم</b>
+<span class="order-unsaved" id="unsavedBadge">• غير محفوظ</span>
 <div style="width:40px"></div>
 </div>
 <div class="order-list" id="orderList"></div>
 <div class="order-footer">
-<button class="cancel-btn" onclick="closeOrderView()">إلغاء</button>
-<button class="save-btn" onclick="saveOrder()">💾 حفظ الترتيب</button>
+<button class="cancel-btn" onclick="tryCloseOrder()">إلغاء</button>
+<button class="save-btn" id="saveOrderBtn" onclick="saveOrder()" disabled>💾 حفظ الترتيب</button>
 </div>
 </div>
-<div class="modal" id="customModal"><div class="m-card"><div class="m-title" id="customTitle">تنبيه</div><div class="m-desc" id="customDesc"></div><input type="text" id="customInput" class="m-input" style="display:none"><div class="m-actions"><button class="m-btn cancel" onclick="closeModal()">إلغاء</button><button class="m-btn confirm" id="customConfirm">تأكيد</button></div></div></div>
-<div class="bottom-sheet" id="bottomSheet" onclick="if(event.target.id==='bottomSheet') closeSheet()"><div class="sheet-card"><div class="sheet-item" onclick="closeSheet(); openOrderView()"><i class="fas fa-arrows-up-down" style="color:var(--primary)"></i><div><div style="font-weight:800;font-size:12px">↕ ترتيب زبناء اليوم</div><div style="font-size:10px;color:var(--muted)">ضغط مطول على الزبون نفسه لسحبه</div></div></div><div class="sheet-item" onclick="closeSheet(); resetRoute()"><i class="fas fa-rotate"></i><div><div style="font-weight:800;font-size:12px">إعادة التعيين</div></div></div><div class="sheet-item" onclick="closeSheet(); syncToday()"><i class="fas fa-arrows-rotate"></i><div><div style="font-weight:800;font-size:12px">مزامنة زبناء اليوم</div></div></div><div class="sheet-item danger" onclick="closeSheet(); clearAll()"><i class="fas fa-trash"></i><div><div style="font-weight:800;font-size:12px">مسح المسار</div></div></div><button class="m-btn cancel" style="width:100%;margin-top:10px" onclick="closeSheet()">إغلاق</button></div></div>
-<div class="toast" id="toast"><span id="toastMsg">تم</span></div>
+
+<div class="modal" id="customModal"><div class="m-card"><div class="m-title"><i class="fas fa-circle-info" style="color:var(--primary)"></i> <span id="customTitle">تنبيه</span></div><div class="m-desc" id="customDesc"></div><input type="text" id="customInput" class="m-input" style="display:none" placeholder=""><div class="m-actions"><button class="m-btn cancel" onclick="closeModal()">إلغاء</button><button class="m-btn confirm" id="customConfirm">تأكيد</button></div></div></div>
+
+<div class="bottom-sheet" id="bottomSheet" onclick="if(event.target.id==='bottomSheet') closeSheet()"><div class="sheet-card"><div style="width:36px;height:4px;background:var(--border);border-radius:10px;margin:0 auto 12px"></div><div class="sheet-item" onclick="closeSheet(); openOrderView()"><i class="fas fa-arrows-up-down" style="color:var(--primary)"></i><div><div style="font-weight:800;font-size:12px">↕ ترتيب زبناء اليوم</div><div style="font-size:10px;color:var(--muted)">سحب مباشر للزبون نفسه - ضغط مطول 350ms</div></div></div><div class="sheet-item" onclick="closeSheet(); resetRoute()"><i class="fas fa-rotate" style="color:#2563eb"></i><div><div style="font-weight:800;font-size:12px">إعادة التعيين</div><div style="font-size:10px;color:var(--muted)">إرجاع الكل إلى في الانتظار</div></div></div><div class="sheet-item" onclick="closeSheet(); syncToday()"><i class="fas fa-arrows-rotate" style="color:var(--primary)"></i><div><div style="font-weight:800;font-size:12px">مزامنة زبناء اليوم</div><div style="font-size:10px;color:var(--muted)">إضافة زبناء اليوم تلقائياً</div></div></div><div class="sheet-item danger" onclick="closeSheet(); clearAll()"><i class="fas fa-trash" style="color:var(--danger);background:#fef2f2"></i><div><div style="font-weight:800;font-size:12px">مسح المسار</div><div style="font-size:10px;color:var(--muted)">حذف كل المسار</div></div></div><div style="margin-top:10px"><button class="m-btn cancel" style="width:100%" onclick="closeSheet()">إغلاق</button></div></div></div>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">تم</span></div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, set, remove, onValue, get } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+// FIREBASE CONFIG - MUST NOT CHANGE - SAME AS ORIGINAL FILES - DO NOT MODIFY
 const firebaseConfig = {
   apiKey: "AIzaSyBCVOOouLET3GDGyHj2i7ncvUZBjUUVB7Y",
   authDomain: "karni-b9b34.firebaseapp.com",
@@ -158,37 +203,67 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+
 let routeList = [];
 let currentView = 'list';
 let customCb = null;
 let customerAmounts = {};
+let isDragging = false;
+let hasUnsavedOrder = false;
+let orderData = [];
+let originalOrderSignature = '';
 const STATUS_AR = {pending:'في الانتظار', current:'الحالي', visited:'تمت زيارته', closed:'مغلق', 'closed-note':'ملاحظة', postponed:'مؤجل'};
-function showToast(msg){ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
-window.showCustomModal=function({title,desc,showInput=false,inputValue='',placeholder='',confirmText='تأكيد',danger=false,onConfirm}){ document.getElementById('customTitle').textContent=title; document.getElementById('customDesc').textContent=desc; const inp=document.getElementById('customInput'); inp.style.display=showInput?'block':'none'; if(showInput){ inp.value=inputValue; inp.placeholder=placeholder; } document.getElementById('customConfirm').textContent=confirmText; document.getElementById('customConfirm').className=danger?'m-btn danger':'m-btn confirm'; customCb=onConfirm; document.getElementById('customModal').classList.add('active'); };
+
+function getLocalToday(){
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth()+1).padStart(2,'0');
+  const dd = String(now.getDate()).padStart(2,'0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function showToast(msg){
+  const toast=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 2200);
+}
+window.showCustomModal = function({title, desc, showInput=false, inputValue='', placeholder='', confirmText='تأكيد', cancelText='إلغاء', danger=false, onConfirm}){
+  document.getElementById('customTitle').textContent=title||'تنبيه';
+  document.getElementById('customDesc').textContent=desc||'';
+  const inp=document.getElementById('customInput');
+  inp.style.display= showInput? 'block':'none';
+  if(showInput){ inp.value=inputValue; inp.placeholder=placeholder; setTimeout(()=>inp.focus(),100); }
+  document.getElementById('customConfirm').textContent=confirmText;
+  document.getElementById('customConfirm').className = danger? 'm-btn danger' : 'm-btn confirm';
+  document.querySelector('#customModal .m-btn.cancel').textContent=cancelText;
+  customCb=onConfirm;
+  document.getElementById('customModal').classList.add('active');
+};
 window.closeModal=function(){ document.getElementById('customModal').classList.remove('active'); customCb=null; };
-document.getElementById('customConfirm').addEventListener('click',()=>{ const v=document.getElementById('customInput').style.display!=='none'?document.getElementById('customInput').value:null; if(customCb) customCb(v); closeModal(); });
+document.getElementById('customConfirm').addEventListener('click',()=>{
+  const val=document.getElementById('customInput').style.display!=='none' ? document.getElementById('customInput').value : null;
+  if(customCb) customCb(val);
+  closeModal();
+});
+document.getElementById('customModal').addEventListener('click',(e)=>{ if(e.target.id==='customModal') closeModal(); });
 window.openSheet=function(){ document.getElementById('bottomSheet').classList.add('active'); };
 window.closeSheet=function(){ document.getElementById('bottomSheet').classList.remove('active'); };
-function setConn(state,text){ document.getElementById('connText').textContent=text; document.getElementById('connDot').className='dot '+(state==='online'?'':state==='off'?'off':'wait'); }
-function saveToFirebase(){ set(ref(db, 'routeManual'), routeList).then(()=>{ showToast('✅ تم الحفظ'); }); }
-async function checkAndLoadTodayCustomers(){
+function setConn(state,text){ const dot=document.getElementById('connDot'); const txt=document.getElementById('connText'); dot.className='dot '+(state==='online'?'':state==='off'?'off':'wait'); txt.textContent=text; }
+
+function saveToFirebase(){
+  // Only used for status changes, not ordering (ordering uses saveOrder)
+  set(ref(db, 'routeManual'), routeList).then(()=>{ showToast('✅ تم الحفظ'); }).catch(()=>{ showToast('⚠️ خطأ في الحفظ'); });
+}
+
+function getOrderSignature(list){
+  return list.map(x=>x.id).join('|');
+}
+
+async function loadCustomerAmounts(){
   try{
-    const today=new Date().toISOString().split('T')[0];
-    const custSnap=await get(ref(db,'customers'));
-    const routeSnap=await get(ref(db,'routeManual'));
-    let data=routeSnap.exists()?routeSnap.val():[];
-    if(!Array.isArray(data)) data=Object.values(data);
-    if(!custSnap.exists()) return;
-    const customers=custSnap.val();
-    let added=0;
-    Object.keys(customers).forEach(key=>{
-      const c=customers[key];
-      if(c.date===today){
-        const exists=data.some(item=>item.id===(c.id||key));
-        if(!exists){ data.push({id:c.id||key,name:c.name,status:'pending',note:''}); added++; }
-      }
-    });
-    if(added>0){ await set(ref(db,'routeManual'),data); showToast('➕ إضافة '+added+' زبون'); }
+    const snap=await get(ref(db,'customers'));
+    if(!snap.exists()) return;
+    const customers=snap.val();
     Object.keys(customers).forEach(k=>{
       const c=customers[k];
       const id=c.id||k;
@@ -199,191 +274,499 @@ async function checkAndLoadTodayCustomers(){
     });
   }catch(e){}
 }
-window.syncToday=function(){ checkAndLoadTodayCustomers(); };
-setConn('wait','جاري الاتصال...'); checkAndLoadTodayCustomers();
-setInterval(checkAndLoadTodayCustomers,30000);
-onValue(ref(db, 'routeManual'), (snap)=>{
-  routeList=snap.exists()? snap.val() : [];
-  if(!Array.isArray(routeList)) routeList=Object.values(routeList);
+
+async function checkAndLoadTodayCustomers(){
+  if(isDragging || hasUnsavedOrder) return;
+  try{
+    const today = getLocalToday();
+    const customersSnapshot = await get(ref(db,'customers'));
+    const routeSnapshot = await get(ref(db,'routeManual'));
+    let routeListData = routeSnapshot.exists() ? routeSnapshot.val() : [];
+    if(!Array.isArray(routeListData)) routeListData=Object.values(routeListData);
+    if(!customersSnapshot.exists()) return;
+    const customers = customersSnapshot.val();
+    let added=0;
+    Object.keys(customers).forEach(key=>{
+      const customer = customers[key];
+      if(customer.date === today){
+        const exists = routeListData.some(item => item.id === (customer.id || key));
+        if(!exists){
+          routeListData.push({id: customer.id || key, name: customer.name, status: 'pending', note: ''});
+          added++;
+        }
+      }
+    });
+    if(added>0){
+      await set(ref(db,'routeManual'), routeListData);
+      showToast(`➕ تمت إضافة ${added} زبون اليوم`);
+    }
+    Object.keys(customers).forEach(k=>{
+      const c=customers[k];
+      const id=c.id||k;
+      let total=0;
+      if(c.debts && Array.isArray(c.debts)) total=c.debts.reduce((s,d)=>s+Number(d.remainingAmount||0),0);
+      else total=Number(c.amount||0);
+      customerAmounts[id]=Math.round(total);
+    });
+  }catch(e){ console.warn(e); }
+}
+window.syncToday = function(){ checkAndLoadTodayCustomers(); };
+
+// INITIAL LOAD - FIREBASE LISTENER - MUST NOT OVERWRITE DURING DRAG
+setConn('wait','جاري الاتصال...');
+loadCustomerAmounts();
+checkAndLoadTodayCustomers();
+setInterval(checkAndLoadTodayCustomers, 45000);
+onValue(ref(db, 'routeManual'), (snapshot)=>{
+  if(isDragging || hasUnsavedOrder){
+    // Do not overwrite local order while user is dragging or has unsaved changes
+    setConn('online','متصل - غير محفوظ');
+    return;
+  }
+  routeList = snapshot.exists()? snapshot.val() : [];
+  if(!Array.isArray(routeList)) routeList = Object.values(routeList);
   renderAll();
   setConn('online','متصل');
-});
-function renderAll(){ renderStats(); renderList(); renderMap(); if(document.getElementById('orderView').classList.contains('active')) renderOrderList(); }
-function renderStats(){
-  let pending=0,current=0,visited=0;
-  routeList.forEach(item=>{ if(item.status==='pending') pending++; if(item.status==='current') current++; if(item.status==='visited') visited++; });
-  document.getElementById('totalCount').innerText=routeList.length;
-  document.getElementById('visitedCount').innerText=visited;
-  document.getElementById('currentCount').innerText=current;
-  document.getElementById('pendingCount').innerText=pending;
+}, ()=>{ setConn('off','غير متصل'); });
+
+function normalizeStatuses(){
+  // READ ONLY separation: ensure at least one current if no current exists, but do not save here
+  // This function mutates routeList for display only, not triggering firebase write inside render
+  const hasCurrent = routeList.some(x=>x.status==='current');
+  if(!hasCurrent){
+    const idx = routeList.findIndex(x=>x.status==='pending');
+    if(idx!==-1){
+      routeList[idx].status='current';
+    }
+  }
 }
-function renderList(){
-  const container=document.getElementById('routeList');
-  if(routeList.length===0){ container.innerHTML='<div class="empty"><div style="font-size:32px">🗺️</div><div style="font-weight:800;margin-top:8px">المسار فارغ</div></div>'; return; }
-  let html=''; let pending=0,current=0;
-  routeList.forEach((item,index)=>{
+
+function renderAll(){
+  normalizeStatuses();
+  renderStats();
+  renderList();
+  renderMap();
+  // Do not auto re-render order list if dragging
+  if(document.getElementById('orderView').classList.contains('active') && !isDragging){
+    // keep orderData in sync only if no unsaved changes
+    if(!hasUnsavedOrder){
+      orderData = [...routeList];
+      originalOrderSignature = getOrderSignature(orderData);
+      renderOrderList();
+    }
+  }
+}
+
+function renderStats(){
+  let pending=0, current=0, visited=0;
+  routeList.forEach(item=>{
     if(item.status==='pending') pending++;
     if(item.status==='current') current++;
-    if(pending>0 && item.status==='pending' && current===0){ item.status='current'; current=1; pending--; }
-    const ar=STATUS_AR[item.status]||item.status;
-    html+=`<div class="route-card ${item.status}" onclick="window.location.href='person.html?id=${item.id}'"><div class="r-num ${item.status}">${index+1}</div><div class="r-info"><div class="r-name">${item.name}</div><div class="r-status ${item.status}">${ar}</div>${item.note?`<div class="r-note">✏️ ${item.note}</div>`:''}<div class="r-actions">${item.status!=='visited'?`<button class="btn-done" onclick="event.stopPropagation();markDone('${item.id}')">✅ تم</button>`:''}<button class="btn-closed" onclick="event.stopPropagation();markClosed('${item.id}')">مغلق</button><button class="btn-note" onclick="event.stopPropagation();addNote('${item.id}')">✏️ رسالة</button><button class="btn-postpone" onclick="event.stopPropagation();postpone('${item.id}')">تأجيل</button><button class="btn-del" onclick="event.stopPropagation();deleteCustomer('${item.id}')">🗑️</button></div></div></div>`;
+    if(item.status==='visited') visited++;
+  });
+  document.getElementById('totalCount').innerText = routeList.length;
+  document.getElementById('visitedCount').innerText = visited;
+  document.getElementById('currentCount').innerText = current;
+  document.getElementById('pendingCount').innerText = pending;
+}
+
+// READ ONLY RENDER - NO STATUS MUTATION - NO FIREBASE WRITE
+function renderList(){
+  const container=document.getElementById('routeList');
+  if(routeList.length===0){
+    container.innerHTML='<div class="empty"><div style="font-size:36px">🗺️</div><div style="font-weight:800;margin-top:8px">المسار فارغ</div><div style="font-size:11px;margin-top:4px">سيتم إضافة زبناء اليوم تلقائياً</div></div>';
+    return;
+  }
+  let html='';
+  routeList.forEach((item, index)=>{
+    const statusAr = STATUS_AR[item.status] || item.status;
+    html+=`
+    <div class="route-card ${item.status}" data-id="${item.id}" onclick="window.location.href='person.html?id=${item.id}'">
+      <div class="r-num ${item.status}">${index+1}</div>
+      <div class="r-info">
+        <div class="r-name">${item.name}</div>
+        <div class="r-status ${item.status}">${statusAr}</div>
+        ${item.note? `<div class="r-note"><i class="fas fa-sticky-note"></i> ${item.note}</div>` : ''}
+        <div class="r-actions">
+          ${item.status!=='visited'? `<button class="btn-done" onclick="event.stopPropagation();markDone('${item.id}')"><i class="fas fa-check"></i> تم</button>` : ''}
+          <button class="btn-closed" onclick="event.stopPropagation();markClosed('${item.id}')">مغلق</button>
+          <button class="btn-note" onclick="event.stopPropagation();addNote('${item.id}')">✏️ رسالة</button>
+          <button class="btn-postpone" onclick="event.stopPropagation();postpone('${item.id}')">تأجيل</button>
+          <button class="btn-del" onclick="event.stopPropagation();deleteCustomer('${item.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`;
   });
   container.innerHTML=html;
 }
+
 function renderMap(){
   const container=document.getElementById('pointsContainer');
-  const startC=document.getElementById('startContainer');
-  const treesC=document.getElementById('treesContainer');
-  const finishC=document.getElementById('finishContainer');
+  const startContainer=document.getElementById('startContainer');
+  const treesContainer=document.getElementById('treesContainer');
+  const finishContainer=document.getElementById('finishContainer');
   const mapContent=document.getElementById('mapContent');
-  const pathDiv=document.getElementById('routePathDiv');
-  const svg=document.getElementById('routeSvg');
+  const routePathDiv=document.getElementById('routePathDiv');
+  const routeSvg=document.getElementById('routeSvg');
   const path=document.getElementById('routePath');
-  container.innerHTML=''; startC.innerHTML=''; treesC.innerHTML=''; finishC.innerHTML='';
-  if(routeList.length===0){ path.setAttribute('d',''); mapContent.style.height='400px'; pathDiv.style.height='400px'; svg.setAttribute('height','400'); return; }
-  let points=[]; let h=130; let total=(routeList.length*h)+350;
-  mapContent.style.height=total+'px'; pathDiv.style.height=total+'px'; svg.setAttribute('height',total);
-  let width=document.getElementById('mapContainer').offsetWidth||360;
-  routeList.forEach((_,i)=>{ let y=100+(i*h); let x=width/2+Math.sin(i*0.9)*(width*0.28); points.push({x,y}); });
-  for(let i=0;i<points.length;i++){ const p=points[i]; treesC.innerHTML+=`<div class="tree" style="top:${p.y-40}px;left:${p.x-170}px">🌳</div><div class="tree" style="top:${p.y+40}px;left:${p.x+160}px">🌲</div>`; }
-  if(points.length>1){
-    let first=points[0];
-    startC.innerHTML=`<div class="house" style="position:absolute;top:${first.y-40}px;left:${first.x}px;transform:translate(-50%,-50%)">🏠 البداية</div>`;
-    let d=`M ${points[0].x} ${points[0].y}`;
-    for(let i=1;i<points.length;i++){ let cp=(points[i-1].x+points[i].x)/2; d+=` Q ${cp} ${points[i-1].y+55}, ${points[i].x} ${points[i].y}`; }
-    let last=points[points.length-1]; d+=` L ${last.x} ${last.y+150}`; path.setAttribute('d',d);
+  container.innerHTML=''; startContainer.innerHTML=''; treesContainer.innerHTML=''; finishContainer.innerHTML='';
+  if(routeList.length===0){
+    path.setAttribute('d','');
+    mapContent.style.height='400px';
+    routePathDiv.style.height='400px';
+    routeSvg.setAttribute('height','400');
+    return;
   }
-  routeList.forEach((item,i)=>{
-    let p=points[i]; let ar=STATUS_AR[item.status]||item.status; let left=i%2===0;
-    container.innerHTML+=`<div class="point" style="top:${p.y}px;left:${p.x}px;flex-direction:${left?'row-reverse':'row'}"><div class="point-dot ${item.status}">${i+1}</div><div class="point-label"><div style="font-weight:800;font-size:12px">${item.name}</div><div style="font-size:10px">${ar}</div></div></div>`;
+  let points=[]; let itemHeight=130; let totalHeight=(routeList.length*itemHeight)+350;
+  mapContent.style.height=totalHeight+'px';
+  routePathDiv.style.height=totalHeight+'px';
+  routeSvg.setAttribute('height',totalHeight);
+  let width=document.getElementById('mapContainer').offsetWidth || 360;
+  routeList.forEach((item,index)=>{
+    let y=100+(index*itemHeight);
+    let x=width/2 + Math.sin(index*0.9)*(width*0.28);
+    points.push({x,y});
   });
-  if(points.length>0){ let last=points[points.length-1]; finishC.innerHTML=`<div class="finish-flag" style="top:${last.y+170}px;left:${last.x}px"><div class="flag">🏁 النهاية</div></div>`; }
+  for(let i=0;i<points.length;i++){
+    const p=points[i];
+    treesContainer.innerHTML+=`<div class="tree" style="top:${p.y-40}px;left:${p.x-170}px">🌳</div><div class="tree" style="top:${p.y+40}px;left:${p.x+160}px">🌲</div>`;
+  }
+  if(points.length>1){
+    let firstPoint=points[0];
+    startContainer.innerHTML=`<div class="house" style="position:absolute;top:${firstPoint.y-40}px;left:${firstPoint.x}px;transform:translate(-50%,-50%)">🏠 البداية</div>`;
+    let d=`M ${points[0].x} ${points[0].y}`;
+    for(let i=1;i<points.length;i++){
+      let cpX=(points[i-1].x+points[i].x)/2;
+      d+=` Q ${cpX} ${points[i-1].y+55}, ${points[i].x} ${points[i].y}`;
+    }
+    let lastPoint=points[points.length-1];
+    d+=` L ${lastPoint.x} ${lastPoint.y+150}`;
+    path.setAttribute('d',d);
+  }
+  routeList.forEach((item,index)=>{
+    let point=points[index];
+    let statusAr=STATUS_AR[item.status]||item.status;
+    let isLeft=index%2===0;
+    container.innerHTML+=`
+    <div class="point" style="top:${point.y}px;left:${point.x}px;flex-direction:${isLeft?'row-reverse':'row'}">
+      <div class="point-dot ${item.status}">${index+1}</div>
+      <div class="point-label">
+        <div class="point-name">${item.name}</div>
+        <div class="point-status ${item.status}">${statusAr}</div>
+      </div>
+    </div>`;
+  });
+  if(points.length>0){
+    let lastPoint=points[points.length-1];
+    finishContainer.innerHTML=`<div class="finish-flag" style="top:${lastPoint.y+170}px;left:${lastPoint.x}px"><div class="flag">🏁 النهاية</div><div class="flag-pole"></div></div>`;
+  }
+  setTimeout(()=>{
+    const cur=document.querySelector('.point-dot.current');
+    if(cur && currentView==='map'){ cur.scrollIntoView({behavior:'smooth', block:'center'}); }
+  },400);
 }
-window.showListView=function(){ currentView='list'; document.getElementById('listView').classList.add('active'); document.getElementById('mapView').classList.remove('active'); document.getElementById('btnList').classList.add('active'); document.getElementById('btnMap').classList.remove('active'); };
-window.showMapView=function(){ currentView='map'; document.getElementById('mapView').classList.add('active'); document.getElementById('listView').classList.remove('active'); document.getElementById('btnMap').classList.add('active'); document.getElementById('btnList').classList.remove('active'); setTimeout(()=>renderMap(),100); };
-let orderData=[]; let orderDrag={el:null,placeholder:null,startY:0,startX:0,isDragging:false,longPressTimer:null};
-window.openOrderView=function(){ if(routeList.length===0){ showToast('⚠️ لا يوجد زبناء'); return; } orderData=[...routeList]; renderOrderList(); document.getElementById('orderView').classList.add('active'); document.body.style.overflow='hidden'; };
-window.closeOrderView=function(){ document.getElementById('orderView').classList.remove('active'); document.body.style.overflow=''; orderDrag={el:null,placeholder:null,startY:0,startX:0,isDragging:false,longPressTimer:null}; };
+
+window.showListView=function(){
+  currentView='list';
+  document.getElementById('listView').classList.add('active');
+  document.getElementById('mapView').classList.remove('active');
+  document.getElementById('btnList').classList.add('active');
+  document.getElementById('btnMap').classList.remove('active');
+};
+window.showMapView=function(){
+  currentView='map';
+  document.getElementById('mapView').classList.add('active');
+  document.getElementById('listView').classList.remove('active');
+  document.getElementById('btnMap').classList.add('active');
+  document.getElementById('btnList').classList.remove('active');
+  setTimeout(()=>{ renderMap(); },100);
+};
+
+// ===== POINTER EVENTS ORDER VIEW - CLEAN MOBILE DRAG =====
+let dragState = {el:null, placeholder:null, startY:0, startX:0, pointerId:null, longPressTimer:null, isLongPress:false, initialIndex:-1};
+
+function updateSaveBtn(){
+  const btn=document.getElementById('saveOrderBtn');
+  const badge=document.getElementById('unsavedBadge');
+  const sig=getOrderSignature(orderData);
+  hasUnsavedOrder = sig !== originalOrderSignature;
+  btn.disabled = !hasUnsavedOrder;
+  badge.classList.toggle('show', hasUnsavedOrder);
+}
+
+window.openOrderView = function(){
+  if(routeList.length===0){ showToast('⚠️ لا يوجد زبناء للترتيب'); return; }
+  orderData = [...routeList];
+  originalOrderSignature = getOrderSignature(orderData);
+  hasUnsavedOrder = false;
+  renderOrderList();
+  document.getElementById('orderView').classList.add('active');
+  document.body.style.overflow='hidden';
+  updateSaveBtn();
+};
+
+window.tryCloseOrder = function(){
+  if(hasUnsavedOrder){
+    showCustomModal({title:'تغييرات غير محفوظة',desc:'لديك ترتيب غير محفوظ. هل تريد الخروج بدون حفظ؟',confirmText:'خروج بدون حفظ',cancelText:'البقاء',danger:true,onConfirm:()=>{ closeOrderView(); }});
+  } else {
+    closeOrderView();
+  }
+};
+
+window.closeOrderView = function(){
+  document.getElementById('orderView').classList.remove('active');
+  document.body.style.overflow='';
+  isDragging=false;
+  hasUnsavedOrder=false;
+  dragState={el:null,placeholder:null,startY:0,startX:0,pointerId:null,longPressTimer:null,isLongPress:false,initialIndex:-1};
+  updateSaveBtn();
+};
+
 function renderOrderList(){
   const container=document.getElementById('orderList');
   container.innerHTML='';
   orderData.forEach((item,index)=>{
-    const amount=customerAmounts[item.id]!==undefined?customerAmounts[item.id]+' درهم':'';
+    const amount = customerAmounts[item.id] !== undefined ? customerAmounts[item.id] + ' درهم' : '';
     const div=document.createElement('div');
     div.className='order-item';
-    div.dataset.index=index;
     div.dataset.id=item.id;
-    div.innerHTML=`<div class="order-num">${String(index+1).padStart(2,'0')}</div><div class="order-info"><div class="order-name">${item.name}</div><div class="order-sub"><span>${STATUS_AR[item.status]||item.status}</span>${amount?`<span>• ${amount}</span>`:''}</div></div><div class="order-handle"><i class="fas fa-grip-lines"></i></div>`;
-    div.addEventListener('touchstart', onOrderTouchStart, {passive:false});
-    div.addEventListener('mousedown', onOrderMouseDown);
+    div.dataset.index=index;
+    // No draggable attribute - Pointer Events only
+    div.innerHTML=`
+      <div class="order-handle"><i class="fas fa-bars"></i></div>
+      <div class="order-info">
+        <div class="order-name">${item.name}</div>
+        <div class="order-sub"><span>${STATUS_AR[item.status]||item.status}</span>${amount? `<span>• ${amount}</span>`:''}</div>
+      </div>
+      <div class="order-num">${String(index+1).padStart(2,'0')}</div>
+    `;
+    // Pointer events - ignore if target is button (but there is no button here)
+    div.addEventListener('pointerdown', onPointerDown);
     container.appendChild(div);
   });
 }
-function onOrderTouchStart(e){
-  if(e.touches.length>1) return;
-  const el=e.currentTarget; const t=e.touches[0];
-  orderDrag.startY=t.clientY; orderDrag.startX=t.clientX; orderDrag.el=el; orderDrag.isDragging=false;
-  clearTimeout(orderDrag.longPressTimer);
-  orderDrag.longPressTimer=setTimeout(()=>{ startDrag(el, t.clientY); }, 380);
-}
-function onOrderMouseDown(e){
+
+function onPointerDown(e){
+  // Ignore if clicking on button (not applicable in order view but safe)
+  if(e.target.closest('button')) return;
   const el=e.currentTarget;
-  orderDrag.startY=e.clientY; orderDrag.startX=e.clientX; orderDrag.el=el; orderDrag.isDragging=false;
-  clearTimeout(orderDrag.longPressTimer);
-  orderDrag.longPressTimer=setTimeout(()=>{ startDrag(el, e.clientY); }, 380);
-  document.addEventListener('mousemove', onOrderMouseMove);
-  document.addEventListener('mouseup', onOrderMouseUp);
-  document.addEventListener('touchmove', onOrderTouchMove, {passive:false});
-  document.addEventListener('touchend', onOrderTouchEnd);
+  if(e.button!==0) return; // only primary
+  dragState.el=el;
+  dragState.startY=e.clientY;
+  dragState.startX=e.clientX;
+  dragState.pointerId=e.pointerId;
+  dragState.isLongPress=false;
+  dragState.initialIndex=parseInt(el.dataset.index)||0;
+  el.classList.add('pressed');
+  clearTimeout(dragState.longPressTimer);
+  dragState.longPressTimer=setTimeout(()=>{
+    // Long press achieved - start dragging
+    dragState.isLongPress=true;
+    beginPointerDrag(e);
+  }, 350);
+  // Prevent context menu
+  el.addEventListener('contextmenu', preventDefaultOnce, {once:true});
 }
-function startDrag(el, clientY){
-  if(orderDrag.isDragging) return;
-  orderDrag.isDragging=true;
+
+function preventDefaultOnce(ev){ ev.preventDefault(); }
+
+function beginPointerDrag(e){
+  if(isDragging) return;
+  if(!dragState.el) return;
+  const el=dragState.el;
+  isDragging=true;
+  el.classList.remove('pressed');
+  // Create placeholder
   const ph=document.createElement('div');
   ph.className='order-item placeholder';
   ph.style.height=el.offsetHeight+'px';
   el.parentNode.insertBefore(ph, el.nextSibling);
-  orderDrag.placeholder=ph;
+  dragState.placeholder=ph;
   el.classList.add('dragging');
-  el.style.position='fixed'; el.style.left='12px'; el.style.right='12px'; el.style.width='calc(100% - 24px)'; el.style.zIndex='100'; el.style.pointerEvents='none';
-  el.style.top=(clientY - el.offsetHeight/2)+'px';
-  if(navigator.vibrate) navigator.vibrate(30);
+  try{ el.setPointerCapture(dragState.pointerId); }catch(err){}
+  el.style.top=(e.clientY - el.offsetHeight/2)+'px';
+  // Listen globally
+  el.addEventListener('pointermove', onPointerMove);
+  el.addEventListener('pointerup', onPointerUp);
+  el.addEventListener('pointercancel', onPointerCancel);
+  document.body.style.touchAction='none';
 }
-function onOrderTouchMove(e){
-  if(!orderDrag.el) return;
-  const t=e.touches[0];
-  const dy=Math.abs(t.clientY-orderDrag.startY); const dx=Math.abs(t.clientX-orderDrag.startX);
-  if(!orderDrag.isDragging && (dy>10 || dx>10)){ clearTimeout(orderDrag.longPressTimer); return; }
-  if(orderDrag.isDragging){ e.preventDefault(); orderDrag.el.style.top=(t.clientY - orderDrag.el.offsetHeight/2)+'px'; handleOver(t.clientY); }
-}
-function onOrderMouseMove(e){
-  if(!orderDrag.el) return;
-  if(!orderDrag.isDragging && Math.abs(e.clientY-orderDrag.startY)>8){ clearTimeout(orderDrag.longPressTimer); }
-  if(orderDrag.isDragging){ orderDrag.el.style.top=(e.clientY - orderDrag.el.offsetHeight/2)+'px'; handleOver(e.clientY); }
-}
-function handleOver(clientY){
+
+function onPointerMove(e){
+  if(!dragState.el) return;
+  const dx=Math.abs(e.clientX-dragState.startX);
+  const dy=Math.abs(e.clientY-dragState.startY);
+  // If not yet long-pressed, check if moved too much -> cancel long press
+  if(!dragState.isLongPress){
+    if(dx>10 || dy>10){
+      clearTimeout(dragState.longPressTimer);
+      dragState.el.classList.remove('pressed');
+    }
+    return;
+  }
+  if(!isDragging) return;
+  // CSS/DOM only - no innerHTML, no firebase
+  e.preventDefault();
+  dragState.el.style.top=(e.clientY - dragState.el.offsetHeight/2)+'px';
+  // Find drop position - lightweight
   const container=document.getElementById('orderList');
   const items=[...container.querySelectorAll('.order-item:not(.dragging):not(.placeholder)')];
-  let closest=null; let closestOffset=Number.NEGATIVE_INFINITY;
+  let closest=null;
+  let closestOffset=Number.NEGATIVE_INFINITY;
   items.forEach(item=>{
     const box=item.getBoundingClientRect();
-    const offset=clientY - box.top - box.height/2;
-    if(offset<0 && offset>closestOffset){ closestOffset=offset; closest=item; }
+    const offset=e.clientY - box.top - box.height/2;
+    if(offset<0 && offset>closestOffset){
+      closestOffset=offset;
+      closest=item;
+    }
   });
-  if(closest && orderDrag.placeholder) container.insertBefore(orderDrag.placeholder, closest);
-  else if(orderDrag.placeholder) container.appendChild(orderDrag.placeholder);
+  if(closest && dragState.placeholder){
+    if(closest!==dragState.placeholder.nextSibling){
+      container.insertBefore(dragState.placeholder, closest);
+      updateNumbersLight();
+    }
+  } else if(dragState.placeholder && dragState.placeholder.parentNode){
+    const last=container.lastElementChild;
+    if(last!==dragState.placeholder){
+      container.appendChild(dragState.placeholder);
+      updateNumbersLight();
+    }
+  }
+}
+
+function updateNumbersLight(){
+  // Lightweight number update - only textContent, no full re-render
+  const container=document.getElementById('orderList');
   const all=[...container.children];
-  let c=1;
-  all.forEach(ch=>{
-    if(ch.classList.contains('placeholder')) return;
-    if(ch.classList.contains('dragging')){
-      const phIdx=all.indexOf(orderDrag.placeholder);
-      let v=1;
-      for(let i=0;i<all.length;i++){ if(all[i]===orderDrag.placeholder) break; if(all[i]!==ch) v++; }
-      if(all.indexOf(ch)<phIdx) v--;
-      ch.querySelector('.order-num').textContent=String(v).padStart(2,'0');
+  let counter=1;
+  let draggingNum=null;
+  // Find where placeholder is to know dragging item's future number
+  const phIndex=all.indexOf(dragState.placeholder);
+  all.forEach((child, idx)=>{
+    if(child.classList.contains('placeholder')) return;
+    if(child.classList.contains('dragging')){
+      // dragging item's number = position of placeholder
+      let num=1;
+      for(let i=0;i<all.length;i++){
+        if(all[i]===dragState.placeholder) break;
+        if(all[i]!==child) num++;
+      }
+      child.querySelector('.order-num').textContent=String(num).padStart(2,'0');
+      draggingNum=num;
       return;
     }
-    const n=ch.querySelector('.order-num');
-    if(n) n.textContent=String(c).padStart(2,'0');
-    c++;
+    // count items before placeholder
+    if(idx<phIndex){
+      child.querySelector('.order-num').textContent=String(counter).padStart(2,'0');
+      counter++;
+    } else {
+      // after placeholder, if dragging element was before placeholder, adjust
+      const draggingIdx=all.findIndex(c=>c.classList.contains('dragging'));
+      if(draggingIdx!==-1 && draggingIdx<phIndex){
+        child.querySelector('.order-num').textContent=String(counter).padStart(2,'0');
+        counter++;
+      } else {
+        child.querySelector('.order-num').textContent=String(counter+1).padStart(2,'0');
+        counter++;
+      }
+    }
   });
+  // Simpler fallback: just sequential ignoring dragging for others, then set dragging
+  // Re-count clean
+  let c=1;
+  for(let i=0;i<all.length;i++){
+    const child=all[i];
+    if(child.classList.contains('placeholder')) continue;
+    if(child.classList.contains('dragging')) continue;
+    if(c===draggingNum) c++;
+    child.querySelector('.order-num').textContent=String(c).padStart(2,'0');
+    c++;
+  }
 }
-function onOrderTouchEnd(e){ endDrag(); document.removeEventListener('touchmove', onOrderTouchMove); document.removeEventListener('touchend', onOrderTouchEnd); document.removeEventListener('mousemove', onOrderMouseMove); document.removeEventListener('mouseup', onOrderMouseUp); }
-function onOrderMouseUp(e){ endDrag(); document.removeEventListener('mousemove', onOrderMouseMove); document.removeEventListener('mouseup', onOrderMouseUp); document.removeEventListener('touchmove', onOrderTouchMove); document.removeEventListener('touchend', onOrderTouchEnd); }
-function endDrag(){
-  clearTimeout(orderDrag.longPressTimer);
-  if(!orderDrag.isDragging || !orderDrag.el){ orderDrag.el=null; orderDrag.placeholder=null; return; }
+
+function onPointerUp(e){
+  if(!dragState.el) return;
+  clearTimeout(dragState.longPressTimer);
+  dragState.el.classList.remove('pressed');
+  if(!dragState.isLongPress){
+    // It was a tap, not drag
+    dragState.el=null;
+    isDragging=false;
+    dragState.isLongPress=false;
+    return;
+  }
+  finishPointerDrag(e);
+}
+
+function onPointerCancel(e){
+  clearTimeout(dragState.longPressTimer);
+  if(dragState.el) dragState.el.classList.remove('pressed');
+  if(isDragging) finishPointerDrag(e);
+}
+
+function finishPointerDrag(e){
+  clearTimeout(dragState.longPressTimer);
+  if(!dragState.el) return;
   const container=document.getElementById('orderList');
-  const ph=orderDrag.placeholder; const el=orderDrag.el;
-  if(ph && ph.parentNode){ container.insertBefore(el, ph); ph.remove(); }
-  el.classList.remove('dragging'); el.style.position=''; el.style.left=''; el.style.right=''; el.style.width=''; el.style.top=''; el.style.zIndex=''; el.style.pointerEvents='';
+  const ph=dragState.placeholder;
+  const el=dragState.el;
+  try{ el.releasePointerCapture(dragState.pointerId); }catch(err){}
+  el.removeEventListener('pointermove', onPointerMove);
+  el.removeEventListener('pointerup', onPointerUp);
+  el.removeEventListener('pointercancel', onPointerCancel);
+  document.body.style.touchAction='';
+  if(ph && ph.parentNode){
+    container.insertBefore(el, ph);
+    ph.remove();
+  }
+  el.classList.remove('dragging');
+  el.style.position=''; el.style.left=''; el.style.right=''; el.style.width=''; el.style.top=''; el.style.zIndex=''; el.style.pointerEvents='';
+  // Rebuild orderData from DOM - local only, no firebase yet
   const newOrder=[];
   [...container.querySelectorAll('.order-item')].forEach(item=>{
     const id=item.dataset.id;
-    const f=orderData.find(o=>o.id===id);
-    if(f) newOrder.push(f);
+    const found=orderData.find(o=>o.id===id);
+    if(found) newOrder.push(found);
   });
   orderData=newOrder;
+  // Single light re-render to fix numbers clean
   renderOrderList();
-  orderDrag.isDragging=false; orderDrag.el=null; orderDrag.placeholder=null;
+  isDragging=false;
+  dragState={el:null,placeholder:null,startY:0,startX:0,pointerId:null,longPressTimer:null,isLongPress:false,initialIndex:-1};
+  updateSaveBtn();
 }
-window.saveOrder=function(){
+
+window.saveOrder = function(){
   if(orderData.length===0){ showToast('⚠️ لا يوجد ترتيب'); return; }
-  set(ref(db,'routeManual'), orderData).then(()=>{
+  if(!hasUnsavedOrder){ showToast('ℹ️ لا يوجد تغييرات'); return; }
+  // Single Firebase write
+  const btn=document.getElementById('saveOrderBtn');
+  btn.disabled=true;
+  btn.textContent='⏳ جاري الحفظ...';
+  set(ref(db, 'routeManual'), orderData).then(()=>{
     routeList=[...orderData];
+    originalOrderSignature=getOrderSignature(routeList);
+    hasUnsavedOrder=false;
     renderAll();
     closeOrderView();
     showToast('✅ تم حفظ الترتيب');
+    btn.textContent='💾 حفظ الترتيب';
+  }).catch(()=>{
+    showToast('⚠️ خطأ في الحفظ');
+    btn.disabled=false;
+    btn.textContent='💾 حفظ الترتيب';
   });
 };
+
 window.markDone=function(id){ let i=routeList.findIndex(c=>c.id===id); if(i!==-1){ routeList[i].status='visited'; saveToFirebase(); } };
 window.markClosed=function(id){ let i=routeList.findIndex(c=>c.id===id); if(i!==-1){ routeList[i].status='closed'; routeList[i].note=''; saveToFirebase(); } };
-window.addNote=function(id){ showCustomModal({title:'إضافة ملاحظة',desc:'اكتب رسالة',showInput:true,placeholder:'مثال: مغلق...',confirmText:'حفظ',onConfirm:(note)=>{ if(note&&note.trim()){ let i=routeList.findIndex(c=>c.id===id); if(i!==-1){ routeList[i].status='closed-note'; routeList[i].note=note.trim(); saveToFirebase(); } } }}); };
+window.addNote=function(id){ showCustomModal({title:'إضافة ملاحظة',desc:'اكتب رسالة',showInput:true,placeholder:'مثال: مغلق، تأجيل...',confirmText:'حفظ',onConfirm:(note)=>{ if(note&&note.trim()){ let i=routeList.findIndex(c=>c.id===id); if(i!==-1){ routeList[i].status='closed-note'; routeList[i].note=note.trim(); saveToFirebase(); } } }}); };
 window.postpone=function(id){ let i=routeList.findIndex(c=>c.id===id); if(i!==-1){ let c=routeList.splice(i,1)[0]; c.status='postponed'; routeList.push(c); saveToFirebase(); showToast('⏩ تم التأجيل'); } };
 window.deleteCustomer=function(id){ showCustomModal({title:'حذف الزبون',desc:'هل تريد حذف هذا الزبون من المسار؟',confirmText:'حذف',danger:true,onConfirm:()=>{ routeList=routeList.filter(c=>c.id!==id); saveToFirebase(); showToast('🗑️ تم الحذف'); }}); };
 window.resetRoute=function(){ showCustomModal({title:'إعادة التعيين',desc:'إرجاع الكل إلى في الانتظار؟',confirmText:'إعادة تعيين',onConfirm:()=>{ routeList.forEach(c=>{ c.status='pending'; c.note=''; }); saveToFirebase(); showToast('🔄 تمت إعادة التعيين'); }}); };
 window.clearAll=function(){ showCustomModal({title:'مسح المسار',desc:'⚠️ مسح كل المسار نهائيا؟',confirmText:'مسح',danger:true,onConfirm:()=>{ remove(ref(db,'routeManual')).then(()=>showToast('🗑️ تم المسح')); }}); };
+window.addEventListener('resize',()=>{ if(currentView==='map') renderMap(); });
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
