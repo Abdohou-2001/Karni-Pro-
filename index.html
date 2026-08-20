@@ -761,6 +761,44 @@
             background: linear-gradient(135deg, var(--card) 0%, #1e3a3a 100%);
         }
 
+    
+        /* ========== City Quick Select - 3 Buttons NEW ========== */
+     .city-quick {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+     .city-quick-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            border: 2px solid var(--border);
+            background: var(--card);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Cairo', sans-serif;
+        }
+     .city-quick-btn:hover {
+            border-color: var(--primary-light);
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+     .city-quick-btn.active-city-btn {
+            background: var(--gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(15,118,110,0.3);
+        }
+     .city-quick-btn:active { transform: scale(0.93); }
+
+        /* remove old Select City badge style tweak */
+     .city-badge {
+            display: none; /* hidden, replaced by quick buttons */
+        }
+
     </style>
 </head>
 <body>
@@ -925,30 +963,23 @@ const db = getDatabase(app);
         let currentSearchQuery = '';
         let searchTimer;
 
-        // ========== Cities System ==========
-        const DEFAULT_CITIES = ["Gulmim", "TanTan", "Toronto", "ouatia"];
+        // ========== Cities System - Only 3 cities ==========
+        const DEFAULT_CITIES = ["TanTan", "Ouatia", "Gulmim"];
         function getAllCities(){
-            const set = new Set(DEFAULT_CITIES);
-            Object.values(allCustomers).forEach(c=>{
-                if(c.city && c.city.trim()) set.add(c.city.trim());
-            });
-            return Array.from(set).sort((a,b)=> a.localeCompare(b));
+            return [...DEFAULT_CITIES];
         }
         function getCityCounts(filteredCustomers = null){
             const source = filteredCustomers || allCustomers;
-            const counts = {};
-            // count only from source that matches status filter? We want dynamic counts based on status if active
+            const counts = {"TanTan":0,"Ouatia":0,"Gulmim":0};
             Object.values(source).forEach(c=>{
                 const city = (c.city||'').trim();
                 if(!city) return;
-                counts[city] = (counts[city]||0)+1;
+                // normalize case
+                const normalized = DEFAULT_CITIES.find(dc=> dc.toLowerCase()===city.toLowerCase());
+                const key = normalized || city;
+                if(counts.hasOwnProperty(key)) counts[key]++;
+                else if(DEFAULT_CITIES.includes(key)) counts[key]++;
             });
-            // ensure default cities appear even with 0 if no status filter
-            if(!filteredCustomers){
-                getAllCities().forEach(city=>{
-                    if(!counts.hasOwnProperty(city)) counts[city]=0;
-                });
-            }
             return counts;
         }
         function getCustomersByStatus(status){
@@ -1176,8 +1207,11 @@ const db = getDatabase(app);
 
                 const overdueClass = custDate && custDate < today ? 'overdue' : '';
 
-                const cityDisplay = customer.city ? customer.city : 'Select City';
-                const cityIcon = customer.city ? '🏙️' : '📍';
+                const currentCity = (customer.city||'').trim();
+                const cityBtns = ["TanTan","Ouatia","Gulmim"].map(cityName => {
+                    const isActive = currentCity.toLowerCase() === cityName.toLowerCase();
+                    return `<button class="city-quick-btn ${isActive?'active-city-btn':''}" onclick="event.stopPropagation(); setCustomerCity('${key}', '${cityName}')">${cityName}</button>`;
+                }).join('');
                 const card = `
                     <div class="customer-card ${overdueClass}" onclick="openDetails('${key}')" style="animation-delay: ${index * 0.05}s">
                         <div class="customer-header">
@@ -1189,8 +1223,8 @@ const db = getDatabase(app);
                                     <span><i class="fas fa-phone"></i> ${customer.phone || '-'}</span>
                                     <span><i class="fas fa-calendar"></i> ${custDate || '-'}</span>
                                 </div>
-                                <div class="customer-meta" style="margin-top:6px;">
-                                    <span class="city-badge">${cityIcon} ${cityDisplay}</span>
+                                <div class="city-quick">
+                                    ${cityBtns}
                                 </div>
                             </div>
                         </div>
@@ -1394,6 +1428,38 @@ onclick="event.stopPropagation(); confirmDelete('${key}')">
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
+
+        // ========== Set City per Customer - 3 buttons ==========
+        window.setCustomerCity = async function(customerId, cityName){
+            const customer = allCustomers[customerId];
+            if(!customer) return;
+            const oldCity = customer.city || '';
+            if(oldCity === cityName){
+                showToast(`مدينة ${customer.name} هي بالفعل ${cityName}`);
+                return;
+            }
+            // Optimistic UI
+            customer.city = cityName;
+            allCustomers[customerId] = customer;
+            // Update buttons instantly in DOM for this card
+            applyAllFilters(); // re-render to show active state
+
+            try{
+                await update(ref(db, 'customers/' + customerId), {
+                    city: cityName,
+                    updatedAt: new Date().toISOString()
+                });
+                showToast(`✅ ${customer.name} → ${cityName}`);
+            }catch(e){
+                console.error(e);
+                showToast('خطأ في حفظ المدينة');
+                // revert
+                customer.city = oldCity;
+                allCustomers[customerId] = customer;
+                applyAllFilters();
+            }
+        }
+
 
                 // ========== City Filter Logic - Improved with combined filters ==========
         window.openCityFilter = function(){
