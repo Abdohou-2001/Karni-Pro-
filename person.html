@@ -300,7 +300,25 @@ window.sendReminderWhatsapp=function(index){
   if(!phone || phone==='بدون هاتف'){ showToast('⚠️ أضف رقم الهاتف أولاً'); return; }
   const cleanPhone=phone.replace(/\D/g,''); const avg=getAvgInterval(customerOperations); const worst=customerDebts.filter(d=>d.remainingAmount>0.5).map(d=>calcRisk(d,avg)).sort((a,b)=>b.daysLate-a.daysLate)[0];
   const lateTxt=worst && worst.daysLate>0 ? `\n⏰ متأخر ${worst.daysLate} يوم` : '';
-  const message=`📌 إشعار أداء\n\nالسلام عليكم ${customerName}${lateTxt}\n\n💵 المتبقي:\n${total}\n\n🕕 بعد التاسعة مساءً\n\n👤 مصطفى`;
+  const message =
+
+`📌 إشعار أداء
+
+السلام عليكم ${customerName}
+
+🔔 هذا تذكير بموعد أداء .
+
+💵 المبلغ المتبقي لكم:
+${total}
+
+🕕 موعد الأداء:
+بعد الساعة التاسعة مساءً.
+
+✅ المرجو توفير الدفعة في الوقت المحدد.
+
+🤝 شكراً لتعاونكم.
+
+👤 مصطفى`;
   window.open('https://wa.me/212'+cleanPhone.replace(/^0/,'')+'?text='+encodeURIComponent(message),'_blank');
 }
 window.sendConfirmWhatsapp=function(index){
