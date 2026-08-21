@@ -307,7 +307,22 @@ window.sendConfirmWhatsapp=function(index){
   const phone=document.getElementById('phone').textContent.trim(); const customerName=document.getElementById('name').textContent;
   if(!phone || phone==='بدون هاتف'){ showToast('⚠️ أضف رقم الهاتف أولاً'); return; }
   const op=customerOperations[index]; const total=document.getElementById('totalAmount').textContent; const cleanPhone=phone.replace(/\D/g,'');
-  const message=`✅ استلام دفعة\n\n${customerName}\n💵 ${op.amount} DH\n📌 المتبقي: ${total}\n\n👤 مصطفى`;
+  const message =
+
+`✅ إشعار استلام دفعة
+
+السلام عليكم ${customerName}
+
+تم تسجيل استلام مبلغ قدره:
+
+💵 ${op.amount} درهم
+
+📌 المبلغ المتبقي الواجب أداؤه:
+${total}
+
+🙏 شكراً لكم على حسن تعاونكم.
+
+👤 مصطفى`;
   window.open('https://wa.me/212'+cleanPhone.replace(/^0/,'')+'?text='+encodeURIComponent(message),'_blank');
 }
 document.getElementById('backBtn').addEventListener('click',()=>{ window.location.href='index.html'; });
