@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#059669">
+  <meta name="description" content="Mostafa Clean Shop - متجر المنظفات والمواد المنزلية">
+  <title>Mostafa Clean Shop | متجر المنظفات</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="shop.css">
+</head>
+<body>
+  <header class="shop-header">
+    <div class="header-inner">
+      <a class="brand" href="shop.html" aria-label="Mostafa Clean Shop">
+        <span class="brand-icon"><i class="fa-solid fa-broom"></i></span>
+        <span><strong>Mostafa Clean Shop</strong><small>متجر المنظفات</small></span>
+      </a>
+      <div class="header-actions">
+        <button class="icon-btn" id="cartOpenBtn" aria-label="السلة">
+          <i class="fa-solid fa-cart-shopping"></i><b id="cartCount">0</b>
+        </button>
+        <a class="manage-link" href="products.html"><i class="fa-solid fa-lock"></i> إدارة المنتجات</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-content">
+        <span class="eyebrow"><i class="fa-solid fa-sparkles"></i> متجر Mostafa Clean Shop</span>
+        <h1>كل ما تحتاجه للنظافة<br><span>في مكان واحد.</span></h1>
+        <p>تصفح منتجات المنظفات والمواد المنزلية واكتشف المنتجات المتوفرة عندنا.</p>
+        <a href="#products" class="hero-btn">تصفح المنتجات <i class="fa-solid fa-arrow-left"></i></a>
+      </div>
+      <div class="hero-shape"><i class="fa-solid fa-spray-can-sparkles"></i></div>
+    </section>
+
+    <section class="catalog" id="products">
+      <div class="section-heading">
+        <div><span class="eyebrow light">منتجاتنا</span><h2>اكتشف المنتجات</h2></div>
+        <p id="resultCount">جاري تحميل المنتجات...</p>
+      </div>
+
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="searchInput" type="search" placeholder="ابحث عن منتج..." autocomplete="off">
+        <button id="clearSearch" aria-label="مسح البحث"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="categories" id="categories"></div>
+      <div class="products-grid" id="productsGrid"></div>
+      <div class="empty-state hidden" id="emptyState">
+        <i class="fa-solid fa-box-open"></i>
+        <h3>لم نجد هذا المنتج</h3>
+        <p>جرب كلمة بحث أخرى أو اختر تصنيفاً مختلفاً.</p>
+      </div>
+    </section>
+  </main>
+
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-panel">
+      <div class="cart-head"><div><span>سلة المشتريات</span><small id="cartItemsLabel">0 منتجات</small></div><button id="cartCloseBtn"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-empty" id="cartEmpty"><i class="fa-solid fa-cart-shopping"></i><p>السلة فارغة</p><small>أضف المنتجات التي تريدها لتظهر هنا.</small></div>
+      <div class="cart-foot">
+        <div class="total-row"><span>المجموع</span><strong id="cartTotal">0.00 درهم</strong></div>
+        <button class="copy-order" id="copyOrderBtn"><i class="fa-solid fa-copy"></i> نسخ الطلب</button>
+        <p class="cart-note">الطلب هنا هو كتالوج فقط. يمكنك نسخ الطلب وإرساله للمتجر.</p>
+      </div>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="shop.js"></script>
+</body>
+</html>
