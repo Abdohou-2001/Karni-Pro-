@@ -3,226 +3,349 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Karni Pro Login</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+<title>Karni Pro Login - Mostafa Clean Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Cairo',sans-serif;
+/* سيتم نقل هذا لاحقاً إلى login.css في المرحلة القادمة - حالياً فقط للتجربة */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif}
+:root{
+  --green-900:#0f766e;
+  --green-700:#0d5d56;
+  --green-500:#14b8a6;
+  --green-100:#ccfbf1;
+  --white:#ffffff;
+  --neutral-100:#f8fafc;
+  --neutral-200:#e2e8f0;
+  --neutral-800:#1e293b;
 }
-
 body{
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-background:linear-gradient(135deg,#0f766e,#14b8a6,#2dd4bf);
-overflow:hidden;
+  min-height:100vh;
+  background: radial-gradient(1200px 600px at 80% -10%, #ccfbf1 0%, transparent 60%),
+              radial-gradient(900px 500px at -10% 110%, #99f6e0 0%, transparent 60%),
+              linear-gradient(135deg,#f0fdfa 0%, #ffffff 55%, #ecfeff 100%);
+  overflow-x:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:24px;
+}
+.login-page{
+  width:100%;
+  max-width:1180px;
+  display:grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap:28px;
+  align-items:center;
+}
+@media(max-width:980px){
+  .login-page{grid-template-columns:1fr; max-width:480px;}
 }
 
+/* ============ SCENE ============ */
+.login-scene{
+  position:relative;
+  min-height:560px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-radius:32px;
+  border:1px solid #e2e8f0;
+  box-shadow: 0 20px 60px rgba(15,118,110,.10), 0 4px 20px rgba(0,0,0,.04);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.scene-header{
+  padding:22px 26px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.brand-mini{
+  display:flex; align-items:center; gap:10px;
+  font-weight:800; color:var(--green-900); font-size:14px;
+}
+.brand-mini span{
+  width:32px; height:32px; display:grid; place-items:center;
+  background:var(--green-900); color:white; border-radius:10px; font-size:18px;
+}
+.scene-content{
+  flex:1;
+  position:relative;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:20px 20px 0;
+}
+/* الباب */
+.door-wrapper{
+  position:relative;
+  width:260px;
+  height:380px;
+  z-index:1;
+}
+.door{
+  position:absolute;
+  inset:0;
+  border-radius:18px 18px 0 0;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  border:1px solid #cbd5e1;
+  border-bottom:none;
+  overflow:hidden;
+  transition: transform 0.8s cubic-bezier(.77,0,.175,1);
+  transform-origin: left center;
+}
+.door.door-closed{ transform: perspective(1200px) rotateY(0deg); }
+.door.door-open{ transform: perspective(1200px) rotateY(-78deg); }
+.door::before{
+  content:""; position:absolute; inset:12px;
+  border:1px dashed #cbd5e1; border-radius:14px; opacity:.6;
+}
+.door-handle{
+  position:absolute; right:18px; top:50%; width:18px; height:18px;
+  background: linear-gradient(180deg,#14b8a6,#0f766e);
+  border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.door-light{
+  position:absolute; inset:0;
+  background: radial-gradient(400px 300px at 50% 50%, rgba(20,184,166,.25), transparent 70%);
+  opacity:0; transition:.6s;
+}
+.door.door-open .door-light{opacity:1;}
+/* الطفل - Placeholder احترافي */
+.child-scene{
+  position:absolute;
+  bottom:18px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:3;
+  width:220px;
+  height:280px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  pointer-events:none;
+}
+.chair{
+  position:absolute; bottom:35px; width:140px; height:14px;
+  background:#e2e8f0; border-radius:8px; box-shadow:0 8px 0 #cbd5e1;
+}
+.child{
+  position:relative;
+  width:110px; height:150px;
+  transition: all .45s ease;
+}
+.child-placeholder{
+  width:100%; height:100%;
+  background: linear-gradient(180deg, #ffffff, #f1f5f9);
+  border:1px solid #e2e8f0;
+  border-radius:32px;
+  display:grid; place-items:center;
+  box-shadow:0 10px 30px rgba(0,0,0,.06);
+  position:relative;
+}
+.child-avatar{
+  width:68px; height:68px; border-radius:50%;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  display:grid; place-items:center; color:white; font-size:32px;
+}
+.child-backpack{
+  position:absolute; bottom:22px; left:50%; transform:translateX(-50%);
+  width:54px; height:42px; background:#0f766e; border-radius:10px 10px 6px 6px;
+}
+.child-backpack::before{content:"🎒"; position:absolute; inset:0; display:grid; place-items:center; font-size:22px;}
+.child-hands{
+  position:absolute; top:38px; left:50%; transform:translateX(-50%);
+  display:flex; gap:18px; transition:.35s;
+}
+.hand{ width:28px; height:22px; background:#fde68a; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,.1);}
+/* حالات العينين */
+.child.child-eyes-covered .child-hands{ transform:translateX(-50%) translateY(-8px) scale(1.1); opacity:1; }
+.child.child-eyes-covered .child-avatar{ filter: brightness(0.9); }
+.child.child-eyes-open .child-hands{ transform:translateX(-50%) translateY(18px) scale(0.8); opacity:0; }
+
+.child-status{
+  margin-top:14px; font-size:12px; font-weight:700;
+  background:#0f766e; color:white; padding:5px 12px; border-radius:999px;
+}
+.floor{
+  position:absolute; bottom:0; left:0; right:0; height:42px;
+  background: linear-gradient(90deg, #f0fdfa, #ccfbf1, #f0fdfa);
+  border-top:1px solid #ccfbf1;
+}
+
+/* ============ LOGIN CARD ============ */
 .card{
-width:90%;
-max-width:420px;
-background:rgba(255,255,255,.15);
-backdrop-filter:blur(15px);
-padding:35px;
-border-radius:30px;
-box-shadow:0 15px 40px rgba(0,0,0,.25);
-border:1px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(18px);
+  padding:32px 30px 26px;
+  border-radius:28px;
+  border:1px solid rgba(226,232,240,.9);
+  box-shadow: 0 20px 50px rgba(15,118,110,.12), 0 8px 20px rgba(0,0,0,.05);
+  position:relative;
+  overflow:hidden;
 }
-
+.card::before{
+  content:""; position:absolute; top:0; right:0; left:0; height:4px;
+  background: linear-gradient(90deg, #0f766e, #14b8a6, #2dd4bf);
+}
+.logo-wrap{ text-align:center; margin-bottom:6px; }
 .logo{
-text-align:center;
-font-size:85px;
-margin-bottom:10px;
-animation:float 3s ease-in-out infinite;
+  font-size:52px; line-height:1;
+  width:72px; height:72px; margin:0 auto 14px;
+  display:grid; place-items:center;
+  background: linear-gradient(135deg,#0f766e,#14b8a6);
+  color:white; border-radius:18px;
+  box-shadow:0 10px 24px rgba(15,118,110,.25);
 }
-
-@keyframes float{
-0%,100%{transform:translateY(0);}
-50%{transform:translateY(-8px);}
-}
-
-.title{
-text-align:center;
-color:white;
-font-size:34px;
-font-weight:900;
-}
-
-.subtitle{
-text-align:center;
-color:#ecfeff;
-margin-top:10px;
-margin-bottom:25px;
-font-size:14px;
-}
-
-.input-group{
-margin-bottom:15px;
-}
-
+.brand-name{ font-size:15px; font-weight:800; color:var(--green-900); letter-spacing:.2px; }
+.title{ text-align:center; color:#0f172a; font-size:28px; font-weight:900; margin-top:14px; }
+.subtitle{ text-align:center; color:#64748b; margin-top:6px; margin-bottom:26px; font-size:13.5px; font-weight:600; }
+.input-group{ margin-bottom:14px; }
+.input-label{ font-size:12.5px; font-weight:700; color:#334155; margin:0 4px 7px; display:block; }
 .input{
-width:100%;
-padding:15px;
-border:none;
-outline:none;
-border-radius:15px;
-background:rgba(255,255,255,.25);
-color:white;
-font-size:15px;
+  width:100%; padding:14px 14px;
+  border:1.5px solid #e2e8f0; outline:none; border-radius:14px;
+  background:#ffffff; color:#0f172a; font-size:14.5px; font-weight:600;
+  transition:.25s;
 }
-
-.input::placeholder{
-color:#f1f5f9;
-}
-
-.password-box{
-position:relative;
-}
-
+.input:focus{ border-color:#14b8a6; box-shadow:0 0 0 4px rgba(20,184,166,.15); }
+.input::placeholder{ color:#94a3b8; font-weight:500; }
+.password-box{ position:relative; }
 .eye{
-position:absolute;
-left:15px;
-top:50%;
-transform:translateY(-50%);
-cursor:pointer;
-font-size:22px;
+  position:absolute; left:12px; top:50%; transform:translateY(-50%);
+  cursor:pointer; font-size:20px; width:36px; height:36px;
+  display:grid; place-items:center; border-radius:10px;
+  background:#f1f5f9; user-select:none; transition:.2s;
 }
-
-button{
-width:100%;
-padding:15px;
-border:none;
-border-radius:15px;
-background:white;
-color:#0f766e;
-font-size:16px;
-font-weight:800;
-cursor:pointer;
-transition:.3s;
+.eye:hover{ background:#e2e8f0; }
+.actions-row{
+  display:flex; justify-content:space-between; align-items:center;
+  margin:10px 2px 18px; font-size:12.5px;
 }
-
-button:hover{
-transform:translateY(-2px);
+.forgot-link{ color:#0f766e; font-weight:700; text-decoration:none; }
+.forgot-link:hover{ text-decoration:underline; }
+.login-btn{
+  width:100%; padding:14px; border:none; border-radius:14px;
+  background: linear-gradient(135deg,#0f766e,#14b8a6);
+  color:white; font-size:15px; font-weight:800; cursor:pointer;
+  transition:.25s; box-shadow:0 10px 20px rgba(15,118,110,.2);
 }
-
+.login-btn:hover{ transform:translateY(-1px); box-shadow:0 14px 26px rgba(15,118,110,.28); }
 #error{
-margin-top:15px;
-text-align:center;
-color:#fff;
-font-weight:bold;
-min-height:25px;
+  margin-top:14px; text-align:center; font-weight:700; min-height:24px;
+  font-size:13px; border-radius:10px; padding:0;
 }
-
-.version{
-text-align:center;
-margin-top:20px;
-color:#ecfeff;
-font-size:12px;
-}
-
+#error.login-error{ color:#b91c1c; background:#fef2f2; border:1px solid #fecaca; padding:10px; }
+#error.login-success{ color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; padding:10px; }
+.version{ text-align:center; margin-top:18px; color:#94a3b8; font-size:11.5px; font-weight:600; letter-spacing:.3px; }
 </style>
 </head>
 <body>
 
-<div class="card">
+<div class="login-page">
 
-<div class="logo">📓</div>
+  <!-- ============ المشهد التفاعلي ============ -->
+  <div class="login-scene" id="loginScene">
+    <div class="scene-header">
+      <div class="brand-mini"><span>📓</span> Mostafa Clean Shop</div>
+      <div style="font-size:11px; color:#94a3b8; font-weight:700;">SECURE ACCESS • Karni Pro</div>
+    </div>
 
-<div class="title">Karni Pro</div>
+    <div class="scene-content">
+      <!-- الباب -->
+      <div class="door-wrapper">
+        <div class="door door-closed" id="door">
+          <div class="door-light"></div>
+          <div class="door-handle"></div>
+        </div>
+      </div>
 
-<div class="subtitle">
-نظام إدارة الزبناء والديون
-</div>
+      <!-- الطفل -->
+      <div class="child-scene" id="childScene">
+        <div class="chair"></div>
+        <div class="child child-eyes-covered" id="child">
+          <div class="child-placeholder">
+            <div class="child-avatar">🧒</div>
+            <div class="child-hands" id="childHands">
+              <div class="hand"></div>
+              <div class="hand"></div>
+            </div>
+            <div class="child-backpack"></div>
+          </div>
+          <!-- حالة الطفل - للـ JS مستقبلاً -->
+          <div class="child-status" id="childStatus">عيناه مغطاة</div>
+        </div>
+      </div>
 
-<div class="input-group">
-<input
-type="email"
-id="email"
-class="input"
-placeholder="📧 البريد الإلكتروني">
-</div>
+      <div class="floor"></div>
+    </div>
+  </div>
 
-<div class="password-box">
+  <!-- ============ بطاقة تسجيل الدخول ============ -->
+  <div class="card" id="loginCard">
+    <div class="logo-wrap">
+      <div class="logo">📓</div>
+      <div class="brand-name">Mostafa Clean Shop</div>
+    </div>
 
-<input
-type="password"
-id="password"
-class="input"
-placeholder="🔑 كلمة المرور">
+    <div class="title">تسجيل الدخول</div>
+    <div class="subtitle">نظام إدارة الزبناء والديون - Karni Pro</div>
 
-<span
-class="eye"
-onclick="togglePassword()">👁️</span>
+    <div class="input-group">
+      <label class="input-label" for="email">البريد الإلكتروني</label>
+      <input type="email" id="email" class="input" placeholder="Abdelalihouna@gmail.com">
+    </div>
 
-</div>
+    <div class="input-group">
+      <label class="input-label" for="password">كلمة المرور</label>
+      <div class="password-box">
+        <input type="password" id="password" class="input" placeholder="••••••••">
+        <span class="eye" id="toggleEye" onclick="togglePassword()">👁️</span>
+      </div>
+    </div>
 
-<br>
+    <div class="actions-row">
+      <a href="#" class="forgot-link" id="forgotPassword">نسيت كلمة المرور؟</a>
+      <span style="color:#94a3b8; font-weight:600;">دخول آمن</span>
+    </div>
 
-<button onclick="login()">
-تسجيل الدخول
-</button>
+    <button class="login-btn" id="loginBtn" onclick="login()">تسجيل الدخول</button>
 
-<div id="error"></div>
+    <div id="error"></div>
 
-<div class="version">
-Karni Pro Secure Access
-</div>
+    <div class="version">Karni Pro Secure Access • v11 • Premium Edition</div>
+  </div>
 
 </div>
 
 <script>
-
+// الحفاظ على المنطق الحالي 100% - لا تغيير
 if(localStorage.getItem("loggedIn")==="true"){
-window.location.href="index.html";
+  window.location.href="index.html";
 }
 
 function togglePassword(){
-
-const pass=
-document.getElementById("password");
-
-pass.type=
-pass.type==="password"
-? "text"
-: "password";
-
+  const pass = document.getElementById("password");
+  pass.type = pass.type==="password" ? "text" : "password";
 }
 
 function login(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-const email=
-document.getElementById("email").value.trim();
-
-const password=
-document.getElementById("password").value;
-
-if(
-email==="Abdelalihouna@gmail.com" &&
-password==="Houna@20272028"
-){
-
-localStorage.setItem("loggedIn","true");
-localStorage.setItem("appVersion","11");
-
-window.location.href="index.html";
-
-}else{
-
-document.getElementById("error").textContent=
-"❌ البريد الإلكتروني أو كلمة المرور غير صحيحة";
-
+  if(email==="Abdelalihouna@gmail.com" && password==="Houna@20272028"){
+    localStorage.setItem("loggedIn","true");
+    localStorage.setItem("appVersion","11");
+    // لاحقاً سيتم هنا: door-open + child يدخل
+    const door = document.getElementById("door");
+    if(door){ door.classList.remove("door-closed"); door.classList.add("door-open"); }
+    window.location.href="index.html";
+  }else{
+    const err = document.getElementById("error");
+    err.textContent = "❌ البريد الإلكتروني أو كلمة المرور غير صحيحة";
+    err.className = "login-error";
+    // لاحقاً سيبقى الباب مغلق: door-closed
+  }
 }
-
-}
-
 </script>
 
 </body>
