@@ -1,27 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head><style>
-@font-face {
-  font-family: "Optimistic";
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Optimistic Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
-}
-:where(html) {
-  font-family: "Optimistic", system-ui, sans-serif;
-}
-:where(code, pre, kbd, samp) {
-  font-family: "Optimistic Mono", ui-monospace, monospace;
-}
-</style>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0f766e">
@@ -56,7 +35,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .r-chip b{display:block;font-size:14px;font-weight:900}
 .r-chip span{font-size:8px;font-weight:800;color:var(--muted)}
 .alert{margin:0 16px 10px;background:#fff1f2;border:1px solid #fecdd3;border-radius:16px;padding:11px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
-[data-theme="dark"] .alert{background:#450a0a;border-color:#7f1d1d}
+[data-theme="dark"].alert{background:#450a0a;border-color:#7f1d1d}
 .actions{padding:10px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .a-btn{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--shadow);cursor:pointer}
 .a-btn.primary{background:var(--gradient);color:#fff;border-color:transparent}
@@ -98,7 +77,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .fab{position:fixed;bottom:20px;left:20px;width:56px;height:56px;border-radius:18px;background:var(--gradient);color:#fff;border:none;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 28px rgba(15,118,110,.35);cursor:pointer;z-index:80}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
 .modal.active{display:flex}
-.m-card{background:var(--card);border-radius:22px;padding:18px;width:100%;max-width:360px;box-shadow:var(--shadow-lg);animation:pop .22s ease}
+.m-card{background:var(--card);border-radius:22px;padding:18px;width:100%;max-width:360px;box-shadow:var(--shadow-lg);animation:pop.22s ease}
 @keyframes pop{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 .m-title{font-size:15px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .m-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px}
@@ -187,36 +166,26 @@ const firebaseConfig = { apiKey: "AIzaSyBCVOOouLET3GDGyHj2i7ncvUZBjUUVB7Y", auth
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const customersRef = ref(db, 'customers');
-let allCustomers={}; let currentStatusFilter='all', currentCityFilter='all', currentRiskFilter='all', currentSearchQuery=''; let searchTimer;
+
+let allCustomers={};
+let currentStatusFilter='all', currentCityFilter='all', currentRiskFilter='all', currentSearchQuery='';
+let searchTimer=null;
+let isInitialLoadDone=false;
+let isFirebaseListenerAttached=false;
 const DEFAULT_CITIES=["TanTan","Ouatia","Gulmim"];
 const RISK_LEVELS={good:{emoji:'🟢',label:'جيد',css:'good',score:1},medium:{emoji:'🟡',label:'متوسط',css:'medium',score:2},weak:{emoji:'🟠',label:'ضعيف',css:'weak',score:3},veryWeak:{emoji:'🔴',label:'ضعيف جدا',css:'veryWeak',score:4},dangerous:{emoji:'🚨',label:'خطر',css:'dangerous',score:5},paid:{emoji:'✅',label:'مسدد',css:'paid',score:0}};
 
-let customCallback=null;
-window.showCustomModal=function({title,desc,showInput=false,inputType='text',inputValue='',placeholder='',showPassword=false,confirmText='تأكيد',cancelText='إلغاء',danger=false,onConfirm}){
-  document.getElementById('customTitleText').textContent=title||'تنبيه';
-  document.getElementById('customDesc').textContent=desc||'';
-  const input=document.getElementById('customInput'); const pass=document.getElementById('customPassword');
-  input.style.display= showInput && !showPassword ? 'block':'none';
-  pass.style.display= showPassword ? 'block':'none';
-  if(showInput && !showPassword){ input.type=inputType; input.value=inputValue; input.placeholder=placeholder; setTimeout(()=>input.focus(),120); }
-  if(showPassword){ pass.value=''; pass.placeholder=placeholder||'كلمة المرور'; setTimeout(()=>pass.focus(),120); }
-  document.getElementById('customConfirm').textContent=confirmText;
-  document.getElementById('customCancel').textContent=cancelText;
-  document.getElementById('customConfirm').className= danger? 'm-btn danger':'m-btn confirm';
-  customCallback=onConfirm;
-  document.getElementById('customModal').classList.add('active');
-};
-window.closeCustomModal=function(){ document.getElementById('customModal').classList.remove('active'); customCallback=null; };
-document.getElementById('customConfirm').addEventListener('click',()=>{
-  const input=document.getElementById('customInput'); const pass=document.getElementById('customPassword');
-  let value=null; if(input.style.display!=='none') value=input.value; if(pass.style.display!=='none') value=pass.value;
-  if(customCallback) customCallback(value); closeCustomModal();
-});
-document.getElementById('customModal').addEventListener('click',(e)=>{ if(e.target.id==='customModal') closeCustomModal(); });
+// --- SMART CACHE ---
+const smartDataCache = new Map(); // id -> { hash, data }
+const customerHashCache = new Map(); // id -> last hash string
 
-function toDateObj(str){ if(!str) return null; const d=new Date(str); if(isNaN(d)) return null; d.setHours(0,0,0,0); return d; }
-function addDays(dateStr,days){ const d=toDateObj(dateStr); if(!d) return null; d.setDate(d.getDate()+days); return d.toISOString().split('T')[0]; }
-function daysBetween(a,b){ const da=toDateObj(a), db=toDateObj(b); if(!da||!db) return null; return Math.floor((db-da)/86400000); }
+function getCustomerHash(c){
+  if(!c) return '';
+  // hash سريع وخفيف للكشف عن التغيير فقط
+  const debtsLen = c.debts? c.debts.length : 0;
+  const opsLen = c.operations? (Array.isArray(c.operations)?c.operations.length:Object.keys(c.operations).length) : 0;
+  return `${c.name||''}|${c.amount||0}|${c.date||''}|${c.city||''}|${c.phone||''}|${debtsLen}|${opsLen}|${c.updatedAt||''}`;
+}
 function getOpsArray(customer){ const ops=customer.operations||[]; let arr=Array.isArray(ops)?ops:Object.values(ops); return arr.filter(o=>o).sort((a,b)=> new Date(a.date||0)-new Date(b.date||0)); }
 function getCustomerAvgInterval(customer){
   const ops=getOpsArray(customer).filter(o=>o.type==='received'); if(ops.length<2) return 14;
@@ -239,6 +208,9 @@ function ensureDebts(customer){
   debts.forEach(d=>{ const sum=(d.payments||[]).reduce((s,p)=>s+Number(p.amount),0); d.remainingAmount=Math.max(0,d.originalAmount-sum); });
   return debts;
 }
+function toDateObj(str){ if(!str) return null; const d=new Date(str); if(isNaN(d)) return null; d.setHours(0,0,0,0); return d; }
+function addDays(dateStr,days){ const d=toDateObj(dateStr); if(!d) return null; d.setDate(d.getDate()+days); return d.toISOString().split('T')[0]; }
+function daysBetween(a,b){ const da=toDateObj(a), db=toDateObj(b); if(!da||!db) return null; return Math.floor((db-da)/86400000); }
 function calcDebtRisk(debt,avgInterval){
   const remaining=Number(debt.remainingAmount||0); if(remaining<=0.5) return {level:'paid',...RISK_LEVELS.paid,daysLate:0,remaining,expectedDate:debt.expectedDate};
   let expectedStr=debt.expectedDate; if(!expectedStr){ const lastPay=(debt.payments&&debt.payments.length>0)? debt.payments[debt.payments.length-1].date:null; const baseDate=lastPay||debt.startDate; expectedStr=addDays(baseDate,avgInterval||14)||debt.startDate; }
@@ -246,7 +218,7 @@ function calcDebtRisk(debt,avgInterval){
   let level; if(daysLate<=0) level='good'; else if(daysLate>=1 && daysLate<=6) level='medium'; else if(daysLate>=7 && daysLate<=14) level='weak'; else if(daysLate>=15 && daysLate<=29) level='veryWeak'; else level='dangerous';
   return {level,...RISK_LEVELS[level],daysLate,remaining,expectedDate:expectedStr};
 }
-function getCustomerSmartData(customer){
+function getCustomerSmartDataRaw(customer){
   const avg=getCustomerAvgInterval(customer); const debts=ensureDebts(customer);
   let enriched=debts.map(d=>{ if(!d.expectedDate){ const lastPay=(d.payments&&d.payments.length>0)? d.payments[d.payments.length-1].date:null; const base=lastPay||d.startDate; d.expectedDate=addDays(base,avg)||d.startDate; } const risk=calcDebtRisk(d,avg); d.risk=risk; d.daysLate=risk.daysLate; return d; });
   const totalRemaining=enriched.reduce((s,d)=>s+Number(d.remainingAmount||0),0);
@@ -255,15 +227,104 @@ function getCustomerSmartData(customer){
   let nextDate=null; if(unpaid.length>0){ const sorted=[...unpaid].sort((a,b)=> new Date(a.expectedDate)-new Date(b.expectedDate)); nextDate=sorted[0].expectedDate; }
   return {debts:enriched,totalRemaining,unpaidCount:unpaid.length,worstRisk:worst,avgInterval:avg,hasToday,hasOverdue,hasUpcoming,nextPaymentDate:nextDate};
 }
-function getCityCounts(filtered=null){ const source=filtered||allCustomers; const counts={"TanTan":0,"Ouatia":0,"Gulmim":0}; Object.values(source).forEach(c=>{ const city=(c.city||'').trim(); if(!city) return; const norm=DEFAULT_CITIES.find(dc=>dc.toLowerCase()===city.toLowerCase()); const key=norm||city; if(counts.hasOwnProperty(key)) counts[key]++; }); return counts; }
-function applyAllFilters(){
-  let filtered={...allCustomers};
-  if(currentSearchQuery){ const q=currentSearchQuery.toLowerCase(); const temp={}; Object.keys(filtered).forEach(k=>{ if((filtered[k].name||'').toLowerCase().includes(q)) temp[k]=filtered[k]; }); filtered=temp; }
-  if(currentCityFilter!=='all'){ const temp={}; Object.keys(filtered).forEach(k=>{ if((filtered[k].city||'').trim().toLowerCase()===currentCityFilter.toLowerCase()) temp[k]=filtered[k]; }); filtered=temp; }
-  if(currentStatusFilter!=='all'){ const temp={}; Object.keys(filtered).forEach(k=>{ const sd=getCustomerSmartData(filtered[k]); if(currentStatusFilter==='today'&&sd.hasToday) temp[k]=filtered[k]; else if(currentStatusFilter==='overdue'&&sd.hasOverdue) temp[k]=filtered[k]; else if(currentStatusFilter==='upcoming'&&sd.hasUpcoming) temp[k]=filtered[k]; }); filtered=temp; }
-  if(currentRiskFilter!=='all'){ const temp={}; Object.keys(filtered).forEach(k=>{ const sd=getCustomerSmartData(filtered[k]); if(sd.worstRisk.level===currentRiskFilter) temp[k]=filtered[k]; else if(sd.debts.some(d=>d.risk.level===currentRiskFilter && d.remainingAmount>0.5)) temp[k]=filtered[k]; }); filtered=temp; }
-  renderCustomers(filtered); updateActiveStates();
+function getCachedSmartData(id, customer){
+  const newHash = getCustomerHash(customer);
+  const oldHash = customerHashCache.get(id);
+  if(oldHash === newHash && smartDataCache.has(id)){
+    return smartDataCache.get(id);
+  }
+  const smart = getCustomerSmartDataRaw(customer);
+  smartDataCache.set(id, smart);
+  customerHashCache.set(id, newHash);
+  return smart;
 }
+// wrapper للحفاظ على الاسم القديم
+function getCustomerSmartData(customer){
+  // هذه الدالة الآن تستخدم الكاش تلقائيا اذا كان id موجود
+  const id = customer.id || customer._id || '';
+  if(id && smartDataCache.has(id)){
+     const cachedHash = customerHashCache.get(id);
+     const currentHash = getCustomerHash(customer);
+     if(cachedHash === currentHash) return smartDataCache.get(id);
+  }
+  return getCustomerSmartDataRaw(customer);
+}
+
+let customCallback=null;
+window.showCustomModal=function({title,desc,showInput=false,inputType='text',inputValue='',placeholder='',showPassword=false,confirmText='تأكيد',cancelText='إلغاء',danger=false,onConfirm}){
+  document.getElementById('customTitleText').textContent=title||'تنبيه';
+  document.getElementById('customDesc').textContent=desc||'';
+  const input=document.getElementById('customInput'); const pass=document.getElementById('customPassword');
+  input.style.display= showInput &&!showPassword? 'block':'none';
+  pass.style.display= showPassword? 'block':'none';
+  if(showInput &&!showPassword){ input.type=inputType; input.value=inputValue; input.placeholder=placeholder; setTimeout(()=>input.focus(),120); }
+  if(showPassword){ pass.value=''; pass.placeholder=placeholder||'كلمة المرور'; setTimeout(()=>pass.focus(),120); }
+  document.getElementById('customConfirm').textContent=confirmText;
+  document.getElementById('customCancel').textContent=cancelText;
+  document.getElementById('customConfirm').className= danger? 'm-btn danger':'m-btn confirm';
+  customCallback=onConfirm;
+  document.getElementById('customModal').classList.add('active');
+};
+window.closeCustomModal=function(){ document.getElementById('customModal').classList.remove('active'); customCallback=null; };
+document.getElementById('customConfirm').addEventListener('click',()=>{
+  const input=document.getElementById('customInput'); const pass=document.getElementById('customPassword');
+  let value=null; if(input.style.display!=='none') value=input.value; if(pass.style.display!=='none') value=pass.value;
+  if(customCallback) customCallback(value); closeCustomModal();
+});
+document.getElementById('customModal').addEventListener('click',(e)=>{ if(e.target.id==='customModal') closeCustomModal(); });
+
+function getCityCounts(filtered=null){ const source=filtered||allCustomers; const counts={"TanTan":0,"Ouatia":0,"Gulmim":0}; Object.values(source).forEach(c=>{ const city=(c.city||'').trim(); if(!city) return; const norm=DEFAULT_CITIES.find(dc=>dc.toLowerCase()===city.toLowerCase()); const key=norm||city; if(counts.hasOwnProperty(key)) counts[key]++; }); return counts; }
+
+function applyAllFilters(){
+  // كل الفلاتر من الذاكرة فقط - لا Firebase هنا
+  let filtered={};
+  const allKeys = Object.keys(allCustomers);
+
+  // 1. بحث
+  if(currentSearchQuery){
+    const q=currentSearchQuery.toLowerCase();
+    for(let i=0;i<allKeys.length;i++){
+      const k=allKeys[i];
+      const c=allCustomers[k];
+      if((c.name||'').toLowerCase().includes(q)) filtered[k]=c;
+    }
+  } else {
+    // نسخ سريع بدون بحث
+    for(let i=0;i<allKeys.length;i++){ const k=allKeys[i]; filtered[k]=allCustomers[k]; }
+  }
+
+  // 2. مدينة
+  if(currentCityFilter!=='all'){
+    const lowerCity=currentCityFilter.toLowerCase();
+    const tmp={};
+    for(const k in filtered){ if((filtered[k].city||'').trim().toLowerCase()===lowerCity) tmp[k]=filtered[k]; }
+    filtered=tmp;
+  }
+
+  // 3. حالة + خطر - يستخدم الكاش
+  if(currentStatusFilter!=='all' || currentRiskFilter!=='all'){
+    const tmp={};
+    for(const k in filtered){
+      const c=filtered[k];
+      const sd=getCachedSmartData(k,c);
+      let ok=true;
+      if(currentStatusFilter!=='all'){
+        if(currentStatusFilter==='today'&&!sd.hasToday) ok=false;
+        else if(currentStatusFilter==='overdue'&&!sd.hasOverdue) ok=false;
+        else if(currentStatusFilter==='upcoming'&&!sd.hasUpcoming) ok=false;
+      }
+      if(ok && currentRiskFilter!=='all'){
+        if(sd.worstRisk.level!==currentRiskFilter &&!sd.debts.some(d=>d.risk.level===currentRiskFilter && d.remainingAmount>0.5)) ok=false;
+      }
+      if(ok) tmp[k]=filtered[k];
+    }
+    filtered=tmp;
+  }
+
+  renderCustomers(filtered);
+  updateActiveStates();
+}
+
 function updateActiveStates(){
   document.querySelectorAll('.f-chip').forEach(c=>c.classList.remove('active'));
   const chips=document.querySelectorAll('.f-chip');
@@ -277,34 +338,124 @@ function updateActiveStates(){
   const riskTab=document.getElementById('riskFilterTab'); const riskText=document.getElementById('riskFilterText');
   if(currentRiskFilter==='all'){riskTab.style.display='none';} else {riskTab.style.display='inline-flex'; riskText.textContent=RISK_LEVELS[currentRiskFilter]?.emoji+' '+RISK_LEVELS[currentRiskFilter]?.label; riskTab.classList.add('active');}
 }
+
 document.addEventListener('DOMContentLoaded',()=>{
   loadTheme(); setTodayDate(); initFirebase();
   const searchInput=document.getElementById('searchInput'); const clearBtn=document.getElementById('clearSearch'); const wrapper=document.getElementById('searchWrapper');
-  searchInput.addEventListener('input',()=>{ clearTimeout(searchTimer); searchTimer=setTimeout(()=>searchCustomer(),150); });
+  searchInput.addEventListener('input',()=>{
+    clearTimeout(searchTimer);
+    // debounce 180ms - احساس WhatsApp
+    searchTimer=setTimeout(()=>searchCustomer(),180);
+  });
   clearBtn.addEventListener('click',()=>{ searchInput.value=''; hideSuggestions(); currentSearchQuery=''; applyAllFilters(); clearBtn.style.display='none'; });
   document.addEventListener('click',(e)=>{ if(!wrapper.contains(e.target)) hideSuggestions(); if(e.target.id==='cityFilterModal') closeCityFilter(); if(e.target.id==='customerModal') closeModal(); });
 });
-function initFirebase(){ setConn('wait','جاري الاتصال...'); onValue(customersRef,(snapshot)=>{ const data=snapshot.val(); allCustomers=data||{}; applyAllFilters(); setConn('online','متصل'); },()=>{ setConn('off','غير متصل'); }); }
-function setConn(state,text){ const dot=document.getElementById('connDot'); const txt=document.getElementById('connText'); dot.className='dot '+(state==='online'?'':state==='off'?'off':'wait'); txt.textContent=text; }
+
+function initFirebase(){
+  if(isFirebaseListenerAttached) return;
+  isFirebaseListenerAttached=true;
+  setConn('wait','جاري الاتصال...');
+
+  // مراقبة الاتصال الحقيقي - لا يعيد تحميل
+  const connectedRef = ref(db, '.info/connected');
+  onValue(connectedRef, (snap)=>{
+    if(snap.val()===true){
+      if(isInitialLoadDone) setConn('online','متصل');
+    } else {
+      setConn('off','غير متصل');
+    }
+  });
+
+  onValue(customersRef,(snapshot)=>{
+    const data=snapshot.val()||{};
+
+    // تنظيف الكاش للمحذوفين فقط
+    const newIds = new Set(Object.keys(data));
+    for(const oldId of Object.keys(allCustomers)){
+      if(!newIds.has(oldId)){
+        smartDataCache.delete(oldId);
+        customerHashCache.delete(oldId);
+      }
+    }
+    // كشف التغييرات - لا نحسب كل شيء، فقط نحذف الكاش للمتغيرين
+    for(const id in data){
+      const oldHash = customerHashCache.get(id);
+      const newHash = getCustomerHash(data[id]);
+      if(oldHash && oldHash!== newHash){
+        smartDataCache.delete(id); // سيعاد حسابه عند الحاجة فقط
+      }
+    }
+
+    allCustomers=data;
+
+    if(!isInitialLoadDone){
+      isInitialLoadDone=true;
+      setConn('online','متصل');
+    }
+    // render واحد فقط من الذاكرة
+    applyAllFilters();
+  },(error)=>{
+    setConn('off','غير متصل');
+  });
+}
+
+function setConn(state,text){
+  const dot=document.getElementById('connDot'); const txt=document.getElementById('connText');
+  if(!dot||!txt) return;
+  dot.className='dot '+(state==='online'?'':state==='off'?'off':'wait'); txt.textContent=text;
+}
 window.openCalendar=function(){ filterByStatus('today'); showToast('عرض زبناء اليوم'); }
 window.openRoute=function(){ window.location.href='route.html'; }
 window.openDetails=function(id){ window.location.href='person.html?id='+id; }
 async function addCustomer(data){ const newRef=push(customersRef); const today=new Date().toISOString().split('T')[0]; const debt={id:'debt_'+newRef.key+'_1',originalAmount:data.amount,startDate:data.date||today,expectedDate:addDays(data.date||today,14)||today,payments:[],remainingAmount:data.amount,createdAt:new Date().toISOString()}; await set(newRef,{...data,id:newRef.key,createdAt:new Date().toISOString(),status:'pending',collected:0,debts:[debt]}); showToast('✅ تمت إضافة الزبون'); }
 async function updateCustomer(id,data){ await update(ref(db,'customers/'+id),data); showToast('✅ تم الحفظ'); }
 async function deleteCustomer(id){ await remove(ref(db,'customers/'+id)); showToast('🗑️ تم الحذف'); }
+
 function renderCustomers(customers){
-  const list=document.getElementById('customersList'); list.innerHTML='';
-  if(!customers || Object.keys(customers).length===0){ list.innerHTML=`<div class="empty"><div style="font-size:36px">👥</div><p>لا يوجد زبناء</p></div>`; updateStats({totalAmount:0,customersCount:0,todayCount:0,overdueCount:0}); updateRiskStats({}); return; }
-  let totalAmount=0, customersCount=0, todayCount=0, overdueCount=0, riskCounts={good:0,medium:0,weak:0,veryWeak:0,dangerous:0};
-  Object.keys(customers).forEach((key,idx)=>{
-    const customer=customers[key]; const smart=getCustomerSmartData(customer);
-    totalAmount+=smart.totalRemaining; customersCount++; if(smart.hasToday) todayCount++; if(smart.hasOverdue) overdueCount++;
+  const list=document.getElementById('customersList');
+  if(!list) return;
+  const keys = Object.keys(customers);
+  if(keys.length===0){
+    list.innerHTML=`<div class="empty"><div style="font-size:36px">👥</div><p>لا يوجد زبناء</p></div>`;
+    updateStats({totalAmount:0,customersCount:0,todayCount:0,overdueCount:0});
+    updateRiskStats({});
+    return;
+  }
+
+  let totalAmount=0, todayCount=0, overdueCount=0;
+  const riskCounts={good:0,medium:0,weak:0,veryWeak:0,dangerous:0};
+  const htmlParts = [];
+  htmlParts.length = keys.length;
+
+  for(let idx=0; idx<keys.length; idx++){
+    const key = keys[idx];
+    const customer = customers[key];
+    const smart = getCachedSmartData(key, customer);
+
+    totalAmount+=smart.totalRemaining;
+    if(smart.hasToday) todayCount++;
+    if(smart.hasOverdue) overdueCount++;
     if(smart.worstRisk.level!=='paid') riskCounts[smart.worstRisk.level]=(riskCounts[smart.worstRisk.level]||0)+1;
-    const overdueClass=smart.hasOverdue?'overdue':''; const cityBtns=["TanTan","Ouatia","Gulmim"].map(cn=>{ const active=(customer.city||'').toLowerCase()===cn.toLowerCase(); return `<button class="city-btn ${active?'active':''}" onclick="event.stopPropagation(); setCustomerCity('${key}','${cn}')">${cn}</button>`; }).join('');
-    let miniDebts=''; smart.debts.filter(d=>d.remainingAmount>0.5).slice(0,2).forEach((d,i)=>{ miniDebts+=`<span class="d-mini">📦 ${i+1} • ${Math.round(d.remainingAmount)} DH • ${d.risk.emoji}</span>`; });
-    if(smart.debts.filter(d=>d.remainingAmount>0.5).length>2) miniDebts+=`<span class="d-mini">+${smart.debts.filter(d=>d.remainingAmount>0.5).length-2}</span>`;
+
+    const overdueClass=smart.hasOverdue?'overdue':'';
+    const cityBtns=["TanTan","Ouatia","Gulmim"].map(cn=>{
+      const active=(customer.city||'').toLowerCase()===cn.toLowerCase();
+      return `<button class="city-btn ${active?'active':''}" onclick="event.stopPropagation(); setCustomerCity('${key}','${cn}')">${cn}</button>`;
+    }).join('');
+
+    let miniDebts='';
+    const activeDebts = smart.debts.filter(d=>d.remainingAmount>0.5);
+    const show = activeDebts.slice(0,2);
+    for(let i=0;i<show.length;i++){
+      const d=show[i];
+      miniDebts+=`<span class="d-mini">📦 ${i+1} • ${Math.round(d.remainingAmount)} DH • ${d.risk.emoji}</span>`;
+    }
+    if(activeDebts.length>2) miniDebts+=`<span class="d-mini">+${activeDebts.length-2}</span>`;
+    if(activeDebts.length===0) miniDebts='<span class="d-mini">✅ مسدد</span>';
+
     const riskBadge=smart.unpaidCount>0? `<span class="r-badge ${smart.worstRisk.css}">${smart.worstRisk.emoji} ${smart.worstRisk.label}</span>`:`<span class="r-badge paid">✅ مسدد</span>`;
-    const card=`
+
+    htmlParts[idx]=`
     <div class="c-card ${overdueClass}" onclick="openDetails('${key}')">
       <button class="ic-btn edit" onclick="event.stopPropagation(); editCustomerName('${key}')" title="تعديل الاسم"><i class="fas fa-pen"></i></button>
       <div class="c-top">
@@ -313,7 +464,7 @@ function renderCustomers(customers){
           <div class="c-name-row"><div class="c-name">${customer.name||'بدون اسم'}</div>${riskBadge}</div>
           <div class="c-amount">${Math.round(smart.totalRemaining)} <span style="font-size:13px">DH</span></div>
           <div class="c-meta"><span><i class="fas fa-calendar"></i> ${smart.nextPaymentDate||customer.date||'-'}</span><span><i class="fas fa-phone"></i> ${customer.phone||'-'}</span></div>
-          <div class="c-debts">${miniDebts||'<span class="d-mini">✅ مسدد</span>'}</div>
+          <div class="c-debts">${miniDebts}</div>
           <div class="city-row"><span style="font-size:10px;color:var(--muted)"><i class="fas fa-location-dot"></i> ${customer.city||'بدون مدينة'}</span><div style="display:flex;gap:4px;margin-right:6px">${cityBtns}</div></div>
         </div>
       </div>
@@ -324,12 +475,17 @@ function renderCustomers(customers){
         <button class="ic-btn primary" onclick="event.stopPropagation(); openDetails('${key}')" title="التفاصيل"><i class="fas fa-user"></i></button>
       </div>
     </div>`;
-    list.innerHTML+=card;
-  });
-  updateStats({totalAmount,customersCount,todayCount,overdueCount}); updateRiskStats(riskCounts);
+  }
+
+  // تحديث DOM مرة واحدة فقط - لا innerHTML += في loop
+  list.innerHTML = htmlParts.join('');
+  updateStats({totalAmount,customersCount:keys.length,todayCount,overdueCount});
+  updateRiskStats(riskCounts);
 }
+
 function updateStats(s){ document.getElementById('totalAmount').textContent=Math.round(s.totalAmount||0); document.getElementById('totalCustomers').textContent=s.customersCount||0; document.getElementById('todayCount').textContent=s.todayCount||0; document.getElementById('overdueCount').textContent=s.overdueCount||0; }
 function updateRiskStats(rc){ document.getElementById('countGood').textContent=rc.good||0; document.getElementById('countMedium').textContent=rc.medium||0; document.getElementById('countWeak').textContent=rc.weak||0; document.getElementById('countVeryWeak').textContent=rc.veryWeak||0; document.getElementById('countDangerous').textContent=rc.dangerous||0; const alertDiv=document.getElementById('dailyAlert'); const total=(rc.dangerous||0)+(rc.veryWeak||0); if(total>0){ alertDiv.style.display='flex'; document.getElementById('alertTitle').textContent=`🚨 ${total} ديون تحتاج متابعة`; document.getElementById('alertDesc').textContent=`${rc.dangerous||0} خطر • ${rc.veryWeak||0} ضعيف جدا`; } else alertDiv.style.display='none'; }
+
 window.showAddModal=function(){ document.getElementById('customerId').value=''; document.getElementById('customerName').value=''; document.getElementById('customerAmount').value=''; document.getElementById('customerPhone').value=''; setTodayDate(); document.getElementById('customerModal').classList.add('active'); }
 window.closeModal=function(){ document.getElementById('customerModal').classList.remove('active'); }
 window.saveCustomer=async function(e){ e.preventDefault(); const id=document.getElementById('customerId').value; const data={name:document.getElementById('customerName').value, amount:parseInt(document.getElementById('customerAmount').value), phone:document.getElementById('customerPhone').value, date:document.getElementById('customerDate').value, paymentDate:document.getElementById('customerDate').value, updatedAt:new Date().toISOString()}; if(id) await updateCustomer(id,data); else await addCustomer(data); closeModal(); }
@@ -339,24 +495,46 @@ window.confirmDelete=function(id){
 }
 window.filterByStatus=function(status){ currentStatusFilter=status; hideSuggestions(); applyAllFilters(); }
 window.filterByRisk=function(risk){ currentRiskFilter=(currentRiskFilter===risk?'all':risk); hideSuggestions(); applyAllFilters(); if(risk!=='all') showToast(`${RISK_LEVELS[risk]?.emoji} ${RISK_LEVELS[risk]?.label}`); }
-function hideSuggestions(){ const box=document.getElementById('searchSuggestions'); if(box){ box.classList.remove('active'); box.innerHTML=''; } const clear=document.getElementById('clearSearch'); if(clear && !document.getElementById('searchInput').value) clear.style.display='none'; }
+function hideSuggestions(){ const box=document.getElementById('searchSuggestions'); if(box){ box.classList.remove('active'); box.innerHTML=''; } const clear=document.getElementById('clearSearch'); if(clear &&!document.getElementById('searchInput').value) clear.style.display='none'; }
 function showSuggestions(query){
   const box=document.getElementById('searchSuggestions'); const input=document.getElementById('searchInput'); const clear=document.getElementById('clearSearch'); if(!box||!input) return;
   const q=query.trim().toLowerCase(); currentSearchQuery=query.trim();
   if(!q){ hideSuggestions(); clear.style.display='none'; applyAllFilters(); return; } clear.style.display='block';
-  let matches=Object.entries(allCustomers).filter(([k,c])=> (c.name||'').toLowerCase().includes(q));
-  if(matches.length===0){ box.innerHTML=`<div style="padding:14px;text-align:center;color:var(--muted)">🔍 لا توجد نتائج</div>`; box.classList.add('active'); renderCustomers({}); return; }
-  matches.sort((a,b)=>{ const an=(a[1].name||'').toLowerCase(), bn=(b[1].name||'').toLowerCase(); const aS=an.startsWith(q)?0:1, bS=bn.startsWith(q)?0:1; if(aS!==bS) return aS-bS; return an.localeCompare(bn); });
-  box.innerHTML=matches.slice(0,15).map(([key,c])=>{ const smart=getCustomerSmartData(c); const initial=(c.name||'?').charAt(0).toUpperCase(); return `<div class="s-item" onclick="openDetails('${key}')"><div class="s-avatar">${initial}</div><div style="flex:1"><div style="font-weight:800;font-size:12px">${c.name} • ${c.city||''}</div><div style="font-size:11px;color:var(--primary);font-weight:700">${Math.round(smart.totalRemaining)} DH • ${smart.worstRisk.emoji} ${smart.worstRisk.label}</div></div><i class="fas fa-chevron-left" style="color:var(--muted);font-size:11px"></i></div>`; }).join(''); box.classList.add('active'); applyAllFilters();
+
+  // سريع من الذاكرة فقط مع الكاش
+  const matched=[];
+  for(const k in allCustomers){
+    const c=allCustomers[k];
+    if((c.name||'').toLowerCase().includes(q)){
+      const smart=getCachedSmartData(k,c);
+      matched.push([k,c,smart]);
+      if(matched.length>50) break;
+    }
+  }
+  if(matched.length===0){ box.innerHTML=`<div style="padding:14px;text-align:center;color:var(--muted)">🔍 لا توجد نتائج</div>`; box.classList.add('active'); renderCustomers({}); return; }
+  matched.sort((a,b)=>{ const an=(a[1].name||'').toLowerCase(), bn=(b[1].name||'').toLowerCase(); const aS=an.startsWith(q)?0:1, bS=bn.startsWith(q)?0:1; if(aS!==bS) return aS-bS; return an.localeCompare(bn); });
+  const html = matched.slice(0,15).map(([key,c,smart])=>{ const initial=(c.name||'?').charAt(0).toUpperCase(); return `<div class="s-item" onclick="openDetails('${key}')"><div class="s-avatar">${initial}</div><div style="flex:1"><div style="font-weight:800;font-size:12px">${c.name} • ${c.city||''}</div><div style="font-size:11px;color:var(--primary);font-weight:700">${Math.round(smart.totalRemaining)} DH • ${smart.worstRisk.emoji} ${smart.worstRisk.label}</div></div><i class="fas fa-chevron-left" style="color:var(--muted);font-size:11px"></i></div>`; }).join('');
+  box.innerHTML=html; box.classList.add('active');
+  applyAllFilters();
 }
 window.searchCustomer=function(){ showSuggestions(document.getElementById('searchInput').value); }
 function loadTheme(){ const t=localStorage.getItem('theme')||'light'; document.documentElement.setAttribute('data-theme',t); document.getElementById('themeIcon').className=t==='dark'?'fas fa-sun':'fas fa-moon'; }
 window.toggleTheme=function(){ const cur=document.documentElement.getAttribute('data-theme'); const next=cur==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',next); localStorage.setItem('theme',next); document.getElementById('themeIcon').className=next==='dark'?'fas fa-sun':'fas fa-moon'; }
-function setTodayDate(){ document.getElementById('customerDate').value=new Date().toISOString().split('T')[0]; }
+function setTodayDate(){ const el=document.getElementById('customerDate'); if(el) el.value=new Date().toISOString().split('T')[0]; }
 function showToast(msg){ const toast=document.getElementById('toast'); document.getElementById('toastMessage').textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2500); }
-window.setCustomerCity=async function(cid,cityName){ const customer=allCustomers[cid]; if(!customer) return; if((customer.city||'')===cityName){ showToast(`${customer.name} في ${cityName} بالفعل`); return; } customer.city=cityName; allCustomers[cid]=customer; applyAllFilters(); try{ await update(ref(db,'customers/'+cid),{city:cityName,updatedAt:new Date().toISOString()}); showToast(`✅ ${customer.name} → ${cityName}`); }catch(e){ showToast('⚠️ خطأ في الحفظ'); } }
+window.setCustomerCity=async function(cid,cityName){ const customer=allCustomers[cid]; if(!customer) return; if((customer.city||'')===cityName){ showToast(`${customer.name} في ${cityName} بالفعل`); return; } customer.city=cityName; allCustomers[cid]=customer; customerHashCache.delete(cid); smartDataCache.delete(cid); applyAllFilters(); try{ await update(ref(db,'customers/'+cid),{city:cityName,updatedAt:new Date().toISOString()}); showToast(`✅ ${customer.name} → ${cityName}`); }catch(e){ showToast('⚠️ خطأ في الحفظ'); } }
 window.openCityFilter=function(){
-  const listDiv=document.getElementById('cityFilterList'); const statusFiltered=currentStatusFilter==='all'?allCustomers:(()=>{let tmp={}; Object.keys(allCustomers).forEach(k=>{const sd=getCustomerSmartData(allCustomers[k]); if(currentStatusFilter==='today'&&sd.hasToday) tmp[k]=allCustomers[k]; else if(currentStatusFilter==='overdue'&&sd.hasOverdue) tmp[k]=allCustomers[k]; else if(currentStatusFilter==='upcoming'&&sd.hasUpcoming) tmp[k]=allCustomers[k];}); return tmp;})();
+  const listDiv=document.getElementById('cityFilterList');
+  let statusFiltered=allCustomers;
+  if(currentStatusFilter!=='all'){
+    statusFiltered={};
+    for(const k in allCustomers){
+      const sd=getCachedSmartData(k,allCustomers[k]);
+      if(currentStatusFilter==='today'&&sd.hasToday) statusFiltered[k]=allCustomers[k];
+      else if(currentStatusFilter==='overdue'&&sd.hasOverdue) statusFiltered[k]=allCustomers[k];
+      else if(currentStatusFilter==='upcoming'&&sd.hasUpcoming) statusFiltered[k]=allCustomers[k];
+    }
+  }
   const counts=getCityCounts(statusFiltered); const cities=Object.keys(counts).filter(c=>c).sort((a,b)=>counts[b]-counts[a]); const total=Object.keys(statusFiltered).length;
   let html=`<div onclick="filterByCity('all')" style="padding:12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between"><span>🌍 الكل</span><span style="background:var(--bg);padding:2px 10px;border-radius:20px;font-size:11px">${total}</span></div>`;
   cities.forEach(city=>{ html+=`<div onclick="filterByCity('${city}')" style="padding:12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between"><span>📍 ${city}</span><span style="background:var(--bg);padding:2px 10px;border-radius:20px;font-size:11px">${counts[city]||0}</span></div>`; });
@@ -385,5 +563,5 @@ const appVersion="11"; if(localStorage.getItem("appVersion")!==appVersion){ loca
 if(!localStorage.getItem("loggedIn")){ window.location.href="login.html"; }
 if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js',{scope:'./'})); }
 </script>
-<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+</body>
 </html>
